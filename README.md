@@ -28,7 +28,6 @@
     - `Género`
     - `Clasificación_por_edad`
     - `idiomas`
-    - `numero_de_episodios`
 
 - **Entidad Secundaria: Reviews de Usuario**  
   - Atributos:   
