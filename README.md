@@ -5,7 +5,7 @@
 ##  Integrantes del equipo 
 
 - **Ignacio de Diego Valera**  
-  -  Correo: i.dedeigo@alumnos.urjc.es  
+  -  Correo: i.dediego@alumnos.urjc.es  
   -  GitHub: [@Ignacioddv](https://github.com/Ignacioddv)
 
 - **Samuel Jesús Gómez Martín**  
