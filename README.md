@@ -24,7 +24,8 @@
     - `imagen`  
     - `nombre`  
     - `precio`
-    - `nombre_serie`
+    - `valoracion`
+    - `rating (1-5)`
 
 - **Entidad Secundaria: Episodios**  
   - Atributos:  
@@ -32,7 +33,7 @@
     - `imagen`  
     - `nombre_episodio`
     - `numero_episodio`
-    - ...  
+    - `rating (1-5)`
 
 ---
 
