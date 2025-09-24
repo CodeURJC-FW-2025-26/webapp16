@@ -18,22 +18,20 @@
 ##  Funcionalidad
 - En esta pagina web dispondremos de un catálogo de diferentes series con toda la informacion necesaria e intuitiva a traves de imágenes, además un apartado en el que el usuario deberá iniciar sesión en su cuenta de softflix para poder acceder a la pagina web, también contando con un apartado dirigido a una ayuda para la busqueda de las series y una página adicional para informacion extra de cada serie.
 ###  Entidades
-- **Entidad Principal: Películas/Series**  
-  - Atributos:  
-    - `id`  
+- **Entidad Principal: Películas**  
+  - Atributos: 
     - `imagen`  
     - `nombre`  
     - `precio`
-    - `valoracion`
-    - `rating (1-5)`
+    - `información`
+    - `puntuación (1-5)`
 
-- **Entidad Secundaria: Episodios**  
-  - Atributos:  
-    - `id`  
-    - `imagen`  
-    - `nombre_episodio`
-    - `numero_episodio`
-    - `rating (1-5)`
+- **Entidad Secundaria: Usuario**  
+  - Atributos:   
+    - `imagen de usuario`  
+    - `nombre_usuario`
+    - `comentario`
+    - `puntuación (1-5)`
 
 ---
 
