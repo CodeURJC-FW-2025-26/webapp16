@@ -23,7 +23,7 @@
     - `id`  
     - `imagen`  
     - `nombre`  
-    - ...  
+    - `precio`  
 
 - **Entidad Secundaria: Episodios**  
   - Atributos:  
