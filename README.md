@@ -39,8 +39,8 @@
 ---
 
 ###  Imágenes
-- Entidad principal: asociada a una/varias imágenes.  
-- Entidad secundaria: asociada a una/varias imágenes.  
+- Entidad principal: asociada a una imagen.  
+- Entidad secundaria: asociada a una imagen.  
 
 ---
 
