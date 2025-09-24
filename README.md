@@ -23,13 +23,14 @@
     - `id`  
     - `imagen`  
     - `nombre`  
-    - `precio`  
+    - `precio`
+    - `nombre_serie`
 
 - **Entidad Secundaria: Episodios**  
   - Atributos:  
     - `id`  
     - `imagen`  
-    - `nombre_serie`  
+    - `nombre_episodio`  
     - ...  
 
 ---
