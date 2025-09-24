@@ -25,8 +25,10 @@
     - `precio`
     - `información`
     - `puntuación (1-5)`
+    - `Género`
+    - `Clasificación_por_edad`
 
-- **Entidad Secundaria: Usuario**  
+- **Entidad Secundaria: Reviews de Usuario**  
   - Atributos:   
     - `imagen de usuario`  
     - `nombre_usuario`
