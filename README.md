@@ -47,4 +47,5 @@
 - Tipo de consultas que se podrán realizar:  
   - Buscar por nombre de película.  
   - Filtrar por género de la película.  
-  - Clasificar según la puntuación de cada película. 
+  - Clasificar según la puntuación de cada película.
+  - Filtrar por clasificación por edades.
