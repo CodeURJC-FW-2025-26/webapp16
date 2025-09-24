@@ -16,7 +16,7 @@
   -  Correo: r.garciapi.2024@alumnos.urjc.es  
   -  GitHub: [@Raulgrp7](https://github.com/Raulgrp7)
 ##  Funcionalidad
-- En esta pagina web dispondremos de un catálogo de diferentes series con toda la informacion necesaria e intuitiva a traves de imágenes, también contando con un apartado dirigido a una ayuda para la busqueda de las series y una página adicional para informacion extra de cada serie.
+- En esta pagina web dispondremos de un catálogo de diferentes series con toda la informacion necesaria e intuitiva a traves de imágenes, además un apartado en el que el usuario deberá iniciar sesión en su cuenta de softflix para poder acceder a la pagina web, también contando con un apartado dirigido a una ayuda para la busqueda de las series y una página adicional para informacion extra de cada serie.
 ###  Entidades
 - **Entidad Principal: Películas/Series**  
   - Atributos:  
@@ -30,7 +30,8 @@
   - Atributos:  
     - `id`  
     - `imagen`  
-    - `nombre_episodio`  
+    - `nombre_episodio`
+    - `numero_episodio`
     - ...  
 
 ---
