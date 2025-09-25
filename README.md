@@ -24,7 +24,7 @@
     - `name`  
     - `prize`
     - `information`
-    - `punctuation (1-5)`
+    - `rating (1-5)`
     - `Genres`
     -` Action`
     - `Adventure`
@@ -44,7 +44,7 @@
     - `user_image`  
     - `user_name`
     - `review`
-    - `punctuation (1-5)`
+    - `rating (1-5)`
 
 ---
 
