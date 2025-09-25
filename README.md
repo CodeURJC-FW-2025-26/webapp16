@@ -26,7 +26,7 @@
     - `information`
     - `rating (1-5)`
     - `Genres`
-    -` Action`
+    - `Action`
     - `Adventure`
     - `Comedy`
     - `Science Fiction`
