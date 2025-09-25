@@ -33,7 +33,7 @@
   - Atributos:   
     - `imagen de usuario`  
     - `nombre_usuario`
-    - `reviews`
+    - `review`
     - `puntuación (1-5)`
 
 ---
