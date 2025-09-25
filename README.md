@@ -2,51 +2,51 @@
 
 ---
 
-##  Integrantes del equipo 
+##  Team members 
 
 - **Ignacio de Diego Valera**  
-  -  Correo: i.dediego@alumnos.urjc.es  
+  -  Mail: i.dediego@alumnos.urjc.es  
   -  GitHub: [@Ignacioddv](https://github.com/Ignacioddv)
 
 - **Samuel Jesús Gómez Martín**  
-  -  Correo: sj.gomez.2024@alumnos.urjc.es  
+  -  Mail: sj.gomez.2024@alumnos.urjc.es  
   -  GitHub: [@samugm0](https://github.com/samugm0)
 
 - **Raúl García Piedra**  
-  -  Correo: r.garciapi.2024@alumnos.urjc.es  
+  -  Mail: r.garciapi.2024@alumnos.urjc.es  
   -  GitHub: [@Raulgrp7](https://github.com/Raulgrp7)
-##  Funcionalidad
-- En esta pagina web dispondremos de un catálogo de diferentes peliculas con toda la informacion necesaria e intuitiva a traves de imágenes, también contando con un apartado dirigido a una ayuda para la busqueda de las peliculas y una página adicional para informacion extra de cada pelicula.
-###  Entidades
-- **Entidad Principal: Películas**  
-  - Atributos: 
-    - `imagen`  
-    - `nombre`  
-    - `precio`
-    - `información`
-    - `puntuación (1-5)`
-    - `Género`
-    - `Clasificación_por_edad`
-    - `idiomas`
+##  Functionality
+- In this web site we will have a catalog of different films with all the  needed and intuitive information through images, also counting with another part that helps  in the searching of the films and an extra web page that contains more information of each film.
+###  Entities
+- **Main Entity: Films**  
+  - Attributes: 
+    - `image`  
+    - `name`  
+    - `prize`
+    - `information`
+    - `punctuation (1-5)`
+    - `Genres`
+    - `rating_by_age`
+    - `languages`
 
-- **Entidad Secundaria: Reviews de Usuario**  
-  - Atributos:   
-    - `imagen de usuario`  
-    - `nombre_usuario`
+- **Secondary Entity: User Reviews**  
+  - Attributes:   
+    - `user_image`  
+    - `user_name`
     - `review`
-    - `puntuación (1-5)`
+    - `punctuation (1-5)`
 
 ---
 
-###  Imágenes
-- Entidad principal: asociada a una imagen.  
-- Entidad secundaria: asociada a una imagen.  
+###  Images
+- Main entity: associated with an image.  
+- Secondary entity: associated with an image.  
 
 ---
 
-###  Buscador, filtrado o categorización
-- Tipo de consultas que se podrán realizar:  
-  - Buscar por nombre de película.  
-  - Filtrar por género de la película.  
-  - Clasificar según la puntuación de cada película.
-  - Filtrar por calificación por edades.
+###  Search, filtering or categorization
+- Type of actions that can be made:  
+  - Search by movie name.  
+  - Filter by movie genre.  
+  - Rank according to the score of each movie.
+  - Filter by age rating.
