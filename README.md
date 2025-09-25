@@ -26,8 +26,18 @@
     - `information`
     - `punctuation (1-5)`
     - `Genres`
+    -` Action`
+    - `Adventure`
+    - `Comedy`
+    - `Science Fiction`
+    - `Horror`
+    - `Fantasy`
     - `rating_by_age`
     - `languages`
+    - `spanish`
+    - `english`
+    - `french`
+    - `german`
 
 - **Secondary Entity: User Reviews**  
   - Attributes:   
