@@ -49,4 +49,4 @@
   - Buscar por nombre de película.  
   - Filtrar por género de la película.  
   - Clasificar según la puntuación de cada película.
-  - Filtrar por clasificación por edades.
+  - Filtrar por calificación por edades.
