@@ -20,31 +20,21 @@
 ###  Entities
 - **Main Entity: Films**  
   - Attributes: 
-    - `image`  
-    - `name`  
-    - `prize`
-    - `information`
-    - `rating (1-5)`
-    - `Genres`
-    - `Action`
-    - `Adventure`
-    - `Comedy`
-    - `Science Fiction`
-    - `Horror`
-    - `Fantasy`
-    - `rating_by_age`
-    - `languages`
-    - `spanish`
-    - `english`
-    - `french`
-    - `german`
+    - `Image`  
+    - `Name`  
+    - `Prize`
+    - `Information`
+    - `Rating (1-5)`
+    - `Genres (Action, Adventure, Comedy, Science Fiction, Horror, Fantasy)`
+    - `Rating_by_age`
+    - `Languages (Spanish, English, French, German)`
 
 - **Secondary Entity: User Reviews**  
   - Attributes:   
-    - `user_image`  
-    - `user_name`
-    - `review`
-    - `rating (1-5)`
+    - `User_image`  
+    - `User_name`
+    - `Review`
+    - `Rating (1-5)`
 
 ---
 
