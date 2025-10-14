@@ -36,6 +36,58 @@
             </div>
         </nav>
     </header>
+        <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 col-md-8 offset-md-2">
+                <h2 class="mb-4">Add film</h2>
+                <!--Here we have the section of the form-->
+                <form role="form">
+                    <div class="mb-3 form-group">
+                        <label for="title" class="form-label">Title of the film</label>
+                        <input type="text" class="form-control" id="title" placeholder="Add the title of the film">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" rows="3"
+                            placeholder="Add the description of the film"></textarea>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="releaseYear" class="form-label">Release year</label>
+                        <input type="number" class="form-control" id="releaseYear" placeholder="Add the release year">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="rating" class="form-label">Calification</label>
+                        <input type="number" class="form-control" id="rating" placeholder="Add the calification (0-100)"
+                            min="0" max="100" step="0.1">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="edad" class="form-label">Age classification</label>
+                        <input type="text" class="form-control" id="edad" placeholder="Add the age classification">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="director" class="form-label">Director</label>
+                        <input type="text" class="form-control" id="director" placeholder="Add the director">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="cast" class="form-label">Casting</label>
+                        <input type="text" class="form-control" id="cast"
+                            placeholder="Add the names of the casting, separated by comas">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="duration" class="form-label">Duration (hours, minutes)</label>
+                        <input type="number" class="form-control" id="duration"
+                            placeholder="Add the duration in hours,minutes">
+                    </div>
+                    <div class="mb-5 mt-5">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <a href="indice.html" class="btn btn-secondary" role="button">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
                 
    <footer class="site-footer">
         <div class="footer-inner">
