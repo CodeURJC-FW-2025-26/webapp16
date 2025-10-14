@@ -84,4 +84,17 @@
 
 -Samuel: I've done everything related to the detail page, including its corresponding CSS and Bootstrap for both the header, which is common to the entire website, and the style of the buttons and footer. Finally, I've commented out the code for a better understanding. 
 
+  -Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/a43883438046be23b639b3e8e9bce807a12f7c98)
+            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/4d6474b0abd368fcc2abf64615a56311dc8b4934)
+            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/3a4394169856e17b21cdd15353b0ab8ec3671812)
+            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/6d21f81a5f480d80503fdcbe6cf0477d4e39b98f)
+            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/463ff282443ab1b2e09d04be194ea50019afb4c5)
+
+ -Pages: ([Ej.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Ej.html))
+         ([Formulario.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Formulario.html))
+         ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
+         ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
+         ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
+             
+
 
