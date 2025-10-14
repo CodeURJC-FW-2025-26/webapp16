@@ -81,3 +81,7 @@
             ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
             ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
 
+
+-Samuel: I've done everything related to the detail page, including its corresponding CSS and Bootstrap for both the header, which is common to the entire website, and the style of the buttons and footer. Finally, I've commented out the code for a better understanding. 
+
+
