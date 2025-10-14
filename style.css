@@ -1,5 +1,4 @@
 /* 1. Styles for indice.html*/
-
 #bgvideo {
     position: absolute;
     inset: 0;
@@ -52,8 +51,6 @@
 }
 
 /* 2. Styles for añadir.html*/
-
-
 .form-label {
     font-size: 1.1rem;
     font-weight: 500;
@@ -71,7 +68,6 @@
 }
 
 /* 3. Styles for ej.html*/
-
 .maincontainer {
     padding: 40px 1rem 0 1rem;
 }
