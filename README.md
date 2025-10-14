@@ -47,3 +47,18 @@
   - Filter by movie genre.  
   - Rank according to the score of each movie.
   - Filter by age rating.
+
+---
+
+### Participation
+- Ignacio: I have mainly participated in three documents: indice.html, Formulario.html and style.css. I have been supervising all of the code, watching the comments, that all of the code was tidy and erasing code that we didn´t usein any of the docuemnts.
+  - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/53c87d31d7d29ea8b967139c66de71cf5a400143)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/dc384734e017a231c924947321f72293b05283c1)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/e6c335be488f624c45cd7eb99b46c74095273098)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/944f65e807caf4bd47c24f6cd4bb27a59e89ae4c)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/e76b69543c04cc4ce8ff0d540f00d5eeb165aa0b)
+  - Pages: ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
+          ([Formulario.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Formulario.html))
+          ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
+          ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
+          ([añadir.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/a%C3%B1adir.html))
