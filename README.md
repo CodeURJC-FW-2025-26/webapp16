@@ -16,11 +16,10 @@
 - **Main Entity: Films**  
   - Attributes: 
     - `Image`  
-    - `Name`  
-    - `Prize`
+    - `Name`
     - `Information`
     - `Rating (1-5)`
-    - `Genres (Action, Adventure, Comedy, Science Fiction, Horror, Fantasy)`
+    - `Genders (Action, Adventure, Comedy, Science Fiction, Horror, Fantasy)`
     - `Rating_by_age`
     - `Languages (Spanish, English, French, German)`
 
