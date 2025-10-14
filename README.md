@@ -58,10 +58,10 @@
              (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/944f65e807caf4bd47c24f6cd4bb27a59e89ae4c)
              (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/e76b69543c04cc4ce8ff0d540f00d5eeb165aa0b)
   - Pages: ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
-          ([Formulario.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Formulario.html))
-          ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
-          ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
-          ([añadir.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/a%C3%B1adir.html))
+           ([Formulario.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Formulario.html))
+           ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
+           ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
+           ([añadir.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/a%C3%B1adir.html))
 
 
 - Raúl: I made all the things related to the page for adding a new element, also adding new css and changing the bootstrap default code. I have also been making comments to be the work more explained and reestructuring some code.
