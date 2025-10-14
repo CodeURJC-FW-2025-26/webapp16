@@ -25,10 +25,6 @@
 
 - **Secondary Entity: User Reviews**  
   - Attributes:   
-    - `user_image`  
-    - `user_name`
-    - `review`
-    - `rating (1-5)`
     - `User_image`  
     - `User_name`
     - `Review`
