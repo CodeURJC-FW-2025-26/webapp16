@@ -50,7 +50,11 @@
 
 ---
 
-### Paractica 1
+### Practica 1
+-WEB IMAGES: ([Añadir](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Images_Web/A%C3%B1adir.jpeg))
+             ([Ejemplo](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Images_Web/Ejemplo.jpeg))
+             ([Indice](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Images_Web/Indice.jpeg))
+  
 - Ignacio: I have mainly participated in three documents: indice.html, Formulario.html and style.css. I have been supervising all of the code, watching the comments, that all of the code was tidy and erasing code that we didn´t use in any of the docuemnts.
   - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/53c87d31d7d29ea8b967139c66de71cf5a400143)
              (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/dc384734e017a231c924947321f72293b05283c1)
@@ -76,4 +80,8 @@
             ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
             ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
             ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
+
+
+-Samuel: I've done everything related to the detail page, including its corresponding CSS and Bootstrap for both the header, which is common to the entire website, and the style of the buttons and footer. Finally, I've commented out the code for a better understanding. 
+
 
