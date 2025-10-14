@@ -50,7 +50,11 @@
 
 ---
 
-### Paractica 1
+### Practica 1
+-WEB IMAGES: (https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Images_Web/A%C3%B1adir.jpeg)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Images_Web/Ejemplo.jpeg)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Images_Web/Indice.jpeg)
+  
 - Ignacio: I have mainly participated in three documents: indice.html, Formulario.html and style.css. I have been supervising all of the code, watching the comments, that all of the code was tidy and erasing code that we didn´t use in any of the docuemnts.
   - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/53c87d31d7d29ea8b967139c66de71cf5a400143)
              (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/dc384734e017a231c924947321f72293b05283c1)
