@@ -65,15 +65,15 @@
 
 
 - Raúl: I made all the things related to the page for adding a new element, also adding new css and changing the bootstrap default code. I have also been making comments to be the work more explained and reestructuring some code.
-- Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/27283d88cc58be7151808851284499b3beb85954)
-           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/1b7c0db6deb3cf5946a8bc4ffdbb65332b23dbbd)
-           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/53ef6bf61a52bebf53d99f7242e493f8cd20d3ae)
-           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/ef8e1a192809035f71173618b97a3bb9862aee03)
-           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/cb00938d0917a2e0144db58eeb4be8262336557b)
+  - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/27283d88cc58be7151808851284499b3beb85954)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/1b7c0db6deb3cf5946a8bc4ffdbb65332b23dbbd)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/53ef6bf61a52bebf53d99f7242e493f8cd20d3ae)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/ef8e1a192809035f71173618b97a3bb9862aee03)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/cb00938d0917a2e0144db58eeb4be8262336557b)
   
-- Pages:  ([añadir.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/a%C3%B1adir.html))
-          ([Formulario.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Formulario.html))
-          ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
-          ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
-          ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
+  - Pages:  ([añadir.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/a%C3%B1adir.html))
+            ([Formulario.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Formulario.html))
+            ([Style.css](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/style.css))
+            ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
+            ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
 
