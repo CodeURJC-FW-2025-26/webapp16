@@ -60,7 +60,7 @@
       <img src="Images_Web/Añadir.jpeg" alt="Captura del sitio" width="800" />
     </p>
   
-- Ignacio: I have mainly participated in three documents: indice.html, Formulario.html and style.css. I have been supervising all of the code, watching the comments, that all of the code was tidy and erasing code that we didn´t use in any of the docuemnts.
+- Ignacio: I have mainly participated in three documents: indice.html, Formulario.html and style.css. I have been supervising all of the code, watching the comments, that all of the code was tidy and erasing code that we didn´t use in any of the files.
   - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/53c87d31d7d29ea8b967139c66de71cf5a400143)
              (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/dc384734e017a231c924947321f72293b05283c1)
              (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/e6c335be488f624c45cd7eb99b46c74095273098)
