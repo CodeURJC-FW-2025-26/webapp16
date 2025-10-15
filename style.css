@@ -182,11 +182,8 @@
     background: #263b43;
     color: #dfeef1;
     padding: 1rem 0;
-    margin-top: 2rem;
-    bottom: 0;
-    left: 0;
+    margin-top: 2rem;   
     width: 100%;
-    z-index: 10;
 }
 
 .site-footer .footer-inner {
@@ -195,4 +192,9 @@
     margin: 0 auto;
     justify-content: space-between;
     align-items: center;
+}
+
+footer .footer-inner .footer-right a {
+    text-decoration: none;
+    text-align: end;
 }
