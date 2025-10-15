@@ -190,11 +190,10 @@
     width: 90%;
     max-width: 1100px;
     margin: 0 auto;
-    justify-content: space-between;
     align-items: center;
 }
 
 footer .footer-inner .footer-right a {
     text-decoration: none;
-    text-align: end;
+    justify-content: end;
 }
