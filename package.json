@@ -1,0 +1,25 @@
+{
+  "name": "practica1",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "---\r ##  Team members \r - **Ignacio de Diego Valera**  \r   -  Mail: i.dediego@alumnos.urjc.es  \r   -  GitHub: [@Ignacioddv](https://github.com/Ignacioddv)\r - **Samuel Jesús Gómez Martín**  \r   -  Mail: sj.gomez.2024@alumnos.urjc.es  \r   -  GitHub: [@samugm0](https://github.com/samugm0)\r - **Raúl García Piedra**  \r   -  Mail: r.garciapi.2024@alumnos.urjc.es  \r   -  GitHub: [@Raulgrp7](https://github.com/Raulgrp7)\r ##  Functionality\r - In this web site we will have a catalog of different films with all the  needed and intuitive information through images, also counting with another part that helps  in the searching of the films and an extra web page that contains more information of each film.\r ###  Entities\r - **Main Entity: Films**  \r   - Attributes: \r     - `Image`  \r     - `Name`\r     - `Information`\r     - `Rating (1-5)`\r     - `Genders (Action, Adventure, Comedy, Science Fiction, Horror, Fantasy)`\r     - `Rating_by_age`\r     - `Languages (Spanish, English, French, German)`",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeURJC-FW-2025-26/webapp16.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CodeURJC-FW-2025-26/webapp16/issues"
+  },
+  "homepage": "https://github.com/CodeURJC-FW-2025-26/webapp16#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mustache-express": "^1.3.2"
+  }
+}
