@@ -43,8 +43,8 @@
                     <img src="/Imagenes/Interstellar/Interestellartitulo.png" alt="" class="titulo-img">
                     <div class="d-flex align-items-center gap-3 mt-3 mb-3">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-hand-thumbs-up-fill me-1"></i>
-                            <span>95%</span>
+                            
+                            <span>⭐ 5/5</span>
                         </div>
                         <div class="border border-dark px-2 rounded">
                             <span>+13</span>
@@ -121,16 +121,6 @@
                         <span>Anne Hathaway</span>
                     </li>
                 </ul>
-    <div class="container my-4">
-        <div class="row">
-            <div class="col-12 d-flex justify-content-center">
-                <a href="/views/Formulario.html" class="btn btn-primary d-flex align-items-center gap-2">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>Add New Review</span>
-                </a>
-            </div>
-        </div>
-    </div>
     <!--And here we have the users rewiews, which are the second entity.-->
     <section class="user-reviews">
         <h4>USER REWIEWS</h4>
@@ -188,8 +178,35 @@
                  </button>
                 </div>
             </div>
-            
     </section>
+    <main class="container my-5">
+        <h2 class="text-center mb-4">Add New Review</h2>
+        <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;">
+            <div class="mb-3">
+                <label for="userName" class="form-label">User name</label>
+                <input type="text" class="form-control" id="userName" placeholder="Enter your name" required>
+            </div>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rating (1–5)</label>
+                <input type="number" class="form-control" id="rating" min="1" max="10" required>
+            </div>       
+            <div class="mb-3">
+                <label for="reviewText" class="form-label">Review</label>
+                <textarea class="form-control" id="reviewText" rows="4" placeholder="Write your review..."
+                    required></textarea>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <form action="url_router">
+                    <button type="submit" class="btn btn-outline-dark">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
+                </form>
+                <a href="/views/indice.html" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </main>
     <!-- To finish, the footer of the page.-->
     <footer class="site-footer">
         <div class="footer-inner">
