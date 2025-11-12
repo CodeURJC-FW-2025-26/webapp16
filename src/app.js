@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
-import databaseRouter from './src/Database.js';
+import databaseRouter from './Database.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
