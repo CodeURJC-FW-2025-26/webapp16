@@ -42,19 +42,19 @@
             <div class="col-12 col-md-8 offset-md-2">
                 <h2 class="mb-4">Add/Edit film</h2>
                 <!--Here we have the section of the form-->
-                <form role="form">
+                <form role="form" method="post" action="/addFilm" enctype="multipart/form-data">
                     <div class="mb-3 form-group">
                         <label for="title" class="form-label">Title of the film</label>
-                        <input type="text" class="form-control" id="title" placeholder="Add the title of the film">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Add the title of the film">
                     </div>
                     <div class="mb-3 form-group">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" rows="3"
+                        <textarea class="form-control" id="description" name="description" rows="3"
                             placeholder="Add the description of the film"></textarea>
                     </div>
                     <div class="mb-3 form-group">
                         <label for="releaseYear" class="form-label">Release year</label>
-                        <input type="number" class="form-control" id="releaseYear" placeholder="Add the release year">
+                        <input type="number" class="form-control" id="releaseYear" name="releaseYear" placeholder="Add the release year">
                     </div>
                     <div class="mt-5 mb-5 checkbox">
                         <label for="genre" class="form-label">Gender:</label>
