@@ -12,4 +12,13 @@ router.get('/otra-ruta', (req, res) => {
     });
 });
 
+
+router.post('/addFilm', (req, res) => {
+    const { title, description, releaseYear, } = req.body;
+    console.log('Título:', title);
+    console.log('Descripción:', description);
+    console.log('Año de lanzamiento:', releaseYear);
+    res.send('Film added successfully');
+});
+
 export default router;
