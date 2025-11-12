@@ -1,16 +1,19 @@
-import { MongoClient, ObjectId } from 'mongodb';
-const client = new MongoClient('mongodb://localhost:27017');
-const db = client.db('Softflix');
-const movies = db.collection('Films');
+import { MongoClient } from 'mongodb';
 
-export const UPLOADS_FOLDER = './uploads';
+const uri = 'mongodb://localhost:27017';
 
-router.get('/', async (req, res) => {
-    let movies = await moviesCollection.find().toArray();
-    res.render('index', { movies });
-});
+const client = new MongoClient(uri);
 
-await Softflix.insertOne({
-    title: 1917,
-    year: 2019
-});                                                 
+    await client.connect();
+    console.log('✅ Conectado correctamente a MongoDB');
+
+    const db = client.db('Softflix');
+    const Softflix = db.collection('Softflix');
+
+    await Softflix.insertOne({
+        titulo: 'Matrix',
+        año: 1999,
+        genero: 'Ciencia ficción'
+    });
+
+                                              
