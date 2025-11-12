@@ -49,15 +49,15 @@
 -**Web Images**
   - Index page
     <p align="center">
-      <img src="Images_Web/Indice.jpeg" alt="Captura del sitio" width="800" />
+      <img src="Public/Images_Web/Indice.jpeg" alt="Captura del sitio" width="800" />
     </p>
   - Ej page
     <p align="center">
-      <img src="Images_Web/Ejemplo.jpeg" alt="Captura del sitio" width="800" />
+      <img src="Public/Images_Web/Ejemplo.jpeg" alt="Captura del sitio" width="800" />
     </p>
   - Add/Edit page
     <p align="center">
-      <img src="Images_Web/Añadir.jpeg" alt="Captura del sitio" width="800" />
+      <img src="Public/Images_Web/Añadir.jpeg" alt="Captura del sitio" width="800" />
     </p>
   
 - Ignacio: I have mainly participated in three documents: indice.html, Formulario.html and style.css. I have been supervising all of the code, watching the comments, that all of the code was tidy and erasing code that we didn´t use in any of the files.
