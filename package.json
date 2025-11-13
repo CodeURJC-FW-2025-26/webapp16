@@ -21,6 +21,7 @@
   "dependencies": {
     "@ljharb/tsconfig": "^0.3.2",
     "express": "^5.1.0",
+    "express-handlebars": "^8.0.3",
     "mongodb": "^6.20.0",
     "multer": "^2.0.2",
     "mustache": "^4.2.0",

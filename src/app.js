@@ -19,7 +19,6 @@ app.set('views', viewsPath);
 
 
 app.use(express.static(path.join(__dirname, "..", "Public")));
-app.use('/views', express.static(path.join(__dirname, '..', 'views')));
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 // parse application/json
@@ -29,13 +28,22 @@ app.use(express.json());
 await initDB(app);
 app.use('/', router);
 
+app.get("/indice", (req, res) => {
+    res.render("indice");
+});
+
+app.get("/add", (req, res) => {
+    res.render("add");
+});
+
 app.get("/ej", (req, res) => {
     res.render("Ej");
 });
 
-app.get("/formulario", (req, res) => {
-    res.render("Formulario");
+app.get("/", (req, res) => {
+    res.render("indice");
 });
+
 const PORT = 3000;
 app.listen(PORT, () =>
     console.log(`Servidor corriendo en http://localhost:${PORT}`)
