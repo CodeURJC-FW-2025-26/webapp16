@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
 import router from './router.js';
+import initDB from './Database.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +23,8 @@ app.get("/indice", (req, res) => {
 });
 
 // Mount main router (contains POST /addFilm)
+// Initialize DB before mounting router
+await initDB(app);
 app.use('/', router);
 
 app.get("/ej", (req, res) => {
