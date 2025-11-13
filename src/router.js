@@ -30,7 +30,7 @@ router.post("/addFilm", async (req, res) => {
     };
 
   await req.app.locals.db.collection("films").insertOne(movie);
-  res.render("Formulario", { mensaje: "Película agregada correctamente" });
+  res.render("Formulario", { _id: movie._id  });
 
   }); 
 
