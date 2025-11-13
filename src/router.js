@@ -14,36 +14,29 @@ router.get('/otra-ruta', (req, res) => {
 });
 
 
-//router.post('/addFilm', async (req, res) => {
-//    let movies = await Collection.insertOne({ 
-//        title: req.body.title,
-//        description: req.body.description,
-//        releaseYear: req.body.releaseYear,
-//        genre: req.body.genre,
-//        rating: req.body.rating,
-//        ageClassification: req.body.ageClassification,
-//        director: req.body.director,
-//        cast: req.body.cast,
-//        duration: req.body.duration,
-//        language: req.body.language,
-//
-//    });
-//    res.json({ message: 'Film added successfully', movie: movies
-//    });
+router.post('/addFilm', async (req, res) => {
+
+    let movies = await Collection.insertOne({
+    res.render('addFilm, {'
+        title: req.body.title,
+        description: req.body.description,
+        releaseYear: req.body.releaseYear,
+        genre: req.body.genre,
+        rating: req.body.rating,
+        ageClassification: req.body.ageClassification,
+        director: req.body.director,
+        cast: req.body.cast,
+        duration: req.body.duration,
+        language: req.body.language,)
+
+    });
+    res.json({ message: 'Film added successfully', movie: movies
+    });
 
 
 
-//});
 
 
-router.post("/addFilm", async (req, res) => {
-  try {
-    await Softflix.insertOne(req.body);
-    res.send("✅ Película guardada correctamente!");
-  } catch (err) {
-    console.error("❌ Error al guardar:", err);
-    res.status(500).send("Error al guardar la película.");
-  }
-});
+
 
 export default router;

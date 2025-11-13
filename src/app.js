@@ -17,7 +17,7 @@ app.get("/indice", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "views", "indice.html"));
 });
 
-app.use("/addFilm", databaseRouter);
+app.use("/add", databaseRouter);
 
 app.get("/ej", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "views", "Ej.html"));
