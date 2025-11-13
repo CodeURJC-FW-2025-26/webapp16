@@ -14,25 +14,12 @@ router.get('/otra-ruta', (req, res) => {
 });
 
 
-router.post("/addFilm", async (req, res) => {
-
-    let movie = {
-      title: req.body.title,
-      description: req.body.description,
-      releaseYear: req.body.releaseYear,
-      genre: req.body.genre,
-      rating: req.body.rating,
-      ageClassification: req.body.ageClassification,
-      director: req.body.director,
-      cast: req.body.cast,
-      duration: req.body.duration,
-      language: req.body.language,
-    };
-
-  await req.app.locals.db.collection("films").insertOne(movie);
-  res.render("Formulario", { _id: movie._id  });
-
-  }); 
+router.post("/addFilm", (req, res) => {
+  // Temporary handler for quick testing without DB/multer.
+  // It logs the received body and returns a simple confirmation.
+  console.log('POST /addFilm body:', req.body);
+  res.send('Formulario recibido. Revisa la consola del servidor para ver los datos.');
+});
 
 
 
