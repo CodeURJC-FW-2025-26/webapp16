@@ -16,7 +16,7 @@ router.get('/otra-ruta', (req, res) => {
 
 router.post("/addFilm", async (req, res) => {
 
-    const movie = await Collection.insertOne({
+    let movie = {
       title: req.body.title,
       description: req.body.description,
       releaseYear: req.body.releaseYear,
@@ -27,10 +27,12 @@ router.post("/addFilm", async (req, res) => {
       cast: req.body.cast,
       duration: req.body.duration,
       language: req.body.language,
-    });
+    };
 
-  }
-); 
+  await req.app.locals.db.collection("films").insertOne(movie);
+  res.render("Formulario", { mensaje: "Película agregada correctamente" });
+
+  }); 
 
 
 
