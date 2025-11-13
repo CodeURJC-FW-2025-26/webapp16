@@ -1,13 +1,19 @@
 import express from "express";
+import mustacheExpress from "mustache-express"; 
 import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
 import router from './router.js';
 import initDB from './Database.js';
 
-const app = express();
+const   app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+app.engine('html', mustacheExpress());
+app.set('view engine', 'html');
+app.set('views', path.join(__dirname, "..", "views"));
+
 app.use(express.static(path.join(__dirname, "..", "Public")));
 app.use('/views', express.static(path.join(__dirname, '..', 'views')));
 // parse application/x-www-form-urlencoded
