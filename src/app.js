@@ -17,7 +17,7 @@ app.get("/indice", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "views", "indice.html"));
 });
 
-app.get("/add", (req, res) => {
+app.post("/addFilm", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "views", "add.html"));
 });
 
