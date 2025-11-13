@@ -15,7 +15,6 @@ router.get('/otra-ruta', (req, res) => {
 
 
 router.post("/addFilm", async (req, res) => {
-  try {
 
     const movie = await Collection.insertOne({
       title: req.body.title,
@@ -31,7 +30,7 @@ router.post("/addFilm", async (req, res) => {
     });
 
   }
-}); 
+); 
 
 
 
