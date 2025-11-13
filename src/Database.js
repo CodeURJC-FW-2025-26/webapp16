@@ -1,14 +1,14 @@
 import { MongoClient } from 'mongodb';
-import express from 'express';
 
 const uri = 'mongodb://localhost:27017';
-const router = express.Router();
-
 const client = new MongoClient(uri);
 
+async function initDB(app) {
     await client.connect();
     const db = client.db('Softflix');
     const Softflix = db.collection('Softflix');
+
+    app.locals.db = db;
 
     await Softflix.insertMany([
         {
@@ -145,6 +145,6 @@ const client = new MongoClient(uri);
         }
 
     ]);
+}
 
-export default router;
-                                              
+export default initDB;

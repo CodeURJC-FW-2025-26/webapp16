@@ -13,9 +13,6 @@ const viewsPath = path.join(__dirname, "..", "views");
 const partialsPath = path.join(viewsPath, "partials");
 
 
-
-
-
 app.engine('html', mustacheExpress(partialsPath, '.html'));
 app.set('view engine', 'html');
 app.set('views', viewsPath);
@@ -27,14 +24,7 @@ app.use('/views', express.static(path.join(__dirname, '..', 'views')));
 app.use(express.urlencoded({ extended: true }));
 // parse application/json
 app.use(express.json());
-app.get("/", (req, res) => {
-    res.render("indice"); // renderiza views/indice.html vía Mustache
-});
-app.get("/indice", (req, res) => {
-    res.render("indice");
-});
 
-// Mount main router (contains POST /addFilm)
 // Initialize DB before mounting router
 await initDB(app);
 app.use('/', router);
@@ -51,6 +41,3 @@ app.listen(PORT, () =>
     console.log(`Servidor corriendo en http://localhost:${PORT}`)
 );
 
-
-
-//hola

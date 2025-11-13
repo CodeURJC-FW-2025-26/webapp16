@@ -1,5 +1,6 @@
+// ...existing code...
 import express from 'express';
-import { Collection } from 'mongodb';
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -13,26 +14,28 @@ router.get('/otra-ruta', (req, res) => {
     });
 });
 
-
 router.post("/addFilm", async (req, res) => {
     try {
-        // build movie object from form fields
+        if (!req.body) {
+            return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
+        }
+
         const movie = {
             title: req.body.title,
             description: req.body.description,
-            releaseYear: req.body.releaseYear,
+            releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
             genre: req.body.genre || [],
-            rating: req.body.rating,
+            rating: req.body.rating ? Number(req.body.rating) : undefined,
             ageClassification: req.body.ageClassification,
             director: req.body.director,
-            cast: req.body.cast,
-            duration: req.body.duration,
+            cast: req.body.cast || [],
+            duration: req.body.duration ? Number(req.body.duration) : undefined,
             language: req.body.language || []
         };
 
-        // ensure genres/language are arrays when multiple values are sent
-        if (typeof movie.genre === 'string') movie.genre = [movie.genre];
-        if (typeof movie.language === 'string') movie.language = [movie.language];
+        if (typeof movie.genre === 'string') movie.genre = movie.genre.split(',').map(s => s.trim()).filter(Boolean);
+        if (typeof movie.language === 'string') movie.language = movie.language.split(',').map(s => s.trim()).filter(Boolean);
+        if (typeof movie.cast === 'string') movie.cast = movie.cast.split(',').map(s => s.trim()).filter(Boolean);
 
         console.log('Inserting movie:', movie);
         const db = req.app.locals.db;
@@ -50,6 +53,5 @@ router.post("/addFilm", async (req, res) => {
     }
 });
 
-
-
 export default router;
+// ...existing code...
