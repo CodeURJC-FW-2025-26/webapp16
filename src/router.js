@@ -36,7 +36,7 @@ router.get('/otra-ruta', (req, res) => {
 //});
 
 
-router.post("/", async (req, res) => {
+router.post("/addFilm", async (req, res) => {
   try {
     await Softflix.insertOne(req.body);
     res.send("✅ Película guardada correctamente!");
