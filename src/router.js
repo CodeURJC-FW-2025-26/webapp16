@@ -1,4 +1,5 @@
 import express from 'express';
+import { Collection } from 'mongodb';
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -13,12 +14,23 @@ router.get('/otra-ruta', (req, res) => {
 });
 
 
-//router.post('/addFilm', async (req, res) => {
-//    let movies = await { title, description, releaseYear } = req.body;
-//    console.log('Título:', title);
-//    console.log('Descripción:', description);
-//    console.log('Año de lanzamiento:', releaseYear);
-//    res.send('Film added successfully');
-//});
+router.post('/addFilm', async (req, res) => {
+    let movies = await Collection.insertOne({ 
+        title: req.body.title,
+        description: req.body.description,
+        releaseYear: req.body.releaseYear,
+        genre: req.body.genre,
+        rating: req.body.rating,
+        ageClassification: req.body.ageClassification,
+        director: req.body.director,
+        cast: req.body.cast,
+        duration: req.body.duration,
+        language: req.body.language,
+
+    });
+    res.json({ message: 'Film added successfully', movie: movies
+    });
+
+});
 
 export default router;
