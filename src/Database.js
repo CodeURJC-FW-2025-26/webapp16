@@ -143,8 +143,7 @@ const client = new MongoClient(uri);
             Casting: 'George MacKay, Richard Madden',
             Duration: '1h 59min'
         }
-        
-        
+
     ]);
 
 export default router;
