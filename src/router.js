@@ -1,4 +1,3 @@
-// ...existing code...
 import express from 'express';
 
 const router = express.Router();
@@ -7,12 +6,6 @@ router.get('/', (req, res) => {
     res.render('indice');
 });
 
-router.get('/otra-ruta', (req, res) => {
-    res.render('indice', {
-        titulo: 'Mi Página',
-        mensaje: 'Bienvenido a mi sitio'
-    });
-});
 
 router.post("/addFilm", async (req, res) => {
     try {
@@ -54,4 +47,3 @@ router.post("/addFilm", async (req, res) => {
 });
 
 export default router;
-// ...existing code...

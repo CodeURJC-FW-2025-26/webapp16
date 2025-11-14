@@ -9,7 +9,6 @@ async function initDB(app) {
     const Softflix = db.collection('Softflix');
 
     app.locals.db = db;
-
     await Softflix.insertMany([
         {
          Title: 'Interstellar',
