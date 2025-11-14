@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import multer from "multer";
 import * as fs from 'fs';
 import router from './router.js';
-import initDB from './Database.js';
+import { initDB, cleanupDB } from './Database.js';
 
 
 const app = express();
@@ -14,6 +14,35 @@ const __dirname = path.dirname(__filename);
 const viewsPath = path.join(__dirname, "..", "views");
 const partialsPath = path.join(viewsPath, "partials");
 const BASE_PATH = path.join(__dirname, '..');
+
+
+// ----------------------------------------------------
+// 🛠️ CONFIGURACIÓN MULTER (Subida de Archivos)
+// ----------------------------------------------------
+const UPLOADS_PATH = path.join(BASE_PATH, 'Public', 'Uploads');
+
+// 1. Asegúrate de que la carpeta de subidas exista
+if (!fs.existsSync(UPLOADS_PATH)) {
+    fs.mkdirSync(UPLOADS_PATH, { recursive: true });
+}
+
+// 2. Configura el almacenamiento de Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Guarda los archivos subidos en Public/Uploads
+        cb(null, UPLOADS_PATH);
+    },
+    filename: (req, file, cb) => {
+        // Usa el nombre original del archivo
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// 3. Pasa la instancia de Multer a app.locals para que router.js la use
+app.locals.upload = upload;
+// ----------------------------------------------------
 
 
 app.engine('html', mustacheExpress(partialsPath, '.html'));
@@ -49,28 +78,43 @@ app.get("/", (req, res) => {
 async function loadInitialData() {
     const dataPath = resolve(process.cwd(), 'data', 'data.json');
     try {
-        const count = await Movie.countDocuments();
-        if (count > 0) {
-            return;
-        }
+        // ... Lógica de carga de datos iniciales ...
     } catch (err) {
         return;
     }
-    let movieData = [];
+    // ... (El cuerpo de loadInitialData que tenías aquí)
+}
+
+
+/**
+ * Borra todos los archivos dentro de Public/Uploads.
+ * Usado para la limpieza al cerrar el servidor.
+ */
+function cleanupUploads() {
+    const uploadDir = path.join(BASE_PATH, 'Public', 'Uploads');
+
     try {
-        const jsonContent = fs.readFileSync(dataPath, 'utf-8');
-        movieData = JSON.parse(jsonContent);
-    } catch (error) {
-        return;
-    }
-    try {
-        const insertedMovies = await Movie.insertMany(movieData);
-    } catch (error) {
-        console.error('❌ ERROR al insertar datos iniciales:', error.message);
+        if (fs.existsSync(uploadDir)) {
+            const files = fs.readdirSync(uploadDir);
+
+            for (const file of files) {
+                const filePath = path.join(uploadDir, file);
+                fs.unlinkSync(filePath); // Borra el archivo
+                console.log(`🗑️ Borrado: ${file}`);
+            }
+            console.log('--- Limpieza de Public/Uploads completada. ---');
+        }
+    } catch (err) {
+        console.error('❌ Error al limpiar la carpeta Uploads:', err.message);
     }
 }
 
+// ----------------------------------------------------
+// Lógica para copiar imágenes de data/Images a Public/Uploads
+// (Mantenida solo por si la necesitas para datos iniciales)
+// ----------------------------------------------------
 function copyImagesToUploads() {
+    // ... (El cuerpo de copyImagesToUploads que ya tenías)
     const sourceDir = path.join(BASE_PATH, 'data', 'Images');
     const destDir = path.join(BASE_PATH, 'Public', 'Uploads');
 
@@ -107,10 +151,26 @@ function copyImagesToUploads() {
     copyFilesRecursively(sourceDir, destDir);
     console.log('--- Subida de imágenes completada (incluyendo subcarpetas). ---');
 }
+// ----------------------------------------------------
 
-copyImagesToUploads();
 
+// ¡IMPORTANTE! Eliminamos la llamada a copyImagesToUploads() del final
+// y añadimos el hook de limpieza.
 const PORT = 3000;
-app.listen(PORT, () =>
+const server = app.listen(PORT, () =>
     console.log(`Servidor corriendo en http://localhost:${PORT}`)
 );
+
+// ----------------------------------------------------
+// 🗑️ HOOKS DE LIMPIEZA AL CERRAR EL SERVIDOR
+// ----------------------------------------------------
+
+// Maneja la detención manual (Ctrl+C)
+process.on('SIGINT', () => {
+    console.log('\nServidor detenido. Iniciando limpieza de subidas...');
+    cleanupUploads();
+    process.exit();
+});
+
+// Maneja otros cierres del proceso
+process.on('exit', cleanupUploads);

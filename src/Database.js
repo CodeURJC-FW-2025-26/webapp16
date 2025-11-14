@@ -64,5 +64,20 @@ async function initDB(app) {
         process.exit(1);
     }
 }
+async function cleanupDB() {
+    try {
+        // Asegúrate de que el cliente esté conectado antes de intentar borrar
+        if (client.serverStatus().ok) {
+            const db = client.db('Softflix');
+            const result = await db.collection('Softflix').deleteMany({});
+            console.log(`\n🧹 LIMPIEZA DB: Se eliminaron ${result.deletedCount} documentos de 'Softflix'.`);
+        }
+    } catch (err) {
+        console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
+    } finally {
+        await client.close();
+        console.log('🔌 MongoDB Client cerrado.');
+    }
+}
 
-export default initDB;
+export {initDB, cleanupDB};

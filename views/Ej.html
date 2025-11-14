@@ -17,7 +17,7 @@
         <div class="row align-items-start">
             <div class="col-12 col-md-7">
                 <div class="info">
-                    <img src="/Imagenes/Interstellar/Interestellartitulo.png" alt="" class="titulo-img">
+                    <img src="data/Images/Interstellar/Interestellartitulo.png" alt="" class="titulo-img">
                     <div class="d-flex align-items-center gap-3 mt-3 mb-3">
                         <div class="d-flex align-items-center">
                             
@@ -70,7 +70,7 @@
             <!--Here we have in the right column the poster of interestellar.-->
             <div class="col-12 col-md-5 d-flex justify-content-center">
                 <div class="imagen">
-                    <img src="/Imagenes/Interstellar/interestellar.jpg" alt="Imagen de Interestellar" class="img-fluid">
+                    <img src="data/Images/Interstellar/interestellar.jpg" alt="Imagen de Interestellar" class="img-fluid">
                 </div>
             </div>
         </div>
@@ -79,22 +79,22 @@
         <p class="extra-pequeno"><strong>Director:</strong></p>
             <ul class="reparto">
                 <li>
-                    <img src="/Imagenes/Interstellar/christopher.jpg" alt="Christopher Nolan">
+                    <img src="data/Images/Interstellar/christopher.jpg" alt="Christopher Nolan">
                     <span>Christopher Nolan</span>
                 </li>
             </ul>
             <p class="extra-pequeno"><strong>Cast:</strong></p>
                 <ul class="reparto">
                     <li>
-                        <img src="/Imagenes/Interstellar/matthew.jpg" alt="Matthew McConaughey">
+                        <img src="data/Images/Interstellar/matthew.jpg" alt="Matthew McConaughey">
                         <span>Matthew McConaughey</span>
                     </li>
                     <li>
-                        <img src="/Imagenes/Interstellar/jessica.jpg" alt="Jessica Chastain">
+                        <img src="data/Images/Interstellar/jessica.jpg" alt="Jessica Chastain">
                         <span>Jessica Chastain</span>
                     </li>
                     <li>
-                        <img src="/Imagenes/Interstellar/anne.jpg" alt="Anne Hathaway">
+                        <img src="data/Images/Interstellar/anne.jpg" alt="Anne Hathaway">
                         <span>Anne Hathaway</span>
                     </li>
                 </ul>
@@ -103,7 +103,7 @@
         <h4>USER REWIEWS</h4>
             <div class="review">
                 <div class="user-info">
-                    <img src="/Imagenes/User/user.jpg" alt="User 1">
+                    <img src="data/Images/User/user.jpg" alt="User 1">
                     <strong>Nachete_06</strong>
                 </div>
                 <p>"Without a doubt, one of the best films of this century. Great work by the director, who makes this a
@@ -121,7 +121,7 @@
 
             <div class="review">
                 <div class="user-info">
-                    <img src="/Imagenes/User/user.jpg" alt="User 2">
+                    <img src="data/Images/User/user.jpg" alt="User 2">
                     <strong>s_gom11</strong>
                 </div>
                 <p>"5/5. An incredible film, with one of the best soundtracks in cinematic history. Christopher Nolan made a
@@ -136,10 +136,9 @@
                  </button>
                 </div>
             </div>
-
             <div class="review">
                 <div class="user-info">
-                    <img src="/Imagenes/User/user.jpg" alt="User 2">
+                    <img src="data/Images/User/user.jpg" alt="User 2">
                     <strong>fantasy_10</strong>
                 </div>
                 <p>"A bit overrated. I like the space, but it's not well adapted. There are other films that, in my opinion,
@@ -173,7 +172,7 @@
                     required></textarea>
             </div>
             <div class="d-flex justify-content-between mt-4">
-                <form action="url_router">
+                <form action="/addFilm" method="POST" enctype="multipart/form-data">
                     <button type="submit" class="btn btn-outline-dark">
                         <i class="bi bi-save me-1"></i> Save
                     </button>
