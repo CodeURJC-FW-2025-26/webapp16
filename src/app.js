@@ -21,7 +21,7 @@ app.set('view engine', 'html');
 app.set('views', viewsPath);
 app.use(express.static(path.join(BASE_PATH, "Public")));
 
-app.use('/imagenes', express.static(path.join(BASE_PATH, 'data', 'Images')));
+app.use('/data/Images', express.static(path.join(BASE_PATH, 'data', 'Images')));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -69,6 +69,53 @@ async function loadInitialData() {
         console.error('❌ ERROR al insertar datos iniciales:', error.message);
     }
 }
+
+function copyImagesToUploads() {
+    const sourceDir = path.join(BASE_PATH, 'data', 'Images');
+    const destDir = path.join(BASE_PATH, 'Public', 'Uploads');
+
+    // --- 🚨 DIAGNÓSTICO DE RUTAS 🚨 ---
+    console.log(`Ruta Origen (data/Images): ${sourceDir}`);
+    console.log(`Ruta Destino (Public/Uploads): ${destDir}`);
+    // ------------------------------------
+
+    // Crea el directorio de destino si no existe
+    if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    // Función recursiva para copiar archivos
+    function copyFilesRecursively(currentSource, currentDest) {
+        try {
+            const files = fs.readdirSync(currentSource);
+
+            for (const file of files) {
+                const sourceFile = path.join(currentSource, file);
+                const destFile = path.join(currentDest, file);
+                const stats = fs.statSync(sourceFile);
+
+                if (stats.isDirectory()) {
+                    // Si es una carpeta, la creamos en el destino y la recorremos
+                    if (!fs.existsSync(destFile)) {
+                        fs.mkdirSync(destFile, { recursive: true });
+                    }
+                    copyFilesRecursively(sourceFile, destFile); // Llamada recursiva
+                } else if (stats.isFile()) {
+                    // Si es un archivo, lo copiamos
+                    fs.copyFileSync(sourceFile, destFile);
+                    console.log(`✅ Copiado: ${file} a ${path.basename(currentDest)}`);
+                }
+            }
+        } catch (err) {
+            console.error(`❌ ERROR al procesar ${currentSource}:`, err.message);
+        }
+    }
+
+    copyFilesRecursively(sourceDir, destDir);
+    console.log('--- Subida de imágenes completada (incluyendo subcarpetas). ---');
+}
+
+copyImagesToUploads();
 
 const PORT = 3000;
 app.listen(PORT, () =>
