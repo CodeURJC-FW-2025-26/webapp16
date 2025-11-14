@@ -10,13 +10,16 @@
         "Casting": "Matthew McConaughey, Jessica Chastain, Anne Hathaway",
         "Duration": "2h 49min",
         "images": [
-            { "name": "interstellar.jpg", "type": "cover"},
-            { "name": "anne.jpg", "type": "scene"},
-            { "name": "christopher.jpg", "type": "scene"},
-            { "name": "matthew.jpg", "type": "scene"},
-            { "name": "Interestellartitulo.png", "type": "scene"},
-            { "name": "INTERESTELLAR.png", "type": "scene"},
-            { "name": "jessica.png", "type": "scene"}
+            { "name": "Interstellar/interstellar.jpg", "type": "cover"},
+            { "name": "Interstellar/anne.jpg", "type": "scene"},
+            { "name": "Interstellar/christopher.jpg", "type": "scene"},
+            { "name": "Interstellar/matthew.jpg", "type": "scene"},
+            { "name": "Interstellar/Interestellartitulo.png", "type": "scene"},
+            { "name": "Interstellar/INTERESTELLAR.png", "type": "scene"},
+            { "name": "Interstellar/jessica.png", "type": "scene"}
+        ],
+        "Comentary": [
+            
         ]
     },
     {

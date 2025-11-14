@@ -37,9 +37,7 @@ router.post("/addFilm", async (req, res) => {
             return res.status(500).send('Database not initialized');
         }
 
-        const result = await db.collection('films').insertOne(movie);
-        console.log('Insert result:', result.insertedId);
-        res.send(`Pelicula guardada con id ${result.insertedId}`);
+        const result = await db.collection('Softflix').insertOne(movie);
     } catch (err) {
         console.error('Error in /addFilm:', err);
         res.status(500).send('Error al guardar la película');
