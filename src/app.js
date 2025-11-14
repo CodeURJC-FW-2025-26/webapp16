@@ -1,11 +1,13 @@
 import express from "express";
 import mustacheExpress from "mustache-express";
-import path from "path";
+import path, { resolve } from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
+import * as fs from 'fs';
 import router from './router.js';
 import initDB from './Database.js';
-import * as fs from 'fs';
+// 🛑 ELIMINAMOS: import Movie from './models/Movie.js'; 
+
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -19,14 +21,21 @@ app.engine('html', mustacheExpress(partialsPath, '.html'));
 app.set('view engine', 'html');
 app.set('views', viewsPath);
 
-
+// Configuración de rutas estáticas:
 app.use(express.static(path.join(BASE_PATH, "Public")));
+
+// Configuración estática para servir imágenes desde data/Images
+app.use('/imagenes', express.static(path.join(BASE_PATH, 'data', 'Images')));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// 1. Inicializar la base de datos (y establecer la conexión y la carga de datos)
 await initDB(app);
 
-copiarImagenesIniciales(BASE_PATH);
+// 🛑 ELIMINAMOS: await loadInitialData(); 
+// 🛑 ELIMINAMOS: copiarImagenesIniciales(BASE_PATH);
+
 
 app.use('/', router);
 
@@ -46,39 +55,43 @@ app.get("/", (req, res) => {
     res.render("indice");
 });
 
-function copiarCarpetaDeImagenes(origen, destino) {
+// 🛑 ELIMINADAS: Las funciones 'copiarCarpetaDeImagenes' y 'copiarImagenesIniciales' 
+// para evitar el error ENOENT y la copia innecesaria.
 
-    const archivos = fs.readdirSync(origen);
-    let archivosCopiados = 0;
 
-    archivos.forEach(archivo => {
-        if (!/\.(jpg|jpeg|png|gif|webp)$/i.test(archivo)) return;
+// --- Función de Carga de Datos Iniciales (Seeding) ---
+async function loadInitialData() {
+    const dataPath = resolve(process.cwd(), 'data', 'data.json');
 
-        const rutaOrigen = path.join(origen, archivo);
-        const rutaDestino = path.join(destino, archivo);
-
-        if (!fs.existsSync(rutaDestino)) {
-            fs.copyFileSync(rutaOrigen, rutaDestino);
-            archivosCopiados++;
+    // 1. Verificar si la colección ya tiene datos
+    try {
+        const count = await Movie.countDocuments();
+        if (count > 0) {
+            console.log('💡 La base de datos ya contiene películas. Se omite la carga inicial.');
+            return;
         }
-    });
-}
+    } catch (err) {
+        console.error('❌ No se pudo verificar la colección de películas:', err.message);
+        return;
+    }
 
-export function copiarImagenesIniciales(basePath) {
-    const destinoUploads = path.join(basePath, "Public", "Uploads");
-    const destinoData = path.join(basePath, "data"); 
+    // 2. Recoger y parsear JSON
+    let movieData = [];
+    try {
+        const jsonContent = fs.readFileSync(dataPath, 'utf-8');
+        movieData = JSON.parse(jsonContent);
+    } catch (error) {
+        console.error('❌ Error al leer data.json. Asegúrate de que existe y es válido:', error.message);
+        return;
+    }
 
-    const origenesParaUploads = [
-        path.join(basePath, "data"),
-        path.join(basePath, "Public", "Imagenes"),
-        path.join(basePath, "Public", "Images_Web")
-    ];
-
-    const origenParaData = path.join(basePath, "Public", "Imagenes");
-    origenesParaUploads.forEach(carpeta => {
-        copiarCarpetaDeImagenes(carpeta, destinoUploads);
-    });
-    copiarCarpetaDeImagenes(origenParaData, destinoData);
+    // 3. Insertar datos en la base de datos
+    try {
+        const insertedMovies = await Movie.insertMany(movieData);
+        console.log(`🎬 Datos cargados con éxito: ${insertedMovies.length} películas insertadas al iniciar el servidor.`);
+    } catch (error) {
+        console.error('❌ ERROR al insertar datos iniciales:', error.message);
+    }
 }
 
 

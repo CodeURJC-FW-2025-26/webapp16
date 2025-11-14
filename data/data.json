@@ -9,7 +9,15 @@
         "Director": "Christopher Nolan",
         "Casting": "Matthew McConaughey, Jessica Chastain, Anne Hathaway",
         "Duration": "2h 49min",
-        "image_file": "interstellar.jpg"
+        "images": [
+            { "name": "interstellar.jpg", "type": "cover"},
+            { "name": "anne.jpg", "type": "scene"},
+            { "name": "christopher.jpg", "type": "scene"},
+            { "name": "matthew.jpg", "type": "scene"},
+            { "name": "Interestellartitulo.png", "type": "scene"},
+            { "name": "INTERESTELLAR.png", "type": "scene"},
+            { "name": "jessica.png", "type": "scene"}
+        ]
     },
     {
         "Title": "How to train your dragon",
@@ -21,7 +29,12 @@
         "Director": "Chris Sanders, Dean DeBlois",
         "Casting": "Jay Baruchel, Gerard Butler, America Ferrara",
         "Duration": "1h 38min",
-        "image_file": "how_to_train_your_dragon.jpg"
+        "images": [
+            {
+                "name": "CEATD.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "The secret live of Walter Mity",
@@ -33,7 +46,12 @@
         "Director": "Ben Stiller",
         "Casting": "Ben Stiller, Kristen Wiig, Sean Penn",
         "Duration": "1h 54min",
-        "image_file": "walter_mitty.jpg"
+        "images": [
+            {
+                "name": "LVSDWM.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Dunkerke",
@@ -45,7 +63,12 @@
         "Director": "Christopher Nolan",
         "Casting": "Harry Styles, Fionn Whitehead, Cillian Murphy",
         "Duration": "1h 46min",
-        "image_file": "dunkerke.jpg"
+        "images": [
+            {
+                "name": "DUNKERE.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Megamind",
@@ -57,7 +80,12 @@
         "Director": "Tom McGrath",
         "Casting": "Will Ferrell, Tom McGrath, Ben Stiller ",
         "Duration": "1h 35min",
-        "image_file": "megamind.jpg"
+        "images": [
+            {
+                "name": "MEGAMIND.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Tenet",
@@ -69,7 +97,12 @@
         "Director": "Christopher Nolan",
         "Casting": "John David Washington, Elizabeth Debicki, Robert Patinson",
         "Duration": "2h 30min",
-        "image_file": "tenet.jpg"
+        "images": [
+            {
+                "name": "TENET.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Spiderman-Far-From-Home",
@@ -81,7 +114,12 @@
         "Director": "Jon Watts",
         "Casting": "Tom Holland, Zendaya, Jake Gyllenhaal ",
         "Duration": " 2h 10min",
-        "image_file": "spiderman_far_from_home.jpg"
+        "images": [
+            {
+                "name": "SPIDERMAN.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Saving private Ryan",
@@ -93,7 +131,12 @@
         "Director": " Steven Spielberg",
         "Casting": "Tom Hanks, Matt Damon, Vin Diesel",
         "Duration": "2h 49min",
-        "image_file": "saving_private_ryan.jpg"
+        "images": [
+            {
+                "name": "SASR.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Súper López",
@@ -105,7 +148,12 @@
         "Director": "Javier Ruiz Caldera",
         "Casting": "Dani Rovira, Alexandra Jiménez, Maribel Verdú",
         "Duration": "1h 48min",
-        "image_file": "super_lopez.jpg"
+        "images": [
+            {
+                "name": "SL.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "Only the Brave",
@@ -117,7 +165,12 @@
         "Director": "Joseph Kosinski",
         "Casting": "Josh Brolin, Miles Tiller, Jeff Bridges",
         "Duration": "2h 13min",
-        "image_file": "only_the_brave.jpg"
+        "images": [
+            {
+                "name": "OTB.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "The secret soldiers of benghazi",
@@ -129,7 +182,12 @@
         "Director": "Michael Bay",
         "Casting": "John Krasinski, James Badge Dale, Max Martini",
         "Duration": "2h 24min",
-        "image_file": "secret_soldiers_of_benghazi.jpg"
+        "images": [
+            {
+                "name": "LSSDB.png",
+                "type": "cover"
+            }
+        ]
     },
     {
         "Title": "1917",
@@ -141,6 +199,11 @@
         "Director": "Sam Mendes",
         "Casting": "George MacKay, Richard Madden",
         "Duration": "1h 59min",
-        "image_file": "1917.jpg"
+        "images": [
+            {
+                "name": "1917.png",
+                "type": "cover"
+            }
+        ]
     }
 ]
