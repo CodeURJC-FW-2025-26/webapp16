@@ -74,17 +74,12 @@ function copyImagesToUploads() {
     const sourceDir = path.join(BASE_PATH, 'data', 'Images');
     const destDir = path.join(BASE_PATH, 'Public', 'Uploads');
 
-    // --- 🚨 DIAGNÓSTICO DE RUTAS 🚨 ---
     console.log(`Ruta Origen (data/Images): ${sourceDir}`);
     console.log(`Ruta Destino (Public/Uploads): ${destDir}`);
-    // ------------------------------------
-
-    // Crea el directorio de destino si no existe
     if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir, { recursive: true });
     }
 
-    // Función recursiva para copiar archivos
     function copyFilesRecursively(currentSource, currentDest) {
         try {
             const files = fs.readdirSync(currentSource);
@@ -95,13 +90,11 @@ function copyImagesToUploads() {
                 const stats = fs.statSync(sourceFile);
 
                 if (stats.isDirectory()) {
-                    // Si es una carpeta, la creamos en el destino y la recorremos
                     if (!fs.existsSync(destFile)) {
                         fs.mkdirSync(destFile, { recursive: true });
                     }
-                    copyFilesRecursively(sourceFile, destFile); // Llamada recursiva
+                    copyFilesRecursively(sourceFile, destFile);
                 } else if (stats.isFile()) {
-                    // Si es un archivo, lo copiamos
                     fs.copyFileSync(sourceFile, destFile);
                     console.log(`✅ Copiado: ${file} a ${path.basename(currentDest)}`);
                 }

@@ -62,28 +62,34 @@
                         <label for="director" class="form-label">Director</label>
                         <input type="text" class="form-control" id="director" name="director" placeholder="Add the director">
                     </div>
-                    <div class="mb-3 form-group">
-                        <label for="foto" class="form-label">Image of the director:</label>
-                        <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
-                    </div>
+                    <form action="/addFilm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3 form-group">
+                            <label for="foto" class="form-label">Image of the director:</label>
+                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+                        </div>
+                    </form>
                     <div class="mb-3 form-group">
                         <label for="cast" class="form-label">Casting</label>
                         <input type="text" class="form-control" id="cast" name="cast"
                             placeholder="Add the names of the casting, separated by comas">
                     </div>
-                    <div class="mb-3 form-group">
-                        <label for="foto" class="form-label">Images of the casting:</label>
-                        <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
-                    </div>
+                    <form action="/addFilm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3 form-group">
+                            <label for="foto" class="form-label">Images of the casting</label>
+                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+                        </div>
+                    </form>
                     <div class="mb-3 form-group">
                         <label for="duration" class="form-label">Duration (hours, minutes)</label>
                         <input type="text" class="form-control" id="duration" name="duration"
                             placeholder="Add the duration in hours,minutes">
                     </div>
-                    <div class="mb-3 form-group">
-                        <label for="foto" class="form-label">Image of the film:</label>
-                        <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
-                    </div>
+                    <form action="/addFilm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3 form-group">
+                            <label for="foto" class="form-label">Image of the film</label>
+                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+                        </div>
+                    </form>
                     <div class="mt-5 checkbox">
                         <label for="language" class="form-label">Language:</label>
                         <div class="btn-group" role="group" aria-label="Language toggle buttons">
