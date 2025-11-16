@@ -255,4 +255,54 @@ router.post('/Ej/:movieId/addReview', async (req, res) => {
     }
 });
 
+
+router.post('/deleteFilm', async (req, res) => {
+    try {
+        const { movieId } = req.body;
+        if (!movieId) return res.status(400).send('movieId es requerido');
+
+        const db = req.app.locals.db;
+        if (!db) return res.status(500).send('Database not initialized');
+
+        const moviesColl = db.collection('Softflix');
+        const commentsColl = db.collection('comentaries');
+
+        const oid = new ObjectId(movieId);
+        const movie = await moviesColl.findOne({ _id: oid });
+        if (!movie) return res.status(404).send('Película no encontrada');
+
+        // Eliminar archivos asociados (si existen)
+        // Asume rutas tipo '/Uploads/filename' o '/Uploads/folder/filename'
+        const possiblePaths = [];
+        if (movie.directorImagePath) possiblePaths.push(movie.directorImagePath);
+        if (movie.image_file) possiblePaths.push(movie.image_file);
+        // Normalizar y eliminar cada archivo si existe
+        for (const rel of possiblePaths) {
+            if (!rel) continue;
+            const relClean = rel.replace(/^\//, '');
+            const fullPath = path.join(process.cwd(), 'Public', relClean);
+            try {
+                if (fs.existsSync(fullPath)) {
+                    fs.unlinkSync(fullPath);
+                    console.log(`Archivo eliminado: ${fullPath}`);
+                }
+            } catch (e) {
+                console.warn('No se pudo eliminar archivo:', fullPath, e.message);
+            }
+        }
+
+        // Eliminar comentarios asociados
+        await commentsColl.deleteMany({ movieId: oid });
+
+        // Finalmente, eliminar la película
+        await moviesColl.deleteOne({ _id: oid });
+
+        console.log(`Película ${movieId} y sus comentarios eliminados.`);
+        return res.redirect('/indice');
+    } catch (err) {
+        console.error('Error al borrar película:', err);
+        return res.status(500).send('Error al borrar la película');
+    }
+});
+
 export default router;
