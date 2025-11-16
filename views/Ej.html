@@ -125,7 +125,6 @@
                 </button>
             </div>
         </div>
-
         <div class="review">
             <div class="user-info">
                 <img src="data/Images/User/user.jpg" alt="User 2">
@@ -171,7 +170,7 @@
                     required>
             </div>
             <div class="mb-3">
-                <label for="rating" class="form-label">Rating (1–10)</label>
+                <label for="rating" class="form-label">Rating (1–5)</label>
                 <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" required>
             </div>
             <div class="mb-3">
@@ -180,7 +179,7 @@
                     placeholder="Write your review..." required></textarea>
             </div>
             <!-- Campo oculto para el ID de la película (necesitarás pasarlo desde el servidor) -->
-            <input type="hidden" id="movieId" name="movieId" value="interstellar-id-placeholder">
+            <input type="hidden" id="movieId" name="movieId" value="{{movieId}}">
             <div class="d-flex justify-content-between mt-4">
                 <button type="submit" class="btn btn-outline-dark">
                     <i class="bi bi-save me-1"></i> Save

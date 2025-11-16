@@ -1,5 +1,6 @@
 import express from 'express';
 import * as fs from 'fs';
+import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
@@ -165,18 +166,53 @@ router.get('/indice', async (req, res) => {
     }
 });
 
-// 🎬 RUTA POST PARA AGREGAR COMENTARIOS
-router.post("/addComment", async (req, res) => {
+// ------------------------------------------------------------------
+// 🗺️ RUTA DE DETALLE (Ejemplo)
+// Carga la primera película y la muestra en la vista 'Ej.html'
+// ------------------------------------------------------------------
+router.get('/ej', async (req, res) => {
+    try {
+        const db = req.app.locals.db;
+        // ... (manejo de errores de DB)
+
+        const collection = db.collection('Softflix');
+        const film = await collection.findOne({});
+
+        if (!film) {
+            return res.status(404).send("No hay películas cargadas en la base de datos.");
+        }
+
+        // 🛑 CORRECCIÓN CLAVE: Obtener el ID y convertirlo a string
+        const movieIdString = film._id.toString();
+
+        // Simula la imagen secundaria para el título 
+        let secondaryImage = null;
+        // ... (lógica de secondaryImage)
+
+        // Renderiza la vista 'Ej.html'
+        res.render('Ej', {
+            film: film,
+            // 🛑 NUEVO CAMPO: Pasa el ID como un string válido de MongoDB
+            movieId: movieIdString,
+            directorImagePath: film.directorImagePath,
+            secondaryImage: secondaryImage
+        });
+
+    } catch (err) {
+        // ... (manejo de errores)
+    }
+});
+
+router.post('/addComment', async (req, res) => {
     try {
         const { userName, rating, reviewText, movieId } = req.body;
 
         if (!userName || !rating || !reviewText || !movieId) {
-            return res.status(400).send('Faltan campos requeridos (userName, rating, reviewText, movieId)');
+            return res.status(400).send('Faltan campos requeridos.');
         }
 
         const db = req.app.locals.db;
         if (!db) {
-            console.error('Database not initialized');
             return res.status(500).send('Database not initialized');
         }
 
@@ -186,24 +222,24 @@ router.post("/addComment", async (req, res) => {
             User_name: userName,
             description: reviewText,
             Rating: Number(rating),
-            movieId: new (require('mongodb')).ObjectId(movieId),
+            movieId: new ObjectId(movieId),
             createdAt: new Date()
         });
 
-        // 2. Actualizar el array 'comentary' de la película
+        // 2. Actualizar el array 'comments' de la película (Asegúrate que el campo es 'comments' y no 'comentary')
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
-            { _id: new (require('mongodb')).ObjectId(movieId) },
-            { $push: { comentary: result.insertedId } }
+            { _id: new ObjectId(movieId) },
+            { $push: { comments: result.insertedId } } // Usamos 'comments' para ser coherente con el modelo JSON
         );
 
         console.log(`✅ Comentario guardado con ID: ${result.insertedId}`);
-        // Redirigir de vuelta a la página de la película
-        res.redirect(`/ej?id=${movieId}`);
+        // Redirigir de vuelta a la página de la película de ejemplo
+        res.redirect(`/ej`);
 
     } catch (err) {
         console.error('❌ ERROR al guardar comentario:', err);
-        res.status(500).send(`Error al guardar el comentario: ${err.message}`);
+        res.status(500).send(`Error al guardar comentario: ${err.message}`);
     }
 });
 
