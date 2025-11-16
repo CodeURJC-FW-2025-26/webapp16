@@ -269,7 +269,7 @@ router.post('/Ej/:movieId/addReview', async (req, res) => {
 router.post('/delete/:movieId', async (req, res) => {
     const movieId = req.params.movieId;
     if (!movieId || !ObjectId.isValid(movieId)) {
-        return res.status(400).send(\"ID de película no válido.\");
+        return res.status(400).send('ID de película no válido.');
     }
     const oid = new ObjectId(movieId);
 
