@@ -161,52 +161,8 @@ router.get('/indice', async (req, res) => {
 
     } catch (err) {
         console.error('❌ ERROR al obtener datos del índice:', err);
-        res.status(500).send(`Error al cargar el índice: ${err.message}`);
+        res.status(500).send('Error al cargar la página principal.');
     }
 });
-
-
-// ----------------------------------------------------
-// ➡️ Ruta Detalle de Película (Ejemplo)
-// ----------------------------------------------------
-// Esta ruta es de ejemplo y debería cargarse desde la DB con un ID real.
-router.get('/Ej', async (req, res) => {
-    // Ejemplo de cómo cargar una película de la base de datos (usando el ID del primer registro)
-    try {
-        const db = req.app.locals.db;
-        const collection = db.collection('Softflix');
-
-        // Cargar el primer documento como ejemplo (solo para que la vista 'Ej' funcione)
-        const film = await collection.findOne({});
-
-        // Si no hay película, muestra un error o redirige
-        if (!film) {
-            return res.status(404).send("No hay películas cargadas en la base de datos.");
-        }
-
-        // Simula la imagen secundaria para el detalle
-        let secondaryImage = null;
-        if (film.directorImagePath) {
-            // Asume que la imagen del detalle usa el mismo folder que la portada
-            const parts = film.directorImagePath.split('/');
-            const folder = parts[parts.length - 2];
-            // Usa una imagen de ejemplo con nombre fijo, o carga la lista completa
-            secondaryImage = `/data/Images/${folder}/Interestellartitulo.png`;
-        }
-
-        res.render('Ej', {
-            film: film,
-            // Pasa el campo correcto para la imagen de portada
-            directorImagePath: film.directorImagePath,
-            // Pasa una imagen para el título
-            secondaryImage: secondaryImage
-        });
-
-    } catch (err) {
-        console.error('❌ ERROR al cargar el detalle de la película:', err);
-        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
-    }
-});
-
 
 export default router;
