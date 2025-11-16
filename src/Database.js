@@ -134,4 +134,3 @@ export async function closeDB() {
         console.log("Conexión a MongoDB cerrada.");
     }
 }
-export { initDB, cleanupDB, generateImagePaths, client };

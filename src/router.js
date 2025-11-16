@@ -1,14 +1,12 @@
 import express from 'express';
 import * as fs from 'fs';
-import path from 'path';
 import { ObjectId } from 'mongodb';
 
 const router = express.Router();
 
-// ----------------------------------------------------\
+// ----------------------------------------------------
 // 🛠️ Middleware para Subida
-// ----------------------------------------------------\
-// Permite que Multer sea accesible solo para la ruta POST /add
+// ----------------------------------------------------
 const uploadMiddleware = (req, res, next) => {
     // Accede al objeto 'upload' de Multer desde app.locals
     const uploadHandler = req.app.locals.upload.single('directorImage');
@@ -27,10 +25,9 @@ router.get('/', (req, res) => {
     res.redirect('/indice');
 });
 
-// ----------------------------------------------------\
+// ----------------------------------------------------
 // ➡️ Ruta Principal de Películas (Indice)
-// ----------------------------------------------------\
-
+// ----------------------------------------------------
 const ITEMS_PER_PAGE = 6;
 
 router.get('/indice', async (req, res) => {
@@ -47,135 +44,133 @@ router.get('/indice', async (req, res) => {
         const query = {};
 
         if (searchQuery) {
-            // Búsqueda insensible a mayúsculas/minúsculas en el campo 'title'
             query.title = { $regex: new RegExp(searchQuery, 'i') };
         }
 
         if (filterGenre && filterGenre !== 'Todos') {
-            // Filtra por género dentro del array 'genre'
+            // Filtra por género (asume que 'genre' es un array en la DB)
             query.genre = filterGenre;
         }
 
-        // 3. Paginación
-        const totalFilms = await collection.countDocuments(query);
-        const totalPages = Math.ceil(totalFilms / ITEMS_PER_PAGE);
-        const skip = (currentPage - 1) * ITEMS_PER_PAGE;
+        // 3. Obtener todos los géneros únicos de la base de datos
+        const uniqueGenres = await collection.aggregate([
+            { $unwind: "$genre" },
+            { $group: { _id: "$genre" } },
+            { $sort: { _id: 1 } }
+        ]).toArray();
 
-        // 4. Obtener las películas
+        // 4. Preparar la lista de géneros para Mustache (CON isActive y URL)
+        const genres = uniqueGenres.map(g => {
+            const genreName = g._id;
+            let url = `/indice?genre=${encodeURIComponent(genreName)}`;
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            return {
+                name: genreName,
+                url: url,
+                // Lógica para marcar el botón activo
+                isActive: genreName === filterGenre
+            };
+        });
+        
+        // 5. Obtener datos de la base de datos con paginación
+        const totalItems = await collection.countDocuments(query);
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
         const films = await collection.find(query)
-            .skip(skip)
+            .skip(offset)
             .limit(ITEMS_PER_PAGE)
             .toArray();
 
-        // 5. Preparar datos para Mustache (paginación)
+        // 6. Configuración de paginación (URLs)
+        const generateUrl = (page) => {
+            let url = `/indice?page=${page}`;
+            if (filterGenre) {
+                url += `&genre=${encodeURIComponent(filterGenre)}`;
+            }
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            return url;
+        };
+
         const pagination = [];
         for (let i = 1; i <= totalPages; i++) {
-            let url = `/indice?page=${i}`;
-            if (searchQuery) url += `&search=${searchQuery}`;
-            if (filterGenre) url += `&genre=${filterGenre}`;
-
             pagination.push({
                 page: i,
-                url: url,
-                isCurrent: i === currentPage
+                url: generateUrl(i),
+                isCurrent: i === currentPage,
             });
         }
 
-        const prevUrl = currentPage > 1 ? `/indice?page=${currentPage - 1}${searchQuery ? `&search=${searchQuery}` : ''}${filterGenre ? `&genre=${filterGenre}` : ''}` : '#';
-        const nextUrl = currentPage < totalPages ? `/indice?page=${currentPage + 1}${searchQuery ? `&search=${searchQuery}` : ''}${filterGenre ? `&genre=${filterGenre}` : ''}` : '#';
-
-        // 6. Obtener todos los géneros para el filtro
-        const allGenres = await collection.distinct('genre');
-        const genreOptions = [{ value: 'Todos', selected: !filterGenre || filterGenre === 'Todos' }];
-        allGenres.forEach(genre => {
-            if (genre && genre.length > 0) {
-                genreOptions.push({
-                    value: genre,
-                    selected: filterGenre === genre
-                });
-            }
-        });
+        const prevUrl = generateUrl(currentPage - 1);
+        const nextUrl = generateUrl(currentPage + 1);
 
 
         // 7. Renderizar
         res.render('indice', {
-            films: films,
-            pagination: pagination,
-            hasPagination: totalPages > 1,
-            isPrevDisabled: currentPage === 1,
-            isNextDisabled: currentPage === totalPages,
-            prevUrl: prevUrl,
-            nextUrl: nextUrl,
-            genreOptions: genreOptions,
+            films,
+            genres,
+            currentFilter: filterGenre,
             currentSearch: searchQuery || '',
-            // Este log puede ayudar a debuggear si las películas se cargan
-            logFilm: films.length > 0 ? films[0].title : 'No films loaded'
+            
+            // Variables de Paginación
+            hasPagination: totalPages > 1,
+            pagination,
+            isPrevDisabled: currentPage <= 1,
+            isNextDisabled: currentPage >= totalPages,
+            prevUrl,
+            nextUrl,
         });
 
     } catch (err) {
-        console.error('❌ ERROR al cargar índice:', err.message);
-        res.status(500).send('Error al cargar la lista de películas.');
+        console.error('❌ ERROR en ruta /indice:', err.message);
+        res.status(500).send('Error interno del servidor.');
     }
 });
 
 
-// ----------------------------------------------------\
-// ➡️ Ruta de Detalle de Película (Ej)
-// ----------------------------------------------------\
+// ----------------------------------------------------
+// ➡️ Ruta de Detalle (Ej)
+// ----------------------------------------------------
 router.get('/Ej/:movieId', async (req, res) => {
     const movieId = req.params.movieId;
-
-    // 1. Validar ID de MongoDB
     if (!movieId || !ObjectId.isValid(movieId)) {
-        return res.status(400).send("ID de película no proporcionado en la URL o no es válido.");
+        return res.status(400).send("ID de película no válido.");
     }
 
     try {
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
 
-        // 2. Buscar la película por su ID
         const film = await collection.findOne({ _id: new ObjectId(movieId) });
 
-        // Si no se encuentra la película
         if (!film) {
             return res.status(404).send(`Película con ID ${movieId} no encontrada.`);
         }
 
-        // 3. Formato de géneros (necesario si vienen como array para Mustache)
-        const formattedFilm = {
-            ...film,
-            // Convertir 'genre' de array a string para mostrarlo en el mustache (si es necesario)
-            // O mantenerlo como array y usar {{#genre}}{{.}}, {{/genre}}
-            genreList: film.genre ? film.genre.join(', ') : '',
-            // Preparar las reviews para mostrarlas
-            hasReviews: film.reviews && film.reviews.length > 0,
-            reviews: film.reviews
-        };
-
-        // 4. Simular la imagen secundaria (como lo tenías antes, pero dentro de la ruta correcta)
+        // 🚨 CORRECCIÓN CLAVE: Asegura que la imagen secundaria usa la ruta /Uploads/
         let secondaryImage = null;
         if (film.directorImagePath) {
-            // Asume que si la ruta es /Uploads/Interstellar/INTERESTELLAR.png, 
-            // la secundaria es /Uploads/Interstellar/Interestellartitulo.png
+            // Ejemplo de film.directorImagePath: /Uploads/Interstellar/INTERESTELLAR.png
             const parts = film.directorImagePath.split('/');
-            parts.pop(); // Elimina el nombre del archivo (INTERESTELLAR.png)
-            const folderPath = parts.join('/'); // /Uploads/Interstellar
-            secondaryImage = `${folderPath}/Interestellartitulo.png`; // Crea la nueva ruta
+            const folder = parts[parts.length - 2]; 
+            // Esto asume que todas las imágenes secundarias están en la subcarpeta del título de la película
+            secondaryImage = `/Uploads/${folder}/Interestellartitulo.png`; 
         }
 
-        // 5. Renderizar la vista 'Ej'
         res.render('Ej', {
-            // Pasas el objeto film completo, que incluye el _id para el formulario de review
-            film: formattedFilm,
-            ...formattedFilm, // Esto "desempaqueta" los campos (title, rating, directorImagePath, etc.)
+            ...film,
+            _id: film._id.toString(), // Pasa el ID como string para el formulario de reseña
             secondaryImage: secondaryImage
         });
 
     } catch (err) {
-        // Esto captura errores si el ID no es válido (ej: es muy corto)
         console.error('❌ ERROR al cargar el detalle de la película:', err.message);
-        res.status(500).send('Error interno al cargar el detalle de la película.');
+        res.status(500).send('Error interno del servidor.');
     }
 });
 
@@ -195,13 +190,15 @@ router.post('/add', uploadMiddleware, async (req, res) => {
 
     const { title, description, releaseYear, genre, rating, ageClassification, director, cast, duration } = req.body;
 
+    // La ruta para las subidas nuevas también usa /Uploads/
     const directorImagePath = `/Uploads/${req.file.filename}`;
 
     const newFilm = {
         title,
         description,
         releaseYear: parseInt(releaseYear),
-        genre: Array.isArray(genre) ? genre : [genre],
+        // Asegura que 'genre' se guarda como array, incluso si es un solo valor
+        genre: Array.isArray(genre) ? genre : [genre], 
         rating: parseFloat(rating),
         ageClassification: parseInt(ageClassification),
         director,
@@ -223,19 +220,19 @@ router.post('/add', uploadMiddleware, async (req, res) => {
 });
 
 
-// ----------------------------------------------------\
+// ----------------------------------------------------
 // ➡️ Ruta de Añadir Review
-// ----------------------------------------------------\
+// ----------------------------------------------------
 router.post('/Ej/:movieId/addReview', async (req, res) => {
     const movieId = req.params.movieId;
     // ✅ Importante: los nombres deben coincidir con los del formulario en Ej.html
-    const { userName, rating, reviewText } = req.body;
-
+    const { userName, rating, reviewText } = req.body; 
+    
     // Validar ID
     if (!movieId || !ObjectId.isValid(movieId)) {
         return res.status(400).send("ID de película no válido.");
     }
-
+    
     // Crear el objeto de la nueva reseña
     const newReview = {
         userName,
@@ -243,17 +240,17 @@ router.post('/Ej/:movieId/addReview', async (req, res) => {
         text: reviewText,
         date: new Date().toLocaleDateString('es-ES') // Formato simple de fecha
     };
-
+    
     try {
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
-
+        
         // Agregar la reseña al array 'reviews'
         await collection.updateOne(
             { _id: new ObjectId(movieId) },
             { $push: { reviews: newReview } }
         );
-
+        
         // Redirigir de vuelta a la página de detalles
         res.redirect(`/Ej/${movieId}`);
     } catch (err) {
@@ -261,6 +258,7 @@ router.post('/Ej/:movieId/addReview', async (req, res) => {
         res.status(500).send('Error al guardar la reseña.');
     }
 });
+
 
 
 // ----------------------------------------------------\
@@ -315,6 +313,5 @@ router.post('/delete/:movieId', async (req, res) => {
         return res.status(500).send('Error al borrar la película.');
     }
 });
-
 
 export default router;
