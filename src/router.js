@@ -3,32 +3,24 @@ import * as fs from 'fs'; // Necesitas fs para borrar el archivo si falla la DB
 
 const router = express.Router();
 
-// ... (otras rutas get) ...
+router.get('/', (req, res) => {
+    res.redirect('/indice');
+});
 
-router.post("/addFilm", (req, res) => { // La ruta principal NO es async
+router.post("/addFilm", (req, res) => { 
 
-    // 1. Obtiene el middleware de Multer. 'foto' debe coincidir con el name="" del input.
     const uploadMiddleware = req.app.locals.upload.single('foto');
-
-    // 2. Ejecuta Multer. Toda la lógica de la DB va dentro de esta callback.
-    uploadMiddleware(req, res, async (err) => { // La callback SÍ es async
-
-        // --- MANEJO DE ERRORES DE MULTER ---
+    uploadMiddleware(req, res, async (err) => { 
         if (err) {
             console.error('❌ ERROR de Subida de Archivos (Multer):', err);
-            // Envía una respuesta al cliente
             return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
         }
-
-        // --- LÓGICA DE LA BASE DE DATOS (Solo se ejecuta si Multer tuvo éxito) ---
         try {
             if (!req.body) {
                 return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
             }
-
-            // Console.log para depuración.
             console.log('Datos de formulario recibidos:', req.body);
-            console.log('Información del archivo:', req.file); // req.file es donde Multer guarda los datos del archivo
+            console.log('Información del archivo:', req.file); 
 
             const movie = {
                 title: req.body.title,
@@ -42,11 +34,9 @@ router.post("/addFilm", (req, res) => { // La ruta principal NO es async
                 duration: req.body.duration ? Number(req.body.duration) : undefined,
                 language: req.body.language || [],
 
-                // Añade la ruta del archivo subido
                 directorImagePath: req.file ? `/Uploads/${req.file.filename}` : null,
             };
 
-            // Conversión de arrays
             if (typeof movie.genre === 'string') movie.genre = movie.genre.split(',').map(s => s.trim()).filter(Boolean);
             if (typeof movie.language === 'string') movie.language = movie.language.split(',').map(s => s.trim()).filter(Boolean);
             if (typeof movie.cast === 'string') movie.cast = movie.cast.split(',').map(s => s.trim()).filter(Boolean);
@@ -58,22 +48,118 @@ router.post("/addFilm", (req, res) => { // La ruta principal NO es async
                 console.error('Database not initialized on app.locals.db');
                 return res.status(500).send('Database not initialized');
             }
-
             const result = await db.collection('Softflix').insertOne(movie);
-
-            // Redirecciona al éxito
             res.redirect('/indice');
 
         } catch (dbErr) {
             console.error('❌ ERROR en la inserción (DB/Lógica):', dbErr);
 
-            // Borra el archivo subido si falla la inserción en la DB
             if (req.file) {
                 fs.unlinkSync(req.file.path);
             }
             res.status(500).send(`Error al guardar la película: ${dbErr.message}`);
         }
     });
+});
+
+router.get("/indice", async (req, res) => {
+    const ITEMS_PER_PAGE = 6;
+    const currentPage = parseInt(req.query.page) || 1;
+
+    const searchQuery = req.query.search || ''; // Buscador por Título
+    const filterGenre = req.query.genre || '';  // Filtro por Género
+
+    const skip = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    // 2. Conexión a DB
+    const db = req.app.locals.db;
+    if (!db) {
+        return res.status(500).send('Database not initialized');
+    }
+    const collection = db.collection('Softflix'); // Usamos el nombre de tu colección
+
+    // 3. Construcción del Objeto de Consulta (Query Object)
+    const query = {};
+
+    if (searchQuery) {
+        // Búsqueda por el campo 'title' (insensible a mayúsculas/minúsculas)
+        query.title = { $regex: searchQuery, $options: 'i' };
+    }
+
+    if (filterGenre && filterGenre !== 'Todos') {
+        // Filtro por el campo 'genre'. Asumimos que 'genre' es un campo de array en tu DB.
+        query.genre = filterGenre;
+    }
+
+    try {
+        // 4. Consulta 1: Obtener el total de elementos (APLICANDO FILTROS/BÚSQUEDA)
+        const totalItems = await collection.countDocuments(query);
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+        // 5. Consulta 2: Obtener las películas de la página actual
+        const films = await collection.find(query)
+            .skip(skip)
+            .limit(ITEMS_PER_PAGE)
+            .toArray();
+
+        // 6. Preparar URL base para mantener el estado del buscador y filtro
+        let baseUrl = '/indice?';
+        if (searchQuery) {
+            baseUrl += `search=${encodeURIComponent(searchQuery)}&`;
+        }
+        if (filterGenre) {
+            baseUrl += `genre=${encodeURIComponent(filterGenre)}&`;
+        }
+
+        // 7. Generar Enlaces de Paginación Numérica
+        const paginationLinks = [];
+        for (let i = 1; i <= totalPages; i++) {
+            paginationLinks.push({
+                page: i,
+                isCurrent: i === currentPage,
+                url: `${baseUrl}page=${i}`
+            });
+        }
+
+        // 8. Preparar Botones de Anterior y Siguiente
+        const prevPage = currentPage > 1 ? currentPage - 1 : 1;
+        const nextPage = currentPage < totalPages ? currentPage + 1 : totalPages;
+
+        // 9. Obtener la lista de géneros disponibles para los botones de filtro
+        // Esto asume que el campo 'genre' en tu DB es un array de strings.
+        const genresCursor = await collection.aggregate([
+            { $unwind: "$genre" },
+            { $group: { _id: "$genre" } },
+            { $sort: { _id: 1 } }
+        ]).toArray();
+
+        const availableGenres = genresCursor.map(g => ({
+            name: g._id,
+            isActive: g._id === filterGenre,
+            // URL que mantiene la búsqueda y aplica el filtro
+            url: `/indice?genre=${encodeURIComponent(g._id)}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`
+        }));
+
+        // 10. Renderizar la vista
+        res.render("indice", {
+            films: films,
+            pagination: paginationLinks,
+            hasPagination: totalPages > 1,
+            // Navegación Anterior/Siguiente
+            prevUrl: `${baseUrl}page=${prevPage}`,
+            nextUrl: `${baseUrl}page=${nextPage}`,
+            isPrevDisabled: currentPage <= 1,
+            isNextDisabled: currentPage >= totalPages,
+            // Estado del Buscador/Filtro
+            currentSearch: searchQuery,
+            currentFilter: filterGenre,
+            genres: availableGenres
+        });
+
+    } catch (err) {
+        console.error('❌ ERROR al obtener datos del índice:', err);
+        res.status(500).send('Error al cargar la página principal.');
+    }
 });
 
 export default router;

@@ -1,37 +1,56 @@
 [
     {
-        "Title": "Interstellar",
+        "title": "Interstellar",
         "description": "In a future where Earth is slowly dying, humanitys survival depends on venturing into the stars. A former pilot is recruited for a daring mission: to travel through a newly discovered wormhole and search for a new home among the stars.As the crew faces unimaginable challenges across space and time, their journey becomes not only a fight for survival, but also a profound exploration of love, sacrifice, and the very limits of human possibility.",
-        "Realase_year": "2014",
-        "Gender": "Science fiction",
-        "Calification": "5/5",
-        "Age_classification": "+13",
-        "Director": "Christopher Nolan",
-        "Casting": "Matthew McConaughey, Jessica Chastain, Anne Hathaway",
-        "Duration": "2h 49min",
+        "releaseYear": "2014",
+        "genre": "Science fiction",
+        "rating": "5/5",
+        "ageClassification": "+13",
+        "director": "Christopher Nolan",
+        "cast": "Matthew McConaughey, Jessica Chastain, Anne Hathaway",
+        "duration": "2h 49min",
         "images": [
-            { "name": "Interstellar/interstellar.jpg", "type": "cover"},
-            { "name": "Interstellar/anne.jpg", "type": "scene"},
-            { "name": "Interstellar/christopher.jpg", "type": "scene"},
-            { "name": "Interstellar/matthew.jpg", "type": "scene"},
-            { "name": "Interstellar/Interestellartitulo.png", "type": "scene"},
-            { "name": "Interstellar/INTERESTELLAR.png", "type": "scene"},
-            { "name": "Interstellar/jessica.png", "type": "scene"}
+            {
+                "name": "Interstellar/interstellar.jpg",
+                "type": "cover"
+            },
+            {
+                "name": "Interstellar/anne.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "Interstellar/christopher.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "Interstellar/matthew.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "Interstellar/Interestellartitulo.png",
+                "type": "scene"
+            },
+            {
+                "name": "Interstellar/INTERESTELLAR.png",
+                "type": "scene"
+            },
+            {
+                "name": "Interstellar/jessica.png",
+                "type": "scene"
+            }
         ],
-        "Comentary": [
-            
-        ]
+        "comments": []
     },
     {
-        "Title": "How to train your dragon",
+        "title": "How to train your dragon",
         "description": "Hiccup, a teenage Viking, begins dragon training classes, and finally sees an opportunity to prove he is capable of becoming a warrior, when he befriends an injured dragon.",
-        "Realase_year": "2010",
-        "Gender": "Action",
-        "Calification": "4/5",
-        "Age_classification": "+7",
-        "Director": "Chris Sanders, Dean DeBlois",
-        "Casting": "Jay Baruchel, Gerard Butler, America Ferrara",
-        "Duration": "1h 38min",
+        "releaseYear": "2010",
+        "genre": "Action",
+        "rating": "4/5",
+        "ageClassification": "+7",
+        "director": "Chris Sanders, Dean DeBlois",
+        "cast": "Jay Baruchel, Gerard Butler, America Ferrara",
+        "duration": "1h 38min",
         "images": [
             {
                 "name": "CEATD.png",
@@ -40,15 +59,15 @@
         ]
     },
     {
-        "Title": "The secret live of Walter Mity",
+        "title": "The secret live of Walter Mity",
         "description": "Walter Mitty, photo editor at Life magazine,has spent his whole life taking little \"mental vacations\" to escape his boring existence, moments in which he becomes the imaginary protagonist of fantastic adventures.",
-        "Realase_year": "2013",
-        "Gender": "Action, comedy",
-        "Calification": "5/5",
-        "Age_classification": "+12",
-        "Director": "Ben Stiller",
-        "Casting": "Ben Stiller, Kristen Wiig, Sean Penn",
-        "Duration": "1h 54min",
+        "releaseYear": "2013",
+        "genre": "Action, comedy",
+        "rating": "5/5",
+        "ageClassification": "+12",
+        "director": "Ben Stiller",
+        "cast": "Ben Stiller, Kristen Wiig, Sean Penn",
+        "duration": "1h 54min",
         "images": [
             {
                 "name": "LVSDWM.png",
@@ -57,15 +76,15 @@
         ]
     },
     {
-        "Title": "Dunkerke",
+        "title": "Dunkerke",
         "description": "Germany advances into France, trapping Allied troops on the beaches of Dunkirk.Under air and ground protection from British and French forces, the troops are slowly evacuated from the beach using any available vessels.",
-        "Realase_year": "2017",
-        "Gender": "Action",
-        "Calification": "3/5",
-        "Age_classification": "+12",
-        "Director": "Christopher Nolan",
-        "Casting": "Harry Styles, Fionn Whitehead, Cillian Murphy",
-        "Duration": "1h 46min",
+        "releaseYear": "2017",
+        "genre": "Action",
+        "rating": "3/5",
+        "ageClassification": "+12",
+        "director": "Christopher Nolan",
+        "cast": "Harry Styles, Fionn Whitehead, Cillian Murphy",
+        "duration": "1h 46min",
         "images": [
             {
                 "name": "DUNKERE.png",
@@ -74,15 +93,15 @@
         ]
     },
     {
-        "Title": "Megamind",
+        "title": "Megamind",
         "description": "Megamind is a supervillain.For years, he has tried to conquer Metro City, but a hero named Metro Man stood in his way.After many attempts, Megamind finally manages to kill him.Suddenly, his life has no meaning.What can a supervillain do without a superhero to fight? Create Titan, a new hero.",
-        "Realase_year": "2010",
-        "Gender": "Comedy",
-        "Calification": "4/5",
-        "Age_classification": "All ages",
-        "Director": "Tom McGrath",
-        "Casting": "Will Ferrell, Tom McGrath, Ben Stiller ",
-        "Duration": "1h 35min",
+        "releaseYear": "2010",
+        "genre": "Comedy",
+        "rating": "4/5",
+        "ageClassification": "All ages",
+        "director": "Tom McGrath",
+        "cast": "Will Ferrell, Tom McGrath, Ben Stiller ",
+        "duration": "1h 35min",
         "images": [
             {
                 "name": "MEGAMIND.png",
@@ -91,15 +110,15 @@
         ]
     },
     {
-        "Title": "Tenet",
+        "title": "Tenet",
         "description": "An epic action story revolving around international espionage, time travel, and evolution, in which a secret agent must prevent World War III.",
-        "Realase_year": "2020",
-        "Gender": "Science-Fiction",
-        "Calification": "4/5",
-        "Age_classification": "+12",
-        "Director": "Christopher Nolan",
-        "Casting": "John David Washington, Elizabeth Debicki, Robert Patinson",
-        "Duration": "2h 30min",
+        "releaseYear": "2020",
+        "genre": "Science-Fiction",
+        "rating": "4/5",
+        "ageClassification": "+12",
+        "director": "Christopher Nolan",
+        "cast": "John David Washington, Elizabeth Debicki, Robert Patinson",
+        "duration": "2h 30min",
         "images": [
             {
                 "name": "TENET.png",
@@ -108,15 +127,15 @@
         ]
     },
     {
-        "Title": "Spiderman-Far-From-Home",
+        "title": "Spiderman-Far-From-Home",
         "description": " Peter Parker decides to take a well-deserved vacation in Europe with MJ, Ned, and the rest of his friends. However, Peter must don the Spider-Man suit once again when Nick Fury entrusts him with a new mission: to stop an attack by creatures that are causing chaos across the continent.",
-        "Realase_year": "2019",
-        "Gender": "Science-Fiction",
-        "Calification": "4/5",
-        "Age_classification": "+12",
-        "Director": "Jon Watts",
-        "Casting": "Tom Holland, Zendaya, Jake Gyllenhaal ",
-        "Duration": " 2h 10min",
+        "releaseYear": "2019",
+        "genre": "Science-Fiction",
+        "rating": "4/5",
+        "ageClassification": "+12",
+        "director": "Jon Watts",
+        "cast": "Tom Holland, Zendaya, Jake Gyllenhaal ",
+        "duration": " 2h 10min",
         "images": [
             {
                 "name": "SPIDERMAN.png",
@@ -125,15 +144,15 @@
         ]
     },
     {
-        "Title": "Saving private Ryan",
+        "title": "Saving private Ryan",
         "description": "Following the Normandy landings, in the midst of World War II, American soldiers must risk their lives to save Private James Ryan, whose three brothers have died in the war.",
-        "Realase_year": "1998",
-        "Gender": "Action",
-        "Calification": "5/5",
-        "Age_classification": "+12",
-        "Director": " Steven Spielberg",
-        "Casting": "Tom Hanks, Matt Damon, Vin Diesel",
-        "Duration": "2h 49min",
+        "releaseYear": "1998",
+        "genre": "Action",
+        "rating": "5/5",
+        "ageClassification": "+12",
+        "director": " Steven Spielberg",
+        "cast": "Tom Hanks, Matt Damon, Vin Diesel",
+        "duration": "2h 49min",
         "images": [
             {
                 "name": "SASR.png",
@@ -142,15 +161,15 @@
         ]
     },
     {
-        "Title": "Súper López",
+        "title": "Súper López",
         "description": " The planet Chitón is about to fall into the hands of an evil leader.Its inhabitants only hope is the baby Jo-Con-Él, who is sent to Earth in a rocket that does not quite land where his parents intended.",
-        "Realase_year": "2018",
-        "Gender": "Comedy",
-        "Calification": "3/5",
-        "Age_classification": "All ages",
-        "Director": "Javier Ruiz Caldera",
-        "Casting": "Dani Rovira, Alexandra Jiménez, Maribel Verdú",
-        "Duration": "1h 48min",
+        "releaseYear": "2018",
+        "genre": "Comedy",
+        "rating": "3/5",
+        "ageClassification": "All ages",
+        "director": "Javier Ruiz Caldera",
+        "cast": "Dani Rovira, Alexandra Jiménez, Maribel Verdú",
+        "duration": "1h 48min",
         "images": [
             {
                 "name": "SL.png",
@@ -159,15 +178,15 @@
         ]
     },
     {
-        "Title": "Only the Brave",
+        "title": "Only the Brave",
         "description": " Film based on Sean Flynn,s GQ article about the first municipal fire department to become an elite squad, the Granite Mountain Hotshots, who had to face the massive wildfire that broke out in Yarnell Hill, Arizona, in June 2013.",
-        "Realase_year": "2017",
-        "Gender": "Action",
-        "Calification": "4/5",
-        "Age_classification": "+12",
-        "Director": "Joseph Kosinski",
-        "Casting": "Josh Brolin, Miles Tiller, Jeff Bridges",
-        "Duration": "2h 13min",
+        "releaseYear": "2017",
+        "genre": "Action",
+        "rating": "4/5",
+        "ageClassification": "+12",
+        "director": "Joseph Kosinski",
+        "cast": "Josh Brolin, Miles Tiller, Jeff Bridges",
+        "duration": "2h 13min",
         "images": [
             {
                 "name": "OTB.png",
@@ -176,15 +195,15 @@
         ]
     },
     {
-        "Title": "The secret soldiers of benghazi",
+        "title": "The secret soldiers of benghazi",
         "description": "On September 11, 2012, the United States embassy in the Libyan city of Benghazi was the target of a terrorist attack. Six former elite soldiers, whose mission was to protect the CIA, fought fiercely to defend the embassy staff. ",
-        "Realase_year": "2016",
-        "Gender": "Action",
-        "Calification": "4/5",
-        "Age_classification": "+16",
-        "Director": "Michael Bay",
-        "Casting": "John Krasinski, James Badge Dale, Max Martini",
-        "Duration": "2h 24min",
+        "releaseYear": "2016",
+        "genre": "Action",
+        "rating": "4/5",
+        "ageClassification": "+16",
+        "director": "Michael Bay",
+        "cast": "John Krasinski, James Badge Dale, Max Martini",
+        "duration": "2h 24min",
         "images": [
             {
                 "name": "LSSDB.png",
@@ -193,15 +212,15 @@
         ]
     },
     {
-        "Title": "1917",
+        "title": "1917",
         "description": " The film follows two young British soldiers over the course of a single day in the darkest days of World War I.",
-        "Realase_year": "2019",
-        "Gender": "Action",
-        "Calification": "5/5",
-        "Age_classification": "+12",
-        "Director": "Sam Mendes",
-        "Casting": "George MacKay, Richard Madden",
-        "Duration": "1h 59min",
+        "releaseYear": "2019",
+        "genre": "Action",
+        "rating": "5/5",
+        "ageClassification": "+12",
+        "director": "Sam Mendes",
+        "cast": "George MacKay, Richard Madden",
+        "duration": "1h 59min",
         "images": [
             {
                 "name": "1917.png",

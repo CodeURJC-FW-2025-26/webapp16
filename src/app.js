@@ -57,12 +57,10 @@ app.use(express.json());
 
 await initDB(app);
 
+// 🔑 CLAVE: Todo el tráfico va a router.js
 app.use('/', router);
 
-app.get("/indice", (req, res) => {
-    res.render("indice");
-});
-
+// Rutas restantes que no están en router.js:
 app.get("/add", (req, res) => {
     res.render("add");
 });
@@ -71,9 +69,10 @@ app.get("/ej", (req, res) => {
     res.render("Ej");
 });
 
-app.get("/", (req, res) => {
-    res.render("indice");
-});
+// ----------------------------------------------------
+// ELIMINADAS: app.get("/indice", ...) y app.get("/", ...) 
+// Ahora son manejadas por router.js
+// ----------------------------------------------------
 
 async function loadInitialData() {
     const dataPath = resolve(process.cwd(), 'data', 'data.json');
@@ -114,7 +113,6 @@ function cleanupUploads() {
 // (Mantenida solo por si la necesitas para datos iniciales)
 // ----------------------------------------------------
 function copyImagesToUploads() {
-    // ... (El cuerpo de copyImagesToUploads que ya tenías)
     const sourceDir = path.join(BASE_PATH, 'data', 'Images');
     const destDir = path.join(BASE_PATH, 'Public', 'Uploads');
 
@@ -154,8 +152,6 @@ function copyImagesToUploads() {
 // ----------------------------------------------------
 
 
-// ¡IMPORTANTE! Eliminamos la llamada a copyImagesToUploads() del final
-// y añadimos el hook de limpieza.
 const PORT = 3000;
 const server = app.listen(PORT, () =>
     console.log(`Servidor corriendo en http://localhost:${PORT}`)
