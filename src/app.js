@@ -84,6 +84,7 @@ app.use('/data/Images', express.static(path.join(BASE_PATH, 'data', 'Images')));
 // 🗺️ ENRUTAMIENTO Y BASE DE DATOS
 // ----------------------------------------------------
 app.use('/', router);
+await cleanupDB();
 initDB(app);
 
 

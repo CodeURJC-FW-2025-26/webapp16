@@ -46,7 +46,7 @@ const generateImagePaths = (movie) => {
         duration,
         images: movie.images,
         comments,
-        directorImagePath 
+        directorImagePath: directorImagePath 
     };
 };
 

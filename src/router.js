@@ -243,4 +243,47 @@ router.post('/addComment', async (req, res) => {
     }
 });
 
+router.get('/Ej/:id', async (req, res) => {
+    // 1. Capturar el ID de la URL
+    const movieId = req.params.id;
+
+    if (!movieId) {
+        return res.status(400).send("ID de película no proporcionado en la URL.");
+    }
+
+    try {
+        const db = req.app.locals.db;
+        const collection = db.collection('Softflix');
+
+        // 2. Buscar la película por su ID
+        const film = await collection.findOne({ _id: new ObjectId(movieId) });
+
+        // Si no se encuentra la película
+        if (!film) {
+            return res.status(404).send(`Película con ID ${movieId} no encontrada.`);
+        }
+
+        // 3. Simular la imagen secundaria (como lo tenías antes, pero dentro de la ruta correcta)
+        let secondaryImage = null;
+        if (film.directorImagePath) {
+            const parts = film.directorImagePath.split('/');
+            const folder = parts[parts.length - 2];
+            secondaryImage = `/data/Images/${folder}/Interestellartitulo.png`;
+        }
+
+        // 4. Renderizar la vista 'Ej'
+        res.render('Ej', {
+            // Pasas el objeto film completo, que incluye el _id para el formulario de review
+            film: film,
+            ...film, // Esto "desempaqueta" los campos (title, rating, directorImagePath, etc.)
+            secondaryImage: secondaryImage
+        });
+
+    } catch (err) {
+        // Esto captura errores si el ID no es válido (ej: es muy corto)
+        console.error('❌ ERROR al cargar el detalle de la película:', err);
+        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
+    }
+});
+
 export default router;
