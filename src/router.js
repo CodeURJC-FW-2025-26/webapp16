@@ -1,5 +1,6 @@
 import express from 'express';
 import * as fs from 'fs';
+import path from 'path';
 import { ObjectId } from 'mongodb';
 
 const router = express.Router();
@@ -210,8 +211,8 @@ router.post('/add', uploadMiddleware, async (req, res) => {
         await collection.insertOne(newFilm);
         res.redirect('/indice');
     } catch (err) {
-        console.error('❌ ERROR al insertar nueva película:', err.message);
-        res.status(500).send('Error al guardar la película.');
+        console.error('❌ ERROR al guardar comentario:', err);
+        res.status(500).send(`Error al guardar comentario: ${err.message}`);
     }
 });
 
