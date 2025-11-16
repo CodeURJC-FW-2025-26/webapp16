@@ -78,4 +78,66 @@
         </li>
     </ul>
 
+    <!-- Cast -->
+    <p class="extra-pequeno"><strong>Cast:</strong></p>
+    <ul class="reparto">
+        {{#cast}}
+        <li>
+            <img src="/Imagenes/Actors/{{.}}.jpg" alt="{{.}}">
+            <span>{{.}}</span>
+        </li>
+        {{/cast}}
+    </ul>
 
+    <!-- Rewievs -->
+    <section class="user-reviews">
+        <h4>USER REVIEWS</h4>
+        {{#reviews}}
+        <div class="review">
+            <div class="user-info">
+                <img src="/Imagenes/User/user.jpg" alt="{{userName}}">
+                <strong>{{userName}}</strong>
+            </div>
+            <p>{{review}}</p>
+            <p>⭐ {{rating}}/5</p>
+        </div>
+        {{/reviews}}
+        {{^reviews}}
+        <p>No hay reseñas aún.</p>
+        {{/reviews}}
+    </section>
+
+    <!-- Add rewievs -->
+    <main class="container my-5">
+        <h2 class="text-center mb-4">Add New Review</h2>
+        <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;" method="POST" action="/Ej/{{_id}}/addReview">
+            <div class="mb-3">
+                <label for="userName" class="form-label">User name</label>
+                <input type="text" class="form-control" id="userName" name="review" placeholder="Enter your name"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rating (1–5)</label>
+                <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" required>
+            </div>
+            <div class="mb-3">
+                <label for="reviewText" class="form-label">Review</label>
+                <textarea class="form-control" id="reviewText" name="review" rows="4" placeholder="Write your review..."
+                    required></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-outline-dark">
+                    <i class="bi bi-save me-1"></i> Save
+                </button>
+                <a href="/indice" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </main>
+
+    {{> footer }}
+</body>
+
+</html>
