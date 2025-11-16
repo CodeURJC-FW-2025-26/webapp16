@@ -157,26 +157,26 @@
     </section>
     <main class="container my-5">
         <h2 class="text-center mb-4">Add New Review</h2>
-        <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;">
+            <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;" method="POST" action="/addComment">
             <div class="mb-3">
                 <label for="userName" class="form-label">User name</label>
-                <input type="text" class="form-control" id="userName" placeholder="Enter your name" required>
+                <input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name" required>
             </div>
             <div class="mb-3">
-                <label for="rating" class="form-label">Rating (1–5)</label>
-                <input type="number" class="form-control" id="rating" min="1" max="10" required>
+                <label for="rating" class="form-label">Rating (1–10)</label>
+                <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" required>
             </div>       
             <div class="mb-3">
                 <label for="reviewText" class="form-label">Review</label>
-                <textarea class="form-control" id="reviewText" rows="4" placeholder="Write your review..."
+                <textarea class="form-control" id="reviewText" name="reviewText" rows="4" placeholder="Write your review..."
                     required></textarea>
             </div>
+            <!-- Campo oculto para el ID de la película (necesitarás pasarlo desde el servidor) -->
+            <input type="hidden" id="movieId" name="movieId" value="interstellar-id-placeholder">
             <div class="d-flex justify-content-between mt-4">
-                <form action="/addFilm" method="POST" enctype="multipart/form-data">
-                    <button type="submit" class="btn btn-outline-dark">
-                        <i class="bi bi-save me-1"></i> Save
-                    </button>
-                </form>
+                <button type="submit" class="btn btn-outline-dark">
+                    <i class="bi bi-save me-1"></i> Save
+                </button>
                 <a href="/indice" class="btn btn-outline-secondary">
                     <i class="bi bi-x-circle me-1"></i> Cancel
                 </a>
