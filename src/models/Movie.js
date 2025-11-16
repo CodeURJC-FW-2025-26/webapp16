@@ -35,7 +35,13 @@ const movieSchema = new mongoose.Schema({
     image_file: {
         type: String
     }
-});
+
+    comentary: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comentary'
+    }]
+
+   });
 
 const Movie = mongoose.model('Movie', movieSchema, 'Softflix');
 
