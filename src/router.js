@@ -37,7 +37,8 @@ router.post("/addFilm", (req, res) => {
                 language: req.body.language || [],
 
                 // CLAVE: La ruta para archivos subidos a Public/Uploads
-                directorImagePath: req.file ? `/Uploads/${req.file.filename}` : null,
+                poster: req.file ? `/Uploads/${req.file.filename}` : `/data/Images7${req.body.title}/${req.body.title}jpg`,
+                directorImagePath: req.file ? `/Uploads/${req.file.filename}` : `/data/Images/${req.body.director}/${req.body.director}jpg`,
             };
 
             // Conversión de arrays
