@@ -49,9 +49,10 @@
                 <span class="me-2 fw-bold">Filtrar por Género:</span>
 
                 <a href="/indice{{#currentSearch}}?search={{currentSearch}}{{/currentSearch}}"
-                    class="btn btn-sm {{^currentFilter}}btn-success{{/currentFilter}}{{^currentFilter}}btn-outline-secondary{{/currentFilter}}">
+                    class="btn btn-sm {{^currentFilter}}btn-success{{/currentFilter}}{{#currentFilter}}btn-outline-secondary{{/currentFilter}}">
                     Todos
                 </a>
+
                 {{#genres}}
                 <a href="{{url}}"
                     class="btn btn-sm {{#isActive}}btn-success{{/isActive}}{{^isActive}}btn-outline-secondary{{/isActive}}">
