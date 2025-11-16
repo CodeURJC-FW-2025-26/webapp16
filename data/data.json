@@ -11,31 +11,31 @@
         "duration": "2h 49min",
         "images": [
             {
-                "name": "/data/Images/Interstellar/INTERESTELLAR.png",
+                "name": "/Interstellar/INTERESTELLAR.png",
                 "type": "cover"
             },
             {
-                "name": "Interstellar/anne.jpg",
+                "name": "/Interstellar/anne.jpg",
                 "type": "scene"
             },
             {
-                "name": "Interstellar/christopher.jpg",
+                "name": "/Interstellar/christopher.jpg",
                 "type": "scene"
             },
             {
-                "name": "Interstellar/matthew.jpg",
+                "name": "/Interstellar/matthew.jpg",
                 "type": "scene"
             },
             {
-                "name": "Interstellar/Interestellartitulo.png",
+                "name": "/Interstellar/Interestellartitulo.png",
                 "type": "scene"
             },
             {
-                "name": "Interstellar/interstellar.jpg",
+                "name": "/Interstellar/interstellar.jpg",
                 "type": "scene"
             },
             {
-                "name": "Interstellar/jessica.png",
+                "name": "/Interstellar/jessica.png",
                 "type": "scene"
             }
         ],
