@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 
 // 💡 EXPORTAR EL CLIENTE: Necesario para el hook de cierre en app.js
 const uri = 'mongodb://localhost:27017/Softflix';
-export const client = new MongoClient(uri);
+const client = new MongoClient(uri);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,7 +82,7 @@ try {
 }
 
 
-export async function initDB(app) {
+async function initDB(app) {
     // Si no hay películas, no inicializar
     if (initialMovies.length === 0) {
         return;
@@ -116,7 +116,7 @@ export async function initDB(app) {
     }
 }
 
-export async function cleanupDB() {
+async function cleanupDB() {
     try {
         await client.connect();
         const db = client.db('Softflix');
@@ -129,9 +129,14 @@ export async function cleanupDB() {
 }
 
 export async function closeDB() {
-    if (client && client.connected) {
-        await client.close();
-        console.log("Conexión a MongoDB cerrada.");
+    if (client) {
+        try {
+            await client.close();
+            console.log("Conexión a MongoDB cerrada.");
+        } catch (err) {
+            console.error('Error cerrando el cliente MongoDB:', err.message);
+        }
     }
 }
+
 export { initDB, cleanupDB, generateImagePaths, client };
