@@ -8,69 +8,6 @@ router.get('/', (req, res) => {
     res.redirect('/indice');
 });
 
-router.post("/addFilm", (req, res) => {
-
-    const uploadMiddleware = req.app.locals.upload.single('foto');
-
-    uploadMiddleware(req, res, async (err) => {
-        if (err) {
-            console.error('❌ ERROR de Subida de Archivos (Multer):', err);
-            return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
-        }
-        try {
-            if (!req.body) {
-                return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
-            }
-            console.log('Datos de formulario recibidos:', req.body);
-            console.log('Información del archivo:', req.file);
-
-            const movie = {
-                title: req.body.title,
-                description: req.body.description,
-                releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
-                genre: req.body.genre || [],
-                rating: req.body.rating ? Number(req.body.rating) : undefined,
-                ageClassification: req.body.ageClassification,
-                director: req.body.director,
-                cast: req.body.cast,
-                duration: req.body.duration,
-                language: req.body.language || [],
-
-                // CLAVE: La ruta para archivos subidos a Public/Uploads
-                poster: req.file ? `/Uploads/${req.file.filename}` : `/data/Images${req.body.title}/${req.body.title}.jpg`,
-                directorImagePath: req.file ? `/Uploads/${req.file.filename}` : `/data/Images/${req.body.director}/${req.body.director}.jpg`,
-            };
-
-            // Conversión de arrays
-            if (typeof movie.genre === 'string') movie.genre = movie.genre.split(',').map(s => s.trim()).filter(Boolean);
-            if (typeof movie.language === 'string') movie.language = movie.language.split(',').map(s => s.trim()).filter(Boolean);
-            if (typeof movie.cast === 'string') movie.cast = movie.cast.split(',').map(s => s.trim()).filter(Boolean);
-
-            console.log('🚀 Insertando película:', movie);
-
-            const db = req.app.locals.db;
-            if (!db) {
-                console.error('Database not initialized on app.locals.db');
-                return res.status(500).send('Database not initialized');
-            }
-
-            const result = await db.collection('Softflix').insertOne(movie);
-
-            // Redirecciona al éxito
-            res.redirect('/indice');
-
-        } catch (dbErr) {
-            console.error('❌ ERROR en la inserción (DB/Lógica):', dbErr);
-
-            // Borra el archivo subido si falla la inserción en la DB
-            if (req.file) {
-                fs.unlinkSync(req.file.path);
-            }
-            res.status(500).send(`Error interno del servidor: ${dbErr.message}`);
-        }
-    });
-});
-
 // ----------------------------------------------------
 // ➡️ Ruta Principal de Películas (Indice)
 // ----------------------------------------------------
@@ -167,40 +104,115 @@ router.get('/indice', async (req, res) => {
     }
 });
 
-// ------------------------------------------------------------------
-// 🗺️ RUTA DE DETALLE (Ejemplo)
-// Carga la primera película y la muestra en la vista 'Ej.html'
-// ------------------------------------------------------------------
-router.get('/ej', async (req, res) => {
+router.post("/addFilm", (req, res) => {
+
+    const uploadMiddleware = req.app.locals.upload.single('foto');
+
+    uploadMiddleware(req, res, async (err) => {
+        if (err) {
+            console.error('❌ ERROR de Subida de Archivos (Multer):', err);
+            return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
+        }
+        try {
+            if (!req.body) {
+                return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
+            }
+            console.log('Datos de formulario recibidos:', req.body);
+            console.log('Información del archivo:', req.file);
+
+            // CLAVE MODIFICADA: La ruta de la imagen subida debe ser /Uploads/nombreDeArchivo
+            const directorImagePath = req.file ? `/Uploads/${req.file.filename}` : null;
+
+            const movie = {
+                title: req.body.title,
+                description: req.body.description,
+                releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
+                genre: req.body.genre || [],
+                rating: req.body.rating ? Number(req.body.rating) : undefined,
+                ageClassification: req.body.ageClassification,
+                director: req.body.director,
+                cast: req.body.cast,
+                duration: req.body.duration,
+                directorImagePath: directorImagePath, // <-- RUTA CORREGIDA
+                comentary: [] // Asegúrate de inicializar el array de comentarios
+            };
+
+            const db = req.app.locals.db;
+            const collection = db.collection('Softflix');
+            await collection.insertOne(movie);
+
+            res.redirect('/indice');
+
+        } catch (err) {
+            // ... (Manejo de errores si falla la base de datos)
+            if (req.file) {
+                fs.unlink(req.file.path, (unlinkErr) => {
+                    if (unlinkErr) console.error('Error al borrar archivo subido:', unlinkErr);
+                });
+            }
+            console.error('❌ ERROR al insertar película en la base de datos:', err);
+            res.status(500).send(`Error al guardar la película: ${err.message}`);
+        }
+    });
+});
+
+// ... (rest of router.js, including /indice route)
+
+// Ruta de detalle de película
+router.get("/ej", async (req, res) => {
+    const movieId = req.query.id; // Asume que ahora usas una query string, no un parámetro de URL
+
+    if (!movieId) {
+        // Redirige al primer registro si no se proporciona ID
+        // Esto es útil si solo quieres ver la página de ejemplo, pero puede ser mejor
+        // redirigir a /indice o a una página de error en una app real.
+        try {
+            const db = req.app.locals.db;
+            const collection = db.collection('Softflix');
+            const firstFilm = await collection.findOne({});
+            if (firstFilm) {
+                // Usa el ID del primer registro para continuar
+                return res.redirect(`/ej?id=${firstFilm._id}`);
+            }
+            return res.status(400).send("ID de película no proporcionado y no hay películas cargadas en la DB.");
+        } catch (err) {
+            return res.status(500).send(`Error al buscar la película de ejemplo: ${err.message}`);
+        }
+    }
+
     try {
         const db = req.app.locals.db;
-        // ... (manejo de errores de DB)
-
         const collection = db.collection('Softflix');
-        const film = await collection.findOne({});
+
+        // 2. Buscar la película por su ID
+        const film = await collection.findOne({ _id: new ObjectId(movieId) });
 
         if (!film) {
-            return res.status(404).send("No hay películas cargadas en la base de datos.");
+            return res.status(404).send(`Película con ID ${movieId} no encontrada.`);
         }
 
-        // 🛑 CORRECCIÓN CLAVE: Obtener el ID y convertirlo a string
-        const movieIdString = film._id.toString();
-
-        // Simula la imagen secundaria para el título 
+        // 3. Simular la imagen secundaria (ajustada para el nuevo esquema /Uploads/)
         let secondaryImage = null;
-        // ... (lógica de secondaryImage)
+        if (film.directorImagePath) {
+            // Ejemplo: /Uploads/Interstellar/interstellar.jpg -> obtenemos 'Interstellar'
+            const parts = film.directorImagePath.split('/');
+            const folder = parts[parts.length - 2];
 
-        // Renderiza la vista 'Ej.html'
+            // CLAVE MODIFICADA: Usamos el nuevo prefijo /Uploads/
+            secondaryImage = `/Uploads/${folder}/Interestellartitulo.png`;
+        }
+
+        // 4. Renderizar la vista 'Ej'
         res.render('Ej', {
             film: film,
-            // 🛑 NUEVO CAMPO: Pasa el ID como un string válido de MongoDB
-            movieId: movieIdString,
-            directorImagePath: film.directorImagePath,
+            ...film,
             secondaryImage: secondaryImage
         });
 
     } catch (err) {
-        // ... (manejo de errores)
+        // Esto captura errores si el ID no es válido
+        console.error('❌ ERROR al cargar el detalle de la película:', err);
+        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
     }
 });
 

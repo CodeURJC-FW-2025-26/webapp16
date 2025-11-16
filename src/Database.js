@@ -25,11 +25,12 @@ const generateImagePaths = (movie) => {
     const comments = movie.Comentary || movie.comments;
 
     let directorImagePath = null;
-
     if (movie.images && Array.isArray(movie.images)) {
         const coverImage = movie.images.find(img => img.type === 'cover');
 
         if (coverImage) {
+            // ✅ CORRECCIÓN CLAVE: La ruta debe empezar con una barra '/' 
+            // para que sea una URL absoluta en el navegador y funcione con Express.
             directorImagePath = `/data/Images/${coverImage.name}`;
         }
     }
@@ -46,7 +47,7 @@ const generateImagePaths = (movie) => {
         duration,
         images: movie.images,
         comments,
-        directorImagePath: directorImagePath 
+        directorImagePath: directorImagePath
     };
 };
 
@@ -95,7 +96,6 @@ async function initDB(app) {
         console.error('❌ Error in initDB (Database connection or insertion):', error.message);
     }
 }
-
 
 async function cleanupDB() {
     try {

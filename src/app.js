@@ -1,3 +1,5 @@
+// app.js
+
 import express from "express";
 import mustacheExpress from "mustache-express";
 import path, { resolve } from "path";
@@ -18,6 +20,33 @@ const BASE_PATH = path.join(__dirname, '..');
 
 
 // ----------------------------------------------------
+// 🛠️ CONFIGURACIÓN MULTER (Subida de Archivos)
+// ----------------------------------------------------
+const UPLOADS_PATH = path.join(BASE_PATH, 'Public', 'Uploads');
+
+// 1. Asegúrate de que la carpeta de subidas exista
+if (!fs.existsSync(UPLOADS_PATH)) {
+    fs.mkdirSync(UPLOADS_PATH, { recursive: true });
+}
+
+// 2. Configura el almacenamiento de Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Guarda los archivos subidos en Public/Uploads
+        cb(null, UPLOADS_PATH);
+    },
+    filename: (req, file, cb) => {
+        // Usa el nombre original del archivo con la fecha para evitar colisiones
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const fileExtension = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension);
+    }
+});
+
+app.locals.upload = multer({ storage: storage }); // Exporta multer a la app.
+
+
+// ----------------------------------------------------
 // 🛠️ CONFIGURACIÓN MUSTACHE Y PARSERS
 // ----------------------------------------------------
 app.engine("html", mustacheExpress(partialsPath));
@@ -28,62 +57,89 @@ app.use(express.json());
 
 
 // ----------------------------------------------------
-// 🛠️ CONFIGURACIÓN MULTER (Subida de Archivos)
+// 📁 SERVICIO DE ARCHIVOS ESTÁTICOS Y COPIA INICIAL
 // ----------------------------------------------------
-const UPLOADS_PATH = path.join(BASE_PATH, 'Public', 'Uploads');
-
-if (!fs.existsSync(UPLOADS_PATH)) {
-    fs.mkdirSync(UPLOADS_PATH, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, UPLOADS_PATH);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
-    },
-});
-
-const upload = multer({ storage: storage });
-app.locals.upload = upload;
-
-
-// ----------------------------------------------------
-// 🗑️ UTILERÍA DE LIMPIEZA DE UPLOADS
-// ----------------------------------------------------
-const cleanupUploads = () => {
-    try {
-        if (fs.existsSync(UPLOADS_PATH)) {
-            fs.readdirSync(UPLOADS_PATH).forEach(file => {
-                const filePath = path.join(UPLOADS_PATH, file);
-                fs.unlinkSync(filePath);
-            });
-            console.log(`\n🗑️ LIMPIEZA UPLOADS: Se eliminaron los archivos temporales.`);
-        }
-    } catch (error) {
-        console.error('❌ ERROR al limpiar la carpeta de uploads:', error.message);
-    }
-};
-
-
-// ----------------------------------------------------
-// 🌐 ARCHIVOS ESTÁTICOS (¡LA CLAVE PARA LAS IMÁGENES!)
-// ----------------------------------------------------
-
-// 1. Sirve archivos desde la carpeta Public (CSS, JS, etc.)
+// 1. Sirve archivos desde la carpeta Public (CSS, JS, Imágenes, etc.)
+// Esto hace que la ruta /Uploads/ sea accesible.
 app.use(express.static(path.join(BASE_PATH, 'Public')));
 
-// 2. 🚨 CLAVE: Mapea la URL /data/Images a la carpeta física data/Images.
-// Esto permite que la URL guardada en DB (/data/Images/Interstellar/interstellar.jpg) funcione.
-app.use('/data/Images', express.static(path.join(BASE_PATH, 'data', 'Images')));
+// 2. ❌ ELIMINAMOS ESTA RUTA ESTÁTICA: Ahora todo se sirve desde Public.
+// app.use('/data/Images', express.static(path.join(BASE_PATH, 'data', 'Images')));
 
+
+// ----------------------------------------------------
+// 🛠️ FUNCIONES DE COPIA Y LIMPIEZA
+// (Mantenemos estas funciones que ya tenías para la copia recursiva y limpieza)
+// ----------------------------------------------------
+const sourceDir = path.join(BASE_PATH, 'data', 'Images');
+const destDir = UPLOADS_PATH; // Public/Uploads
+
+// Función para limpiar archivos subidos (incluye la lógica de borrado del JSON)
+function cleanupUploads() {
+    console.log('🧹 Limpiando carpeta de subidas...');
+    try {
+        if (fs.existsSync(UPLOADS_PATH)) {
+            // Borra todo el contenido de UPLOADS_PATH
+            fs.rmSync(UPLOADS_PATH, { recursive: true, force: true });
+            // Vuelve a crear la carpeta vacía
+            fs.mkdirSync(UPLOADS_PATH, { recursive: true });
+        }
+    } catch (err) {
+        console.error('❌ ERROR al limpiar la carpeta de subidas:', err.message);
+    }
+}
+
+// Función recursiva para copiar directorios y archivos
+function copyFilesRecursively(currentSource, currentDest) {
+    // ... (Tu implementación existente de copyFilesRecursively)
+    try {
+        const files = fs.readdirSync(currentSource);
+
+        for (const file of files) {
+            const sourceFile = path.join(currentSource, file);
+            const destFile = path.join(currentDest, file);
+            const stats = fs.statSync(sourceFile);
+
+            if (stats.isDirectory()) {
+                if (!fs.existsSync(destFile)) {
+                    fs.mkdirSync(destFile, { recursive: true });
+                }
+                copyFilesRecursively(sourceFile, destFile);
+            } else if (stats.isFile()) {
+                fs.copyFileSync(sourceFile, destFile);
+                console.log(`✅ Copiado: ${file} a ${path.basename(currentDest)}`);
+            }
+        }
+    } catch (err) {
+        console.error(`❌ ERROR al procesar ${currentSource}:`, err.message);
+    }
+}
+
+// Función principal para la copia de imágenes iniciales
+function copyImagesToUploads() {
+    console.log('--- Iniciando subida de imágenes iniciales a Public/Uploads ---');
+    try {
+        if (!fs.existsSync(sourceDir)) {
+            console.warn(`⚠️ Advertencia: Carpeta de origen de imágenes no encontrada: ${sourceDir}`);
+            return;
+        }
+        if (!fs.existsSync(destDir)) {
+            fs.mkdirSync(destDir, { recursive: true });
+        }
+        copyFilesRecursively(sourceDir, destDir);
+        console.log('--- Subida de imágenes completada (incluyendo subcarpetas). ---');
+    } catch (err) {
+        console.error('❌ ERROR en copyImagesToUploads:', err.message);
+    }
+}
+// ----------------------------------------------------
 
 // ----------------------------------------------------
 // 🗺️ ENRUTAMIENTO Y BASE DE DATOS
 // ----------------------------------------------------
 app.use('/', router);
+// 🚨 CLAVE: Llamar a la función de copia ANTES de inicializar la DB
+copyImagesToUploads(); // <--- LLAMADA A LA FUNCIÓN DE COPIA
 await cleanupDB();
 initDB(app);
 
@@ -97,19 +153,16 @@ const server = app.listen(PORT, () =>
 );
 
 // ----------------------------------------------------
-// 🗑️ HOOKS DE LIMPIEZA AL CERRAR EL SERVIDOR (¡LA OTRA CLAVE!)
+// 🗑️ HOOKS DE LIMPIEZA AL CERRAR EL SERVIDOR
 // ----------------------------------------------------
 
 // Maneja la detención manual (Ctrl+C)
-// 🚨 CLAVE: La función debe ser 'async' y usar 'await cleanupDB()'
 process.on('SIGINT', async () => {
     console.log('\nServidor detenido. Iniciando limpieza de subidas y base de datos...');
     cleanupUploads();
-    await cleanupDB(); // ⬅️ ¡Esto es lo que garantiza que los datos viejos se borren!
+    await cleanupDB();
     server.close(() => {
+        console.log('Servidor Express cerrado.');
         process.exit(0);
     });
 });
-
-// Maneja otros cierres del proceso
-process.on('exit', cleanupUploads);
