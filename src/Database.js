@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from "url";
 
+// 💡 EXPORTAR EL CLIENTE: Necesario para el hook de cierre en app.js
 const uri = 'mongodb://localhost:27017/Softflix';
-const client = new MongoClient(uri);
+export const client = new MongoClient(uri);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,99 +33,105 @@ const generateImagePaths = (movie) => {
         const coverImage = movie.images.find(img => img.type === 'cover');
 
         if (coverImage) {
-            let relativePath = coverImage.name; // EJ: '/data/Images/Interstellar/INTERESTELLAR.png'
+            // 🚨 CORRECCIÓN CLAVE: La ruta debe ser /Uploads/filename para ser consistente 
+            // con donde las copias app.js y donde Multer las guarda.
+            // La ruta original es: Interstellar/INTERESTELLAR.png
+            // La ruta final debe ser: /Uploads/Interstellar/INTERESTELLAR.png
+            const imageName = coverImage.name.replace(/^(\/|\\)/, ''); // Quita el '/' o '\' inicial si existe
 
-            // PASO 1: Eliminar cualquier barra inicial si existe.
-            if (relativePath.startsWith('/')) {
-                relativePath = relativePath.substring(1);
-            }
-
-            // PASO 2: Eliminar el prefijo 'data/Images/'
-            const prefixToRemove = 'data/Images/';
-
-            if (relativePath.startsWith(prefixToRemove)) {
-                // Resultado es: 'Interstellar/INTERESTELLAR.png'
-                relativePath = relativePath.substring(prefixToRemove.length);
-            }
-
-            // PASO 3: Construir la ruta final.
-            // RUTA FINAL CORRECTA: /Uploads/Interstellar/INTERESTELLAR.png
-            directorImagePath = `Public/Uploads/${relativePath}`;
+            // Creamos una ruta que apunta a la carpeta de subidas
+            directorImagePath = `/Uploads/${imageName}`;
         }
     }
 
+    // Normalizar los géneros
+    let normalizedGenre = genre;
+    if (typeof genre === 'string') {
+        // Asumimos que los géneros están separados por coma si es un string
+        normalizedGenre = genre.split(',').map(g => g.trim()).filter(g => g.length > 0);
+    } else if (!Array.isArray(genre)) {
+        normalizedGenre = [];
+    }
+
+    // Devolvemos el objeto completo con la ruta normalizada y el array de géneros
     return {
-        title: title,
-        description: description,
+        title,
+        description,
         releaseYear: parseInt(releaseYear),
-        genre: Array.isArray(genre) ? genre : [genre],
+        genre: normalizedGenre,
         rating: parseFloat(rating),
-        ageClassification: parseInt(ageClassification),
-        director: director,
-        cast: Array.isArray(cast) ? cast : [cast],
-        duration: duration,
-        directorImagePath: directorImagePath,
-        reviews: comments
+        ageClassification,
+        director,
+        cast,
+        duration,
+        directorImagePath,
+        reviews: [] // Inicializar el array de reseñas
     };
 };
-
 
 // Cargar películas iniciales de forma síncrona
 let initialMovies = [];
 try {
     const rawData = fs.readFileSync(JSON_PATH);
     const data = JSON.parse(rawData);
+    // Aplicar la transformación de rutas antes de guardar
     initialMovies = data.map(generateImagePaths);
+    console.log(`Cargadas ${initialMovies.length} películas del data.json.`);
 } catch (error) {
-    console.error("❌ Error al cargar o parsear data.json:", error.message);
+    console.error("❌ Error al cargar o parsear data.json. Asegúrate de que el archivo existe y es JSON válido:", error.message);
 }
 
 
-async function initDB(app) {
+export async function initDB(app) {
+    // Si no hay películas, no inicializar
     if (initialMovies.length === 0) {
-        console.log("⚠️ Advertencia: No hay datos iniciales en data.json para insertar.");
+        return;
     }
 
     try {
         await client.connect();
         const db = client.db('Softflix');
-        app.locals.db = db; // Asignamos el objeto DB
         const Softflix = db.collection('Softflix');
 
+        app.locals.db = db;
         const count = await Softflix.countDocuments();
 
         if (count === 0) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
             if (initialMovies.length > 0) {
-                // El log AHORA debe mostrar la ruta limpia: /Uploads/Interstellar/...
+                // Este log ahora debería mostrar: /Uploads/Interstellar/...
                 console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA: ${initialMovies[0].directorImagePath}`);
             }
 
             await Softflix.insertMany(initialMovies);
+            console.log("✅ Inserción inicial completada con éxito.");
         } else {
-            console.log(`✅ Softflix ya contiene ${count} películas.`);
+            console.log(`✅ Softflix ya contiene ${count} películas. Omite la inserción inicial.`);
         }
 
     } catch (error) {
         console.error('❌ ERROR CRÍTICO en initDB. Asegúrate de que MongoDB está corriendo en localhost:27017.', error.message);
+        // 💡 CRÍTICO: Relanzar el error para que app.js lo capture y detenga el servidor
         throw new Error("Fallo la conexión a la base de datos o la inserción inicial.");
     }
 }
 
-async function cleanupDB() {
+export async function cleanupDB() {
     try {
         await client.connect();
         const db = client.db('Softflix');
         const result = await db.collection('Softflix').deleteMany({});
-        console.log(`\n🧹 LIMPIZA DB: Se eliminaron ${result.deletedCount} documentos de 'Softflix'.`);
+        console.log(`\n🧹 LIMPIEZA DB: Se eliminaron ${result.deletedCount} documentos de 'Softflix'.`);
     } catch (err) {
         console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
-    } finally {
-        // Aseguramos el cierre de la conexión después de la limpieza
-        if (client && client.connected) {
-            await client.close();
-        }
     }
+    // No cerramos el cliente aquí si se va a re-utilizar inmediatamente en initDB
 }
 
+export async function closeDB() {
+    if (client && client.connected) {
+        await client.close();
+        console.log("Conexión a MongoDB cerrada.");
+    }
+}
 export { initDB, cleanupDB, generateImagePaths, client };
