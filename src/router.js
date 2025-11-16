@@ -180,42 +180,35 @@ router.get('/Ej/:movieId', async (req, res) => {
 });
 
 
-// ----------------------------------------------------\
+// ----------------------------------------------------
 // ➡️ Ruta de Añadir Película (Add)
-// ----------------------------------------------------\
+// ----------------------------------------------------
 router.get('/add', (req, res) => {
-    res.render('add', {
-        // Puedes pasar valores iniciales si es necesario
-    });
+    res.render('add', {});
 });
 
-// 💡 CORRECCIÓN APLICADA: Usamos la función uploadMiddleware
+
 router.post('/add', uploadMiddleware, async (req, res) => {
     if (!req.file) {
-        // El archivo debe estar adjunto al objeto 'req' por Multer
         return res.status(400).send('No se ha subido ningún archivo.');
     }
 
     const { title, description, releaseYear, genre, rating, ageClassification, director, cast, duration } = req.body;
 
-    // La ruta que se guarda en la base de datos apunta a la carpeta /Uploads
     const directorImagePath = `/Uploads/${req.file.filename}`;
-
-    // Normalizar 'genre' y 'cast' que vienen de un solo input de texto
-    const parseArray = (input) => Array.isArray(input) ? input : (input ? input.split(',').map(item => item.trim()).filter(item => item.length > 0) : []);
 
     const newFilm = {
         title,
         description,
         releaseYear: parseInt(releaseYear),
-        genre: parseArray(genre),
+        genre: Array.isArray(genre) ? genre : [genre],
         rating: parseFloat(rating),
-        ageClassification: ageClassification,
+        ageClassification: parseInt(ageClassification),
         director,
-        cast: parseArray(cast),
+        cast: Array.isArray(cast) ? cast : [cast],
         duration,
-        directorImagePath, // Guarda la ruta /Uploads/...
-        reviews: [] // Inicializamos el array de reviews
+        directorImagePath,
+        reviews: []
     };
 
     try {
