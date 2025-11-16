@@ -165,4 +165,46 @@ router.get('/indice', async (req, res) => {
     }
 });
 
+// 🎬 RUTA POST PARA AGREGAR COMENTARIOS
+router.post("/addComment", async (req, res) => {
+    try {
+        const { userName, rating, reviewText, movieId } = req.body;
+
+        if (!userName || !rating || !reviewText || !movieId) {
+            return res.status(400).send('Faltan campos requeridos (userName, rating, reviewText, movieId)');
+        }
+
+        const db = req.app.locals.db;
+        if (!db) {
+            console.error('Database not initialized');
+            return res.status(500).send('Database not initialized');
+        }
+
+        // 1. Insertar el comentario en la colección 'comentaries'
+        const comentaryCollection = db.collection('comentaries');
+        const result = await comentaryCollection.insertOne({
+            User_name: userName,
+            description: reviewText,
+            Rating: Number(rating),
+            movieId: new (require('mongodb')).ObjectId(movieId),
+            createdAt: new Date()
+        });
+
+        // 2. Actualizar el array 'comentary' de la película
+        const moviesCollection = db.collection('Softflix');
+        await moviesCollection.updateOne(
+            { _id: new (require('mongodb')).ObjectId(movieId) },
+            { $push: { comentary: result.insertedId } }
+        );
+
+        console.log(`✅ Comentario guardado con ID: ${result.insertedId}`);
+        // Redirigir de vuelta a la página de la película
+        res.redirect(`/ej?id=${movieId}`);
+
+    } catch (err) {
+        console.error('❌ ERROR al guardar comentario:', err);
+        res.status(500).send(`Error al guardar el comentario: ${err.message}`);
+    }
+});
+
 export default router;
