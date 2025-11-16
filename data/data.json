@@ -39,7 +39,27 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [
+            {
+                "User_name": "Nachete_06",
+                "description": "Without a doubt, one of the best films of this century. Great work by the director, who makes this a work of art and captivates you from beginning to end.",
+                "Rating": "5/5"
+            },
+            {
+                "User_name": "s_gom11",
+                "description": "5/5. An incredible film, with one of the best soundtracks in cinematic history. Christopher Nolan made a great success by bringing back Hans Zimmer. A masterpiece.",
+                "Rating": "5/5"
+            },
+            {
+                "User_name": "fantasy_10",
+                "description": "A bit overrated. I like the space, but it's not well adapted. There are other films that, in my opinion, have better adaptations and are more believable. I also want to congratulate the director and the production team because it's visually unbeatable. Great work!",
+                "Rating": "4/5"
+            }
+
+
+
+
+        ]
     },
     {
         "title": "How to train your dragon",
