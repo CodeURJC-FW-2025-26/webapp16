@@ -217,6 +217,10 @@ router.get("/ej", async (req, res) => {
     }
 });
 
+router.get('/add', (req, res) => {
+    res.render('add');
+});
+
 router.post('/addComment', async (req, res) => {
     try {
         const { userName, rating, reviewText, movieId } = req.body;
