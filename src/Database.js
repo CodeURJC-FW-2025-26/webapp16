@@ -11,6 +11,8 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
+
+// 💡 CRÍTICO: Función de transformación con limpieza robusta de rutas.
 const generateImagePaths = (movie) => {
 
     const title = movie.Title || movie.title;
@@ -25,65 +27,76 @@ const generateImagePaths = (movie) => {
     const comments = movie.Comentary || movie.comments;
 
     let directorImagePath = null;
+
     if (movie.images && Array.isArray(movie.images)) {
         const coverImage = movie.images.find(img => img.type === 'cover');
 
         if (coverImage) {
-            // ✅ CORRECCIÓN CLAVE: La ruta debe empezar con una barra '/' 
-            // para que sea una URL absoluta en el navegador y funcione con Express.
-            directorImagePath = `/data/Images/${coverImage.name}`;
+            let relativePath = coverImage.name; // EJ: '/data/Images/Interstellar/INTERESTELLAR.png'
+
+            // PASO 1: Eliminar cualquier barra inicial si existe.
+            if (relativePath.startsWith('/')) {
+                relativePath = relativePath.substring(1);
+            }
+
+            // PASO 2: Eliminar el prefijo 'data/Images/'
+            const prefixToRemove = 'data/Images/';
+
+            if (relativePath.startsWith(prefixToRemove)) {
+                // Resultado es: 'Interstellar/INTERESTELLAR.png'
+                relativePath = relativePath.substring(prefixToRemove.length);
+            }
+
+            // PASO 3: Construir la ruta final.
+            // RUTA FINAL CORRECTA: /Uploads/Interstellar/INTERESTELLAR.png
+            directorImagePath = `Public/Uploads/${relativePath}`;
         }
     }
 
     return {
-        title,
-        description,
-        releaseYear,
-        genre,
-        rating,
-        ageClassification,
-        director,
-        cast,
-        duration,
-        images: movie.images,
-        comments,
-        directorImagePath: directorImagePath
+        title: title,
+        description: description,
+        releaseYear: parseInt(releaseYear),
+        genre: Array.isArray(genre) ? genre : [genre],
+        rating: parseFloat(rating),
+        ageClassification: parseInt(ageClassification),
+        director: director,
+        cast: Array.isArray(cast) ? cast : [cast],
+        duration: duration,
+        directorImagePath: directorImagePath,
+        reviews: comments
     };
 };
 
 
-async function loadInitialData() {
-    try {
-        const data = fs.readFileSync(JSON_PATH, 'utf-8');
-        let initialMovies = JSON.parse(data);
-
-        initialMovies = initialMovies.map(generateImagePaths);
-        return initialMovies;
-
-    } catch (error) {
-        console.error("❌ Error loading data.json:", error.message);
-        return [];
-    }
+// Cargar películas iniciales de forma síncrona
+let initialMovies = [];
+try {
+    const rawData = fs.readFileSync(JSON_PATH);
+    const data = JSON.parse(rawData);
+    initialMovies = data.map(generateImagePaths);
+} catch (error) {
+    console.error("❌ Error al cargar o parsear data.json:", error.message);
 }
 
-async function initDB(app) {
-    const initialMovies = await loadInitialData();
 
+async function initDB(app) {
     if (initialMovies.length === 0) {
-        return;
+        console.log("⚠️ Advertencia: No hay datos iniciales en data.json para insertar.");
     }
 
     try {
         await client.connect();
         const db = client.db('Softflix');
+        app.locals.db = db; // Asignamos el objeto DB
         const Softflix = db.collection('Softflix');
 
-        app.locals.db = db;
         const count = await Softflix.countDocuments();
 
         if (count === 0) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
             if (initialMovies.length > 0) {
+                // El log AHORA debe mostrar la ruta limpia: /Uploads/Interstellar/...
                 console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA: ${initialMovies[0].directorImagePath}`);
             }
 
@@ -93,7 +106,8 @@ async function initDB(app) {
         }
 
     } catch (error) {
-        console.error('❌ Error in initDB (Database connection or insertion):', error.message);
+        console.error('❌ ERROR CRÍTICO en initDB. Asegúrate de que MongoDB está corriendo en localhost:27017.', error.message);
+        throw new Error("Fallo la conexión a la base de datos o la inserción inicial.");
     }
 }
 
@@ -102,15 +116,15 @@ async function cleanupDB() {
         await client.connect();
         const db = client.db('Softflix');
         const result = await db.collection('Softflix').deleteMany({});
-        console.log(`\n🧹 LIMPIEZA DB: Se eliminaron ${result.deletedCount} documentos de 'Softflix'.`);
+        console.log(`\n🧹 LIMPIZA DB: Se eliminaron ${result.deletedCount} documentos de 'Softflix'.`);
     } catch (err) {
         console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
     } finally {
-        if (client) {
+        // Aseguramos el cierre de la conexión después de la limpieza
+        if (client && client.connected) {
             await client.close();
-            console.log('🔌 MongoDB Client cerrado.');
         }
     }
 }
 
-export { initDB, cleanupDB };
+export { initDB, cleanupDB, generateImagePaths, client };

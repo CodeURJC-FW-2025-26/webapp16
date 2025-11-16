@@ -7,8 +7,8 @@ import { fileURLToPath } from "url";
 import multer from "multer";
 import * as fs from 'fs';
 import router from './router.js';
-// Asegúrate de que importas initDB y cleanupDB
-import { initDB, cleanupDB } from './Database.js';
+// Asegúrate de que importas initDB, cleanupDB y client para el cierre.
+import { initDB, cleanupDB, client } from './Database.js';
 
 
 const app = express();
@@ -17,7 +17,6 @@ const __dirname = path.dirname(__filename);
 const viewsPath = path.join(__dirname, "..", "views");
 const partialsPath = path.join(viewsPath, "partials");
 const BASE_PATH = path.join(__dirname, '..');
-
 
 // ----------------------------------------------------
 // 🛠️ CONFIGURACIÓN MULTER (Subida de Archivos)
@@ -43,7 +42,8 @@ const storage = multer.diskStorage({
     }
 });
 
-app.locals.upload = multer({ storage: storage }); // Exporta multer a la app.
+// El objeto Multer completo se adjunta a app.locals
+app.locals.upload = multer({ storage: storage });
 
 
 // ----------------------------------------------------
@@ -59,29 +59,22 @@ app.use(express.json());
 // ----------------------------------------------------
 // 📁 SERVICIO DE ARCHIVOS ESTÁTICOS Y COPIA INICIAL
 // ----------------------------------------------------
-// 1. Sirve archivos desde la carpeta Public (CSS, JS, Imágenes, etc.)
-// Esto hace que la ruta /Uploads/ sea accesible.
+// Sirve archivos desde la carpeta Public (incluye Public/Uploads)
 app.use(express.static(path.join(BASE_PATH, 'Public')));
-
-// 2. ❌ ELIMINAMOS ESTA RUTA ESTÁTICA: Ahora todo se sirve desde Public.
-// app.use('/data/Images', express.static(path.join(BASE_PATH, 'data', 'Images')));
 
 
 // ----------------------------------------------------
 // 🛠️ FUNCIONES DE COPIA Y LIMPIEZA
-// (Mantenemos estas funciones que ya tenías para la copia recursiva y limpieza)
 // ----------------------------------------------------
 const sourceDir = path.join(BASE_PATH, 'data', 'Images');
 const destDir = UPLOADS_PATH; // Public/Uploads
 
-// Función para limpiar archivos subidos (incluye la lógica de borrado del JSON)
 function cleanupUploads() {
     console.log('🧹 Limpiando carpeta de subidas...');
     try {
         if (fs.existsSync(UPLOADS_PATH)) {
-            // Borra todo el contenido de UPLOADS_PATH
+            // Elimina y recrea la carpeta para asegurar la limpieza total
             fs.rmSync(UPLOADS_PATH, { recursive: true, force: true });
-            // Vuelve a crear la carpeta vacía
             fs.mkdirSync(UPLOADS_PATH, { recursive: true });
         }
     } catch (err) {
@@ -89,9 +82,7 @@ function cleanupUploads() {
     }
 }
 
-// Función recursiva para copiar directorios y archivos
 function copyFilesRecursively(currentSource, currentDest) {
-    // ... (Tu implementación existente de copyFilesRecursively)
     try {
         const files = fs.readdirSync(currentSource);
 
@@ -115,7 +106,6 @@ function copyFilesRecursively(currentSource, currentDest) {
     }
 }
 
-// Función principal para la copia de imágenes iniciales
 function copyImagesToUploads() {
     console.log('--- Iniciando subida de imágenes iniciales a Public/Uploads ---');
     try {
@@ -138,10 +128,18 @@ function copyImagesToUploads() {
 // 🗺️ ENRUTAMIENTO Y BASE DE DATOS
 // ----------------------------------------------------
 app.use('/', router);
-// 🚨 CLAVE: Llamar a la función de copia ANTES de inicializar la DB
-copyImagesToUploads(); // <--- LLAMADA A LA FUNCIÓN DE COPIA
-await cleanupDB();
-initDB(app);
+
+// 🚨 CRÍTICO: Inicialización y conexión a la base de datos.
+// Debe ser envuelto en un try/catch para manejar fallos de conexión a MongoDB.
+copyImagesToUploads(); // Copia las imágenes antes de rellenar la DB
+try {
+    await cleanupDB(); // Limpia la DB
+    await initDB(app); // Espera a que la base de datos se rellene y se conecte
+} catch (e) {
+    console.error("❌ ERROR FATAL: No se pudo inicializar la base de datos. El servidor no iniciará.", e.message);
+    // Si la conexión falla, detenemos la aplicación para evitar errores en las rutas.
+    process.exit(1);
+}
 
 
 // ----------------------------------------------------
@@ -160,7 +158,10 @@ const server = app.listen(PORT, () =>
 process.on('SIGINT', async () => {
     console.log('\nServidor detenido. Iniciando limpieza de subidas y base de datos...');
     cleanupUploads();
-    await cleanupDB();
+    // Solo intenta la limpieza de DB si el cliente de MongoDB existe
+    if (client) {
+        await cleanupDB();
+    }
     server.close(() => {
         console.log('Servidor Express cerrado.');
         process.exit(0);
