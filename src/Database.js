@@ -13,14 +13,6 @@ const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
 const generateImagePaths = (movie) => {
 
-    let directorImagePath = null;
-
-    if (movie.images && Array.isArray(movie.images) && movie.images.length > 0) {
-        // La ruta pública es /data/Images/ + ruta relativa del JSON (ej: Interstellar/interstellar.jpg)
-        directorImagePath = `/data/Images/${movie.images[0].name}`;
-    }
-
-    // Normalización de campos para que funcionen con tu data.json original o corregido
     const title = movie.Title || movie.title;
     const releaseYear = movie.Realase_year || movie.releaseYear;
     const genre = movie.Gender || movie.genre;
@@ -29,29 +21,33 @@ const generateImagePaths = (movie) => {
     const director = movie.Director || movie.director;
     const cast = movie.Casting || movie.cast;
     const duration = movie.Duration || movie.duration;
+    const description = movie.description;
+    const comments = movie.Comentary || movie.comments;
 
+    let directorImagePath = null;
 
-    // Mapeo final
-    const normalizedMovie = {
-        title: title,
-        description: movie.description,
-        releaseYear: releaseYear ? Number(releaseYear) : undefined,
-        // Conversión a array
-        genre: typeof genre === 'string' ? [genre.trim()] : (genre || []),
-        // Extraer solo el número
-        rating: rating ? Number(rating.split('/')[0]) : undefined,
-        ageClassification: ageClassification,
-        director: director,
-        // Conversión a array
-        cast: typeof cast === 'string' ? cast.split(',').map(s => s.trim()).filter(Boolean) : (cast || []),
-        duration: duration,
-        language: movie.language || [],
+    if (movie.images && Array.isArray(movie.images)) {
+        const coverImage = movie.images.find(img => img.type === 'cover');
 
-        // 🔑 CLAVE: Campo de imagen correcto
-        directorImagePath: directorImagePath,
+        if (coverImage) {
+            directorImagePath = `/data/Images/${coverImage.name}`;
+        }
+    }
+
+    return {
+        title,
+        description,
+        releaseYear,
+        genre,
+        rating,
+        ageClassification,
+        director,
+        cast,
+        duration,
+        images: movie.images,
+        comments,
+        directorImagePath 
     };
-
-    return normalizedMovie;
 };
 
 
@@ -68,7 +64,6 @@ async function loadInitialData() {
         return [];
     }
 }
-
 
 async function initDB(app) {
     const initialMovies = await loadInitialData();
@@ -87,9 +82,9 @@ async function initDB(app) {
 
         if (count === 0) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
-
-            // 🚨 DIAGNÓSTICO CLAVE: Muestra la ruta de la primera película antes de insertarla.
-            console.log(`RUTA DE IMAGEN DE INTERSTELLAR: ${initialMovies[0].directorImagePath}`);
+            if (initialMovies.length > 0) {
+                console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA: ${initialMovies[0].directorImagePath}`);
+            }
 
             await Softflix.insertMany(initialMovies);
         } else {
@@ -111,8 +106,10 @@ async function cleanupDB() {
     } catch (err) {
         console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
     } finally {
-        await client.close();
-        console.log('🔌 MongoDB Client cerrado.');
+        if (client) {
+            await client.close();
+            console.log('🔌 MongoDB Client cerrado.');
+        }
     }
 }
 
