@@ -22,50 +22,56 @@ const generateImagePaths = (movie) => {
     const rating = movie.Calification || movie.rating;
     const ageClassification = movie.Age_classification || movie.ageClassification;
     const director = movie.Director || movie.director;
-    const cast = movie.Casting || movie.cast;
     const duration = movie.Duration || movie.duration;
     const description = movie.description;
     const comments = movie.Comentary || movie.comments;
 
+    // 🔑 Desglosar el campo 'cast' (string) en un array de nombres.
+    const castString = movie.Casting || movie.cast;
+    const castArray = castString ? castString.split(',').map(name => name.trim()) : [];
+
     let directorImagePath = null;
+    let cover = null;
 
     if (movie.images && Array.isArray(movie.images)) {
+        const directorImage = movie.images.find(img => img.type === 'director');
+        if (directorImage) {
+            directorImagePath = directorImage.path;
+        }
         const coverImage = movie.images.find(img => img.type === 'cover');
-
         if (coverImage) {
-            // 🚨 CORRECCIÓN CLAVE: La ruta debe ser /Uploads/filename para ser consistente 
-            // con donde las copias app.js y donde Multer las guarda.
-            // La ruta original es: Interstellar/INTERESTELLAR.png
-            // La ruta final debe ser: /Uploads/Interstellar/INTERESTELLAR.png
-            const imageName = coverImage.name.replace(/^(\/|\\)/, ''); // Quita el '/' o '\' inicial si existe
-
-            // Creamos una ruta que apunta a la carpeta de subidas
-            directorImagePath = `/Uploads/${imageName}`;
+            cover = coverImage.path;
         }
     }
 
-    // Normalizar los géneros
-    let normalizedGenre = genre;
-    if (typeof genre === 'string') {
-        // Asumimos que los géneros están separados por coma si es un string
-        normalizedGenre = genre.split(',').map(g => g.trim()).filter(g => g.length > 0);
-    } else if (!Array.isArray(genre)) {
-        normalizedGenre = [];
-    }
-
-    // Devolvemos el objeto completo con la ruta normalizada y el array de géneros
+    // Este es el objeto final que se inserta en MongoDB:
     return {
-        title,
-        description,
-        releaseYear: parseInt(releaseYear),
-        genre: normalizedGenre,
-        rating: parseFloat(rating),
-        ageClassification,
-        director,
-        cast,
-        duration,
-        directorImagePath,
-        reviews: comments || []// Inicializar el array de reseñas
+        title: title,
+        Realase_year: releaseYear,
+        Gender: genre,
+        Calification: rating,
+        Age_classification: ageClassification,
+        Director: director,
+        Duration: duration,
+        description: description,
+        Comentary: comments,
+        directorImagePath: directorImagePath,
+        cover: cover,
+
+        // 🔑 Mapeo de Actores
+        Actor1: castArray[0] || null,
+        Actor2: castArray[1] || null,
+        Actor3: castArray[2] || null,
+
+        // Campos de imagen (se mantienen null para datos de data.json)
+        image_actor1: movie.image_actor1 || null,
+        image_actor2: movie.image_actor2 || null,
+        image_actor3: movie.image_actor3 || null,
+
+        // 🔑 Campo de Idioma (array)
+        language: Array.isArray(movie.language)
+            ? movie.language
+            : (movie.language ? [movie.language] : []),
     };
 };
 

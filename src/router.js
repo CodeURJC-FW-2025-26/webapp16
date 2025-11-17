@@ -303,46 +303,66 @@ router.post('/deleteFilm', async (req, res) => {
     }
 });
 
-//Ruta para pagina de ejemplo. 
-router.get('/ej/:id', async (req, res) => {
-    // 1. Capturar el ID de la URL
-    const movieId = req.params.id;
-
-    if (!movieId) {
-        return res.status(400).send("ID de película no proporcionado en la URL.");
-    }
-
+router.get('/Ej/:id', async (req, res) => {
     try {
+        const movieId = req.params.id;
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
 
-        // 2. Buscar la película por su ID
         const film = await collection.findOne({ _id: new ObjectId(movieId) });
 
-        // Si no se encuentra la película
         if (!film) {
-            return res.status(404).send(`Película con ID ${movieId} no encontrada.`);
+            return res.status(404).send("Película no encontrada");
         }
 
-        // 3. Simular la imagen secundaria (como lo tenías antes, pero dentro de la ruta correcta)
-        let secondaryImage = null;
-        if (film.directorImagePath) {
-            const parts = film.directorImagePath.split('/');
-            const folder = parts[parts.length - 2];
-            secondaryImage = `/data/Images/${folder}/Interestellartitulo.png`;
+        // 1. Lógica para crear el array de casting (Array de Objetos)
+        const castArray = [];
+        // Itera sobre los campos Actor1, Actor2, Actor3 que se guardaron en Database.js
+        for (let i = 1; i <= 3; i++) {
+            const actorNameKey = `Actor${i}`;
+            const actorImageKey = `image_actor${i}`;
+
+            const name = film[actorNameKey];
+            const imagePath = film[actorImageKey];
+
+            if (name) {
+                // Se genera un objeto { name: 'Nombre', imagePath: 'ruta' }
+                castArray.push({
+                    name: name,
+                    // Ruta de la imagen, o una ruta por defecto si el campo está vacío
+                    imagePath: imagePath || '/path/to/default/actor.jpg'
+                });
+            }
         }
 
-        // 4. Renderizar la vista 'Ej'
+        // 2. Normalización de datos para la plantilla
+        const filmNormalized = {
+            ...film,
+            // (Tu normalización existente para otros campos)
+            title: film.Title || film.title,
+            rating: film.Calification || film.rating,
+            ageClassification: film.Age_classification || film.ageClassification,
+            duration: film.Duration || film.duration,
+            releaseYear: film.Realase_year || film.releaseYear,
+            director: film.Director || film.director,
+            poster: film.cover || film.bannerImage || film.image_file || film.coverPath || film.mainImagePath || null,
+            reviews: film.comments || film.reviews || film.comentary || [],
+
+            // 🔑 CRÍTICO: Asignar el array de objetos 'cast'
+            cast: castArray,
+
+            // CRÍTICO: Asegurar que 'language' existe (array de strings)
+            language: Array.isArray(film.language) ? film.language : (film.language || []),
+
+            directorImagePath: film.directorImagePath || film.fotoDirector
+        };
+
+        // Renderizar la vista
         res.render('Ej', {
-            // Pasas el objeto film completo, que incluye el _id para el formulario de review
-            film: film,
-            ...film, // Esto "desempaqueta" los campos (title, rating, directorImagePath, etc.)
-            secondaryImage: secondaryImage,
-            comments: film.comments ||[]
+            ...filmNormalized,
         });
 
     } catch (err) {
-        // Esto captura errores si el ID no es válido (ej: es muy corto)
         console.error('❌ ERROR al cargar el detalle de la película:', err);
         res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
     }
