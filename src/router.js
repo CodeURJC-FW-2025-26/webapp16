@@ -372,7 +372,7 @@ router.get('/Ej/:id', async (req, res) => {
 
 
 // =======================================================
-// ➡️ GET /edit/:id  → Cargar datos de la película para editar
+// ➡️ POST /editFilm/:id → Manejar la edición y subida de archivos
 // =======================================================
 router.get('/edit/:id', async (req, res) => {
     try {
@@ -386,10 +386,47 @@ router.get('/edit/:id', async (req, res) => {
             return res.status(404).send("Película no encontrada");
         }
 
-        // Renderiza el mismo formulario "add", pero con datos cargados
+        // 1. Normalizar y preparar los datos para la plantilla 'add.html'
+        const genreArray = Array.isArray(film.genre) ? film.genre : (film.genre ? [film.genre] : []);
+        const languageArray = Array.isArray(film.language) ? film.language : (film.language ? [film.language] : []);
+
+        const filmNormalized = {
+            // Campos base (títulos y descripción)
+            _id: film._id,
+            title: film.Title || film.title,
+            description: film.Description || film.description,
+
+            // Campos con nombres potenciales inconsistentes en la DB (Normalización)
+            releaseYear: film.Realase_year || film.releaseYear, // 'Realase_year' parece un error tipográfico
+            rating: film.Calification || film.rating,
+            ageClassification: film.Age_classification || film.ageClassification,
+            director: film.Director || film.director,
+            duration: film.Duration || film.duration,
+
+            // Casting (Aseguramos que sea un array para precargar los tres campos)
+            cast: Array.isArray(film.cast) ? film.cast : (film.cast ? [film.cast] : []),
+
+            // Flags para Checkboxes (Género)
+            isAction: genreArray.includes('Action'),
+            isComedy: genreArray.includes('Comedy'),
+            isHorror: genreArray.includes('Horror'),
+            isScifi: genreArray.includes('Science-Fiction'),
+            isFantasy: genreArray.includes('Fantasy'),
+            isAdventure: genreArray.includes('Adventure'),
+            isOtherGenre: genreArray.includes('Other'),
+
+            // Flags para Checkboxes (Idioma)
+            isEnglish: languageArray.includes('English'),
+            isSpanish: languageArray.includes('Spanish'),
+            isFrench: languageArray.includes('French'),
+            isGerman: languageArray.includes('German'),
+            isOtherLanguage: languageArray.includes('Other'),
+        };
+
+        // 2. Renderizar la vista
         res.render("add", {
             editing: true,
-            film
+            film: filmNormalized // Enviamos el objeto normalizado
         });
 
     } catch (err) {

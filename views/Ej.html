@@ -52,8 +52,8 @@
                         <form method="POST" action="/deleteFilm"
                             onsubmit="return confirm('Are you sure you want to delete the film?');"
                             style="display:inline-block;margin-right:8px;">
-                            <input type="hidden" name="movieId" value="{{_id}}"> <button type="submit"
-                                class="btn btn-outline-danger btn-lg">
+                            <input type="hidden" name="movieId" value="{{_id}}">
+                            <button type="submit" class="btn btn-outline-danger btn-lg">
                                 <i class="bi-trash-fill"></i> Delete
                             </button>
                         </form>
@@ -138,4 +138,5 @@
 
     {{> footer }}
 </body>
+
 </html>
