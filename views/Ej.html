@@ -16,7 +16,6 @@
 
     <div class="container maincontainer my-4">
         <div class="row align-items-start">
-            <!-- Movie information -->
             <div class="col-12 col-md-7">
                 <div class="info">
                     <h1>{{title}}</h1>
@@ -39,7 +38,6 @@
                     </div>
                     <p><small>{{description}}</small></p>
 
-                    <!-- Cast and director -->
                     <p class="extra-pequeno">
                         Genre: {{#genre}}{{.}}, {{/genre}}<br>
                         Languages: {{#language}}{{.}}, {{/language}}<br>
@@ -47,7 +45,6 @@
                         Director: {{director}}
                     </p>
 
-                    <!--Buttons -->
                     <div class="d-flex flex-column gap-2 mt-3">
                         <a href="/edit/{{_id}}" class="btn btn-outline-dark btn-lg">
                             <i class="bi-pencil-fill me-1"></i> Edit
@@ -55,8 +52,8 @@
                         <form method="POST" action="/deleteFilm"
                             onsubmit="return confirm('Are you sure you want to delete the film?');"
                             style="display:inline-block;margin-right:8px;">
-                            <input type="hidden" name="movieId" value="{{film._id}}">
-                            <button type="submit" class="btn btn-outline-danger btn-lg">
+                            <input type="hidden" name="movieId" value="{{_id}}"> <button type="submit"
+                                class="btn btn-outline-danger btn-lg">
                                 <i class="bi-trash-fill"></i> Delete
                             </button>
                         </form>
@@ -67,7 +64,6 @@
                 </div>
             </div>
 
-            <!-- Movie poster -->
             <div class="col-12 col-md-5 d-flex justify-content-center">
                 <div class="imagen">
                     <img src="{{poster}}" alt="Poster de {{title}}" class="img-fluid">
@@ -76,7 +72,6 @@
         </div>
     </div>
 
-    <!-- Director -->
     <p class="extra-pequeno"><strong>Director:</strong></p>
     <ul class="reparto">
         <li>
@@ -85,7 +80,6 @@
         </li>
     </ul>
 
-    <!-- Cast -->
     <p class="extra-pequeno"><strong>Cast:</strong></p>
     <ul class="reparto">
         {{#cast}}
@@ -96,7 +90,6 @@
         {{/cast}}
     </ul>
 
-    <!-- Rewievs -->
     <section class="user-reviews">
         <h4>USER REVIEWS</h4>
         {{#reviews}}
@@ -114,7 +107,6 @@
         {{/reviews}}
     </section>
 
-    <!-- Add rewievs -->
     <main class="container my-5">
         <h2 class="text-center mb-4">Add New Review</h2>
         <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;" method="POST" action="/Ej/{{_id}}/addReview">
@@ -146,3 +138,4 @@
 
     {{> footer }}
 </body>
+</html>
