@@ -3,7 +3,7 @@
         "title": "Interstellar",
         "description": "In a future where Earth is slowly dying, humanitys survival depends on venturing into the stars. A former pilot is recruited for a daring mission: to travel through a newly discovered wormhole and search for a new home among the stars.As the crew faces unimaginable challenges across space and time, their journey becomes not only a fight for survival, but also a profound exploration of love, sacrifice, and the very limits of human possibility.",
         "releaseYear": "2014",
-        "genre": "Science fiction",
+        "genre": "Science-Fiction",
         "rating": "5",
         "ageClassification": "+13",
         "director": "Christopher Nolan",
@@ -117,17 +117,13 @@
                 "description": "A bit overrated. I like the space, but it's not well adapted. There are other films that, in my opinion, have better adaptations and are more believable. I also want to congratulate the director and the production team because it's visually unbeatable. Great work!",
                 "Rating": "4/5"
             }
-
-
-
-
         ]
     },
     {
         "title": "The secret live of Walter Mity",
         "description": "Walter Mitty, photo editor at Life magazine,has spent his whole life taking little \"mental vacations\" to escape his boring existence, moments in which he becomes the imaginary protagonist of fantastic adventures.",
         "releaseYear": "2013",
-        "genre": "Action, comedy",
+        "genre": "Action, Comedy",
         "rating": "5",
         "ageClassification": "+12",
         "director": "Ben Stiller",
@@ -738,10 +734,6 @@
                 "description": "A bit overrated. I like the space, but it's not well adapted. There are other films that, in my opinion, have better adaptations and are more believable. I also want to congratulate the director and the production team because it's visually unbeatable. Great work!",
                 "Rating": "4/5"
             }
-
-
-
-
         ]
     }
 ]
