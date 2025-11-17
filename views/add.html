@@ -27,6 +27,21 @@
                         <textarea class="form-control" id="description" name="description" rows="3"
                             placeholder="Add the description of the film"></textarea>
                     </div>
+
+                    <div class="mb-3 form-group">
+                        <label for="cover" class="form-label">Cover Image (Poster):</label>
+                        <input class="form-control" type="file" id="cover" name="cover" accept="image/*">
+                    </div>
+
+                    <div class="mb-3 form-group">
+                        <label for="titlePhoto" class="form-label">Title Image (Logo):</label>
+                        <input class="form-control" type="file" id="titlePhoto" name="titlePhoto" accept="image/*">
+                    </div>
+
+                    <div class="mb-3 form-group">
+                        <label for="filmPhoto" class="form-label">Film Image (General Still):</label>
+                        <input class="form-control" type="file" id="filmPhoto" name="filmPhoto" accept="image/*">
+                    </div>
                     <div class="mb-3 form-group">
                         <label for="releaseYear" class="form-label">Release year</label>
                         <input type="number" class="form-control" id="releaseYear" name="releaseYear"
@@ -73,24 +88,25 @@
                             placeholder="Add the director">
                     </div>
                     <div class="mb-3 form-group">
-                        <label for="foto" class="form-label">Image of the director:</label>
-                        <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+                        <label for="fotoDirector" class="form-label">Image of the director:</label>
+                        <input class="form-control" type="file" id="fotoDirector" name="fotoDirector" accept="image/*">
                     </div>
                     <div class="mb-3 form-group">
                         <label for="actor1" class="form-label">First actor</label>
                         <input type="text" class="form-control" id="actor1" name="cast"
                             placeholder="Add the names of the Casting">
-                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
-                            <label for="actor2" class="form-label">Second actor</label>
+                        <input class="form-control" type="file" id="fotoActor1" name="fotoActor1" accept="image/*">
+
+                        <label for="actor2" class="form-label">Second actor</label>
                         <input type="text" class="form-control" id="actor2" name="cast"
                             placeholder="Add the names of the casting">
-                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
-                            <label for="actor3" class="form-label">Third actor</label>
+                        <input class="form-control" type="file" id="fotoActor2" name="fotoActor2" accept="image/*">
+
+                        <label for="actor3" class="form-label">Third actor</label>
                         <input type="text" class="form-control" id="actor3" name="cast"
                             placeholder="Add the names of the casting">
-                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+                        <input class="form-control" type="file" id="fotoActor3" name="fotoActor3" accept="image/*">
                     </div>
-
                     <div class="mb-3 form-group">
                         <label for="duration" class="form-label">Duration (hours, minutes)</label>
                         <input type="text" class="form-control" id="duration" name="duration"
@@ -126,4 +142,5 @@
     </div>
     {{> footer}}
 </body>
+
 </html>

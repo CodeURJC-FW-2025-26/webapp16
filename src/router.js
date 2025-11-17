@@ -107,35 +107,78 @@ router.get('/indice', async (req, res) => {
 
 router.post("/addFilm", (req, res) => {
 
-    const uploadMiddleware = req.app.locals.upload.single('foto');
+    // 1. Definir el middleware con upload.fields() para esperar los 7 campos de archivo
+    const uploadMiddleware = req.app.locals.upload.fields([
+        { name: 'cover', maxCount: 1 },
+        { name: 'titlePhoto', maxCount: 1 },
+        { name: 'filmPhoto', maxCount: 1 },
+        { name: 'fotoDirector', maxCount: 1 },
+        { name: 'fotoActor1', maxCount: 1 },
+        { name: 'fotoActor2', maxCount: 1 },
+        { name: 'fotoActor3', maxCount: 1 },
+    ]);
 
     uploadMiddleware(req, res, async (err) => {
         if (err) {
             console.error('❌ ERROR de Subida de Archivos (Multer):', err);
             return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
         }
+
         try {
             if (!req.body) {
                 return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
             }
-            console.log('Datos de formulario recibidos:', req.body);
-            console.log('Información del archivo:', req.file);
 
-            // CLAVE MODIFICADA: La ruta de la imagen subida debe ser /Uploads/nombreDeArchivo
-            const directorImagePath = req.file ? `/Uploads/${req.file.filename}` : null;
+            const files = req.files;
 
+            // 2. Función auxiliar para obtener la ruta de un archivo específico
+            const getFilePath = (fieldName) => {
+                return files && files[fieldName] && files[fieldName][0]
+                    ? `/Uploads/${files[fieldName][0].filename}`
+                    : null;
+            };
+
+            // 3. Extraer todas las rutas de las imágenes subidas
+            const coverPath = getFilePath('cover');
+            const titlePhotoPath = getFilePath('titlePhoto');
+            const filmPhotoPath = getFilePath('filmPhoto');
+            const directorImagePath = getFilePath('fotoDirector');
+            const actor1ImagePath = getFilePath('fotoActor1');
+            const actor2ImagePath = getFilePath('fotoActor2');
+            const actor3ImagePath = getFilePath('fotoActor3');
+
+            // 4. Crear el objeto movie - LÓGICA DE ARRAY CORREGIDA
             const movie = {
                 title: req.body.title,
                 description: req.body.description,
                 releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
-                genre: req.body.genre || [],
+
+                // CRÍTICO: Asegura que siempre sea un array, incluso si se selecciona un solo elemento
+                genre: Array.isArray(req.body.genre) ? req.body.genre : (req.body.genre ? [req.body.genre] : []),
+
                 rating: req.body.rating ? Number(req.body.rating) : undefined,
                 ageClassification: req.body.ageClassification,
                 director: req.body.director,
-                cast: req.body.cast,
+
+                // Imágenes de la película
+                coverPath: coverPath,
+                titlePhotoPath: titlePhotoPath,
+                filmPhotoPath: filmPhotoPath,
+
+                // Información de casting
+                // CRÍTICO: Asegura que 'cast' siempre sea un array
+                cast: Array.isArray(req.body.cast) ? req.body.cast : (req.body.cast ? [req.body.cast] : []),
+
+                directorImagePath: directorImagePath,
+                actor1ImagePath: actor1ImagePath,
+                actor2ImagePath: actor2ImagePath,
+                actor3ImagePath: actor3ImagePath,
+
                 duration: req.body.duration,
-                directorImagePath: directorImagePath, // <-- RUTA CORREGIDA
-                comentary: [] // Asegúrate de inicializar el array de comentarios
+                // CRÍTICO: Asegura que 'language' siempre sea un array
+                language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
+
+                comentary: []
             };
 
             const db = req.app.locals.db;
@@ -145,10 +188,15 @@ router.post("/addFilm", (req, res) => {
             res.redirect('/indice');
 
         } catch (err) {
-            // ... (Manejo de errores si falla la base de datos)
-            if (req.file) {
-                fs.unlink(req.file.path, (unlinkErr) => {
-                    if (unlinkErr) console.error('Error al borrar archivo subido:', unlinkErr);
+            // 5. Borrar archivos si falla la inserción en la base de datos
+            const files = req.files;
+            if (files) {
+                Object.keys(files).forEach(key => {
+                    files[key].forEach(file => {
+                        fs.unlink(file.path, (unlinkErr) => {
+                            if (unlinkErr) console.error(`Error al borrar archivo subido (${file.filename}):`, unlinkErr);
+                        });
+                    });
                 });
             }
             console.error('❌ ERROR al insertar película en la base de datos:', err);
