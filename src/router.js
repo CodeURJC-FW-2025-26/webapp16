@@ -303,7 +303,8 @@ router.post('/deleteFilm', async (req, res) => {
     }
 });
 
-router.get('/Ej/:id', async (req, res) => {
+//Ruta para pagina de ejemplo. 
+router.get('/ej/:id', async (req, res) => {
     // 1. Capturar el ID de la URL
     const movieId = req.params.id;
 
