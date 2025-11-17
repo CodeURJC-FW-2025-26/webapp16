@@ -405,4 +405,35 @@ router.get('/Ej/:id', async (req, res) => {
     }
 });
 
+
+// =======================================================
+// ➡️ GET /edit/:id  → Cargar datos de la película para editar
+// =======================================================
+router.get('/edit/:id', async (req, res) => {
+    try {
+        const movieId = req.params.id;
+        const db = req.app.locals.db;
+        const collection = db.collection('Softflix');
+
+        const film = await collection.findOne({ _id: new ObjectId(movieId) });
+
+        if (!film) {
+            return res.status(404).send("Película no encontrada");
+        }
+
+        // Renderiza el mismo formulario "add", pero con datos cargados
+        res.render("add", {
+            editing: true,
+            film
+        });
+
+    } catch (err) {
+        console.error("❌ Error al cargar película para editar:", err);
+        res.status(500).send("Error al cargar datos de la película.");
+    }
+});
+
+
+
+
 export default router;
