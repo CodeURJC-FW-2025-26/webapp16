@@ -207,7 +207,63 @@ router.post("/addFilm", (req, res) => {
 
 // ... (rest of router.js, including /indice route)
 
+// Ruta de detalle de película
+router.get("/ej", async (req, res) => {
+    const movieId = req.query.id; // Asume que ahora usas una query string, no un parámetro de URL
 
+    if (!movieId) {
+        // Redirige al primer registro si no se proporciona ID
+        // Esto es útil si solo quieres ver la página de ejemplo, pero puede ser mejor
+        // redirigir a /indice o a una página de error en una app real.
+        try {
+            const db = req.app.locals.db;
+            const collection = db.collection('Softflix');
+            const firstFilm = await collection.findOne({});
+            if (firstFilm) {
+                // Usa el ID del primer registro para continuar
+                return res.redirect(`/ej?id=${firstFilm._id}`);
+            }
+            return res.status(400).send("ID de película no proporcionado y no hay películas cargadas en la DB.");
+        } catch (err) {
+            return res.status(500).send(`Error al buscar la película de ejemplo: ${err.message}`);
+        }
+    }
+
+    try {
+        const db = req.app.locals.db;
+        const collection = db.collection('Softflix');
+
+        // 2. Buscar la película por su ID
+        const film = await collection.findOne({ _id: new ObjectId(movieId) });
+
+        if (!film) {
+            return res.status(404).send(`Película con ID ${movieId} no encontrada.`);
+        }
+
+        // 3. Simular la imagen secundaria (ajustada para el nuevo esquema /Uploads/)
+        let secondaryImage = null;
+        if (film.directorImagePath) {
+            // Ejemplo: /Uploads/Interstellar/interstellar.jpg -> obtenemos 'Interstellar'
+            const parts = film.directorImagePath.split('/');
+            const folder = parts[parts.length - 2];
+
+            // CLAVE MODIFICADA: Usamos el nuevo prefijo /Uploads/
+            secondaryImage = `/Uploads/${folder}/Interestellartitulo.png`;
+        }
+
+        // 4. Renderizar la vista 'Ej'
+        res.render('Ej', {
+            film: film,
+            ...film,
+            secondaryImage: secondaryImage
+        });
+
+    } catch (err) {
+        // Esto captura errores si el ID no es válido
+        console.error('❌ ERROR al cargar el detalle de la película:', err);
+        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
+    }
+});
 
 router.get('/add', (req, res) => {
     res.render('add');
@@ -305,7 +361,7 @@ router.post('/deleteFilm', async (req, res) => {
     }
 });
 
-router.get('/ej/:id', async (req, res) => {
+router.get('/Ej/:id', async (req, res) => {
     // 1. Capturar el ID de la URL
     const movieId = req.params.id;
 
@@ -331,7 +387,6 @@ router.get('/ej/:id', async (req, res) => {
             const parts = film.directorImagePath.split('/');
             const folder = parts[parts.length - 2];
             secondaryImage = `/data/Images/${folder}/Interestellartitulo.png`;
-            
         }
 
         // 4. Renderizar la vista 'Ej'
