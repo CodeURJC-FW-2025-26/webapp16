@@ -65,7 +65,7 @@ const generateImagePaths = (movie) => {
         cast,
         duration,
         directorImagePath,
-        reviews: [] // Inicializar el array de reseñas
+        reviews: comments || []// Inicializar el array de reseñas
     };
 };
 
