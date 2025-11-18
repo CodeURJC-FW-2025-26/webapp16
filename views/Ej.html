@@ -90,18 +90,34 @@
         {{/cast}}
     </ul>
 
-    <section class="user-reviews">
+    <section class="user-reviews container my-5">
         <h4>USER REVIEWS</h4>
         {{#reviews}}
-        <div class="review">
-            <div class="user-info">
-                <img src="/User/User.png" alt="{{userName}}">
-                <strong>{{userName}}</strong>
+        <div class="review p-3 mb-3 border rounded shadow-sm d-flex justify-content-between align-items-start bg-light">
+            <div class="review-content">
+                <div class="user-info d-flex align-items-center mb-1">
+                    <img src="/User/User.png" alt="{{userName}}"
+                        style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                    <strong>{{userName}}</strong>
+                    <span class="badge bg-warning text-dark ms-3">⭐ {{rating}}/5</span>
+                </div>
+                <p class="mb-1">{{text}}</p>
             </div>
-            <p>{{text}}</p>
-            <p>⭐ {{rating}}</p>
+            <div class="review-actions d-flex gap-2">
+                <a href="/deleteComment/{{movie.url_slug}}/{{_id}}" class="btn btn-sm btn-outline-primary"
+                    title="Edit Review">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                </a>
+    
+                <form action="/deleteComment/{{movie.url_slug}}/{{_id}}" method="POST"class="m-0">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Review">
+                        <i class="bi bi-trash-fill"></i> Delete
+                    </button>
+                </form>
+            </div>
         </div>
         {{/reviews}}
+    
         {{^reviews}}
         <p>No hay reseñas aún.</p>
         {{/reviews}}
