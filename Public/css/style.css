@@ -197,3 +197,19 @@ footer .footer-inner .footer-right a {
     text-decoration: none;
     justify-content: end;
 }
+
+
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body > .container, body > .main-content {
+    flex: 1 0 auto; 
+}
+
+.site-footer {
+    flex-shrink: 0; 
+}
