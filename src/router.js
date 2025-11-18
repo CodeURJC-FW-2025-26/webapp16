@@ -565,5 +565,116 @@ router.get('/edit/:id', async (req, res) => {
     }
 });
 
+// ➡️ GET /editComment/:movieId/:commentId → Cargar el formulario de edición de comentarios
+router.get('/editComment/:movieId/:commentId', async (req, res) => {
+    try {
+        const { movieId, commentId } = req.params;
+        const db = req.app.locals.db;
+        const comentaryCollection = db.collection('comentaries');
+
+        // 1. Validar y buscar el comentario
+        if (!ObjectId.isValid(commentId)) {
+            return res.status(400).send('ID de comentario no válido.');
+        }
+
+        const comment = await comentaryCollection.findOne({ _id: new ObjectId(commentId) });
+
+        if (!comment) {
+            return res.status(404).send("Comentario no encontrado para editar.");
+        }
+
+        // 2. Renderizar el formulario 'editComment'
+        res.render('editComment', {
+            pageTitle: `Editando Comentario para: ${comment.User_name}`,
+            // Variables requeridas por el template editComment.html
+            filmSlug: movieId, // Usamos movieId para redirigir/cancelar
+            commentId: commentId,
+            commentText: comment.description,
+            commentRating: comment.Rating
+        });
+
+    } catch (err) {
+        console.error("❌ ERROR cargando comentario para edición:", err);
+        res.status(500).send(`Error cargando comentario: ${err.message}`);
+    }
+});
+
+
+
+// ➡️ POST /updateComment/:movieId/:commentId → Actualizar el comentario en la DB
+router.post('/updateComment/:movieId/:commentId', async (req, res) => {
+    try {
+        const { movieId, commentId } = req.params;
+        const { reviewText, reviewRating } = req.body;
+        const db = req.app.locals.db;
+        const comentaryCollection = db.collection('comentaries');
+
+        // 1. Validar
+        if (!reviewText || !reviewRating || !ObjectId.isValid(commentId)) {
+            return res.status(400).send('Faltan campos requeridos o ID no válido.');
+        }
+
+        // 2. Actualizar el documento en 'comentaries'
+        const updateResult = await comentaryCollection.updateOne(
+            { _id: new ObjectId(commentId) },
+            {
+                $set: {
+                    description: reviewText,
+                    Rating: parseInt(reviewRating),
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        if (updateResult.modifiedCount === 0 && updateResult.matchedCount === 0) {
+            console.warn(`No se encontró o no se modificó el comentario ${commentId}.`);
+        }
+
+        // 3. Redirigir de vuelta a la página de detalle
+        // La URL de detalle de la película es /Ej/:id
+        res.redirect(`/Ej/${movieId}`);
+
+    } catch (err) {
+        console.error("❌ ERROR actualizando comentario:", err);
+        res.status(500).send(`Error actualizando comentario: ${err.message}`);
+    }
+});
+
+
+// ➡️ POST /deleteComment/:movieId/:commentId → Eliminar un comentario específico
+router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
+    try {
+        const { movieId, commentId } = req.params;
+        const db = req.app.locals.db;
+
+        // 1. Validar IDs
+        if (!ObjectId.isValid(movieId) || !ObjectId.isValid(commentId)) {
+            return res.status(400).send('ID de película o comentario no válido.');
+        }
+
+        const oidComment = new ObjectId(commentId);
+        const oidMovie = new ObjectId(movieId);
+
+        // 2. Eliminar el documento de comentario (colección 'comentaries')
+        const comentaryCollection = db.collection('comentaries');
+        const deleteResult = await comentaryCollection.deleteOne({ _id: oidComment });
+
+        // 3. Eliminar la referencia (ObjectId) del comentario en el array 'comments' de la película ($pull)
+        const moviesCollection = db.collection('Softflix');
+        await moviesCollection.updateOne(
+            { _id: oidMovie },
+            { $pull: { comments: oidComment } } 
+        );
+
+        console.log(`✅ Comentario ${commentId} eliminado y referencia removida de la Película ${movieId}.`);
+
+        // 4. Redirigir de vuelta a la página de detalle
+        res.redirect(`/Ej/${movieId}`);
+
+    } catch (err) {
+        console.error("❌ ERROR eliminando comentario:", err);
+        res.status(500).send(`Error eliminando el comentario: ${err.message}`);
+    }
+});
 
 export default router;
