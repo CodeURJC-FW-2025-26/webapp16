@@ -51,36 +51,37 @@
         "director": "Chris Sanders, Dean DeBlois",
         "cast": ["Jay Baruchel", "Gerard Butler", "America Ferrara"],
         "duration": "1h 38min",
-        "images": [
-            {
+        
+        "cover_image": {
                 "name": "/CEATD2/CEATD.jpg",
                 "type": "cover"
             },
-            {
-                "name": "/CEATD2/Cate Blanchett.jpg",
+        "film_image": {
+                "name": "/CEATD2/CoEAD2.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/CEATD2/Gerard Butler.jpg",
+        "title_image": {
+                "name": "/CEATD2/CoEAD2-Titulo.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/CEATD2/Jay Baruchel.jpg",
-                "type": "scene"
-            },
-            {
+        "director_image": {
                 "name": "/CEATD2/Dean Deblois-director.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/CEATD2/Como Entrenar A Tu Dragon 2.jpeg",
+        "actor1_image": {
+                "name": "/CEATD2/Jay Baruchel.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/CEATD2/CoEAD2-Titulo.jpg",
+        "actor2_image": {
+                "name": "/CEATD2/Gerard Butler.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor3_image": {
+                "name": "/CEATD2/Cate Blanchett.jpg",
+                "type": "scene"
+            },
+        
+
         "comments": []
     },
     {
@@ -94,37 +95,35 @@
         "director": "Ben Stiller",
         "cast": ["Ben Stiller", "Kristen Wiig", "Sean Penn"],
         "duration": "1h 54min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/LVDSWM/The-Secret-Life-of-Walter-Mitty-Titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/LVDSWM/LVSDWM.png",
                 "type": "cover"
             },
-            {
-                "name": "/LVDSWM/Ben Stiller.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/LVDSWM/Ben Stiller.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/LVDSWM/Kristen Wiig.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/LVDSWM/Jon Daly.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/LVDSWM/La vida Secreta De Walter Mitty.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/LVDSWM/The-Secret-Life-of-Walter-Mitty-Titulo.jpg",
+        "director_image": {
+                "name": "/LVDSWM/Ben Stiller.jpg",
                 "type": "scene"
-            }
-        ],
-        
+            },
+        "actor1_image": {
+                "name": "/LVDSWM/Ben Stiller.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/LVDSWM/Kristen Wiig.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/LVDSWM/Jon Daly.jpg",
+                "type": "scene"
+            },
+ 
         "comments": []
         
     },
@@ -139,37 +138,37 @@
         "director": "Christopher Nolan",
         "cast": ["Harry Styles", "Fionn Whitehead", "Cillian Murphy"],
         "duration": "1h 46min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/Dunkerque/Dunkerque-titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/Dunkerque/DUNKERKE.png",
                 "type": "cover"
             },
-            {
-                "name": "/Dunkerque/Aneurin Barnard.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Dunkerque/Fionn Whitehead.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Dunkerque/Damien Bonnardjpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Dunkerque/Christopher Nolan.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/Dunkerque/Dunkerque.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/Dunkerque/Titulo-Dunkerque.jpg",
+        "director_image": {
+                "name": "/Dunkerque/Christopher Nolan.jpg",
                 "type": "scene"
-            }
-            
-        ],
+            },
+        "actor1_image": {
+                "name": "/Dunkerque/Aneurin Barnard.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/Dunkerque/Fionn Whitehead.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/Dunkerque/Damien Bonnardjpg",
+                "type": "scene"
+            },
+        
+
+
         "comments": []
     },
     {
@@ -183,36 +182,36 @@
         "director": "Tom McGrath",
         "cast": ["Will Ferrell", "Tom McGrath", "Ben Stiller"],
         "duration": "1h 35min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/Megamind/Megamind-Titulo.jpeg",
+                "type": "scene"
+            },
+        
+        "cover_image": {
                 "name": "/Megamind/MEGAMIND.png",
                 "type": "cover"
             },
-            {
-                "name": "/Megamind/Tina Fey.jpg",
+        "film_image": {
+                "name": "/Megamind/Megamind.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/Megamind/Brad Pitt.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Megamind/Will Ferrell.jpg",
-                "type": "scene"
-            },
-            {
+        "director_image": {
                 "name": "/Megamind/Tom McGrath.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/Megamind/MEgamind.jpeg",
+        "actor1_image": {
+                "name": "/Megamind/Will Ferrell.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/Megamind/Megamind-Titulo.jpeg",
+        "actor2_image": {
+                "name": "/Megamind/Tina Fey.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor3_image": {
+                "name": "/Megamind/Brad Pitt.jpg",
+                "type": "scene"
+            },
+
         "comments": []
     },
     {
@@ -226,36 +225,36 @@
         "director": "Christopher Nolan",
         "cast": ["John David Washington", "Elizabeth Debicki", "Robert Patinson"],
         "duration": "2h 30min",
-        "images": [
-            {
+    
+        "title_image": {
+                "name": "/Tenet/Tenet-titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/Tenet/TENET.png",
                 "type": "cover"
             },
-            {
-                "name": "/Tenet/Wesc Chataman.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Tenet/John David-Washington.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Tenet/Robert Pattinson.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Tenet/Christopher Nolan.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/Tenet/Tenet.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/Tenet/Tenet-titulo.jpg",
+        "director_image": {
+                "name": "/Tenet/Christopher Nolan.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor1_image": {
+                "name": "/Tenet/John David-Washington.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/Tenet/Elizabeth Debicki.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/Tenet/Robert Pattinson.jpg",
+                "type": "scene"
+            },
+
         "comments": []
     },
     {
@@ -269,36 +268,37 @@
         "director": "Jon Watts",
         "cast": ["Tom Holland", "Zendaya", "Jake Gyllenhaal"],
         "duration": " 2h 10min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/Spidermanfarfromhome/SpidermanFFH-titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/Spidermanfarfromhome/SPIDERMAN.png",
                 "type": "cover"
             },
-            {
-                "name": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Spiderman farfromhome/Tom Holland.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Spidermanfarfromhome/Samuel L. Jackson.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/Spiderman farfromhome/Jon Watts.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/Spiderman farfromhome/spider-man-far-from-home.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/Spiderman farfromhome/Titulo-SpidermanFFH.jpg",
+        "director_image": {
+                "name": "/Spiderman farfromhome/Jon Watts.jpg",
                 "type": "scene"
-            }
-        ],
+            },  
+        "actor1_image": {
+                "name": "/Spiderman farfromhome/Tom Holland.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/Spidermanfarfromhome/Samuel L. Jackson.jpg",
+                "type": "scene"
+            },
+
+
+
         "comments": []
     },
     {
@@ -312,36 +312,34 @@
         "director": " Steven Spielberg",
         "cast": ["Tom Hanks", "Matt Damon", "Vin Diesel"],
         "duration": "2h 49min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/SPR/sSRyan-titulo.jpeg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/SPR/SASR.png",
                 "type": "cover"
             },
-            {
-                "name": "/SPR/Tom Sizemon.jpg",
+        "film_image": {
+                "name": "/SPR/Saving Private Ryan.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/SPR/Tom Hanks.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/SPR/Edward Burns.jpg",
-                "type": "scene"
-            },
-            {
+        "director_image": {
                 "name": "/SPR/Steven Spielberg.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/SPR/SSRyan.jpeg",
+        "actor1_image": {
+                "name": "/SPR/Tom Hanks.jpg",
                 "type": "scene"
             },
-            {
-                "name": "/SPR/sSRyan-titulo.jpeg",
+        "actor2_image": {
+                "name": "/SPR/Edward Burns.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor3_image": {
+                "name": "/SPR/Tom Sizemon.jpg",
+                "type": "scene"
+            },
         "comments": []
     },
     {
@@ -355,37 +353,36 @@
         "director": "Javier Ruiz Caldera",
         "cast": ["Dani Rovira", "Alexandra Jiménez", "Maribel Verdú"],
         "duration": "1h 48min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/SuperLopez/SUperLopez-titulo.jpeg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/SuperLopez/SL.png",
                 "type": "cover"
             },
-            {
-                "name": "/SuperLopez/Dani Rovira.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/SuperLopez/Julin Lopez.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/SuperLopez/Alexandra Jimenez.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/SuperLopez/Javier Ruiz-Director.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/SuperLopez/SuperLopez.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/SuperLopez/SUperLopez-titulo.jpeg",
+        "director_image": {
+                "name": "/SuperLopez/Javier Ruiz-Director.jpg",
                 "type": "scene"
-            }
-
-        ],
+            },
+        "actor1_image": {
+                "name": "/SuperLopez/Dani Rovira.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/SuperLopez/Julin Lopez.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/SuperLopez/Alexandra Jimenez.jpg",
+                "type": "scene"
+            },
+ 
+        
         "comments": []
     },
     {
@@ -399,36 +396,35 @@
         "director": "Joseph Kosinski",
         "cast": ["Josh Brolin", "Miles Tiller", "Jeff Bridges"],
         "duration": "2h 13min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/OnlytheBrave/Only the Brave-titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/OnlytheBrave/OTB.png",
                 "type": "cover"
             },
-            {
-                "name": "/OnlytheBrave/Josh Brolin.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/OnlytheBrave/Miles Teller.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/OnlytheBrave/Jeff Bridges.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/OnlytheBrave/Joseph Kosinski-Director.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/OnlytheBrave/Only the Brave.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/OnlytheBrave/Only the Brave-titulo.jpg",
+        "director_image": {
+                "name": "/OnlytheBrave/Joseph Kosinski-Director.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor1_image": {
+                "name": "/OnlytheBrave/Josh Brolin.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/OnlytheBrave/Miles Teller.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/OnlytheBrave/Jeff Bridges.jpg",
+                "type": "scene"
+            },
+ 
         "comments": []
     },
     {
@@ -442,36 +438,35 @@
         "director": "Michael Bay",
         "cast": ["John Krasinski", "James Badge Dale", "Max Martini"],
         "duration": "2h 24min",
-        "images": [
-            {
+        "title_image": {
+                "name": "/13 horas/13 Horas- titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/13 horas/LSSDB.png",
                 "type": "cover"
             },
-            {
-                "name": "/13 horas/John Krasinski.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/13 horas/James Badge Dale.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/13 horas/Pablo Schreiber.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/13 horas/Michael Bay.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/13 horas/13 Horas.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/13 Horas- titulo.jpg",
+        "director_image": {
+                "name": "/13 horas/Michael Bay.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor1_image": {
+                "name": "/13 horas/John Krasinski.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/13 horas/James Badge Dale.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/13 horas/Pablo Schreiber.jpg",
+                "type": "scene"
+            },
+
         "comments": []
 
     },
@@ -486,36 +481,35 @@
         "director": "Sam Mendes",
         "cast": ["George MacKay", "Richard Madden"],
         "duration": "1h 59min",
-        "images": [
-            {
+        "title_image": {                
+                "name": "/1917/1917-titulo.jpg",
+                "type": "scene"
+            },
+        "cover_image": {
                 "name": "/1917/1917.png",
                 "type": "cover"
             },
-            {
-                "name": "/1917/George MacKay.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/1917/Daniel Mays.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/1917/Colin Firth.jpg",
-                "type": "scene"
-            },
-            {
-                "name": "/1917/Sam Mendes- Director.jpg",
-                "type": "scene"
-            },
-            {
+        "film_image": {
                 "name": "/1917/1917.jpeg",
                 "type": "scene"
             },
-            {
-                "name": "/1917/Titulo-1917.jpg",
+        "director_image": {
+                "name": "/1917/Sam Mendes- Director.jpg",
                 "type": "scene"
-            }
-        ],
+            },
+        "actor1_image":  {
+                "name": "/1917/Richard Madden.jpg",
+                "type": "scene"
+            },
+        "actor2_image": {
+                "name": "/1917/George MacKay.jpg",
+                "type": "scene"
+            },
+        "actor3_image": {
+                "name": "/1917/Daniel Mays.jpg",
+                "type": "scene"
+            },
+
         "comments": []
     }
 ]
