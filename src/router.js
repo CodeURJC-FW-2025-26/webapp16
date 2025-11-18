@@ -308,7 +308,8 @@ router.get('/Ej/:id', async (req, res) => {
 router.get('/add', (req, res) => {
     res.render('add');
 });
-
+//----------------------------------------
+//Router post to addComment
 router.post('/addComment', async (req, res) => {
     try {
         const { userName, rating, reviewText, movieId } = req.body;
