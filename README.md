@@ -40,8 +40,6 @@
 - Type of actions that can be made:  
   - Search by movie name.  
   - Filter by movie genre.  
-  - Rank according to the score of each movie.
-  - Filter by age rating.
 
 ---
 
@@ -101,6 +99,39 @@
            ([README.md](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/README.md))
            ([añadir.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/a%C3%B1adir.html))
            
-             
+  ---
 
+###Practica2
 
+#  File Structure and Responsibilities
+
+This section details the function of each key file in the website's implementation, adhering to the **Model-View-Controller (MVC)** architecture.
+
+---
+
+##  Core Setup and Application Entry
+
+| File | Primary Responsibility |
+| :--- | :--- |
+| **`app.js`** | **Server Entry Point.** Initializes the **Express** application, configures the **Mustache** view engine, and sets up *middleware* (like `multer` for uploads). It is crucial for the **database lifecycle**, calling `initDB()` on startup to load data from `data.json` and managing connections via `closeDB()` upon server shutdown. |
+
+---
+
+##  Application Logic (The Controller)
+
+| File | Primary Responsibility |
+| :--- | :--- |
+| **`router.js`** | **Central Controller.** Manages **routing** (mapping all URLs, e.g., `/index`, `/Ej/:id`, `/addFilm`). It orchestrates data flow: it queries **MongoDB** via `Database.js` and **prepares data** for the view. It implements core logic like **pagination**, **searching**, **filtering**, and handling all form submissions (`POST` requests). |
+
+---
+
+##  Data Layer (The Model)
+
+| File | Primary Responsibility |
+| :--- | :--- |
+| **`Database.js`** | **Model and Persistence.** Manages the connection to **MongoDB**. It contains the `initDB` function, which cleans the collection and loads the **`data.json`** data. It includes data transformation logic (`generateImagePaths`) to normalize and validate data before insertion. |
+| **`data.json`** | **Initial Data Source (Seed).** Contains the complete movie *dataset* (descriptions, cast, genres, languages, and image paths). This file is used by `Database.js` to initialize the database upon server startup. |
+
+---
+
+- Ignacio: I have mainly participated in the `indice.html` where Ishow de cover of the fils and de navegation var, where we can search a film by it's title and the genres. I have also helped my other teammates, mant in de JS part and `data.json`, where we have all the functions for making the website works
