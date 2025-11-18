@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb'; // Importar ObjectId
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from "url";
@@ -121,33 +121,75 @@ try {
 
 
 // -------------------------------------------------------------------------
-// 💾 DB Connection and Cleanup Functions
+// 💾 DB Connection and Cleanup Functions (CORREGIDAS)
 // -------------------------------------------------------------------------
+
+async function cleanupDB() {
+    try {
+        await client.connect();
+        const db = client.db('Softflix');
+        // 🔑 CORRECCIÓN: Limpiar AMBAS colecciones
+        await db.collection('Softflix').deleteMany({});
+        await db.collection('comentaries').deleteMany({});
+        console.log(`\n🧹 DB CLEANUP: Collections 'Softflix' and 'comentaries' cleaned.`);
+    } catch (err) {
+        console.error('❌ ERROR cleaning up database:', err.message);
+    }
+}
 
 async function initDB(app) {
     if (initialMovies.length === 0) {
-        console.warn("⚠️ data.json contains no movies. The database will be initialized empty.");
+        console.warn("⚠️ data.json contains no movies. Database will be initialized empty.");
     }
 
     try {
         await client.connect();
         const db = client.db('Softflix');
-        const Softflix = db.collection('Softflix');
-
         app.locals.db = db;
-        const count = await Softflix.countDocuments();
 
-        // 💡 CRITICAL: Delete old data and insert new data
-        // This ensures that path changes are applied upon restart.
-        if (count > 0) {
-            console.log(`🧹 Cleaning up ${count} existing documents for reloading...`);
-            await Softflix.deleteMany({});
-        }
+        const SoftflixColl = db.collection('Softflix');
+        const ComentariesColl = db.collection('comentaries');
 
         if (initialMovies.length > 0) {
-            console.log(`✨ Inserting ${initialMovies.length} initial movies into Softflix...`);
-            await Softflix.insertMany(initialMovies);
-            console.log("✅ Initial insertion completed successfully.");
+            console.log(`✨ Starting initial load of ${initialMovies.length} movies...`);
+            
+            const moviesToInsert = [];
+
+            for (const movie of initialMovies) {
+                // Sacamos los comentarios embebidos para insertarlos por separado
+                const initialComments = movie.comments || [];
+                const commentIds = [];
+
+                // 2. Insertar comentarios y obtener IDs
+                if (initialComments.length > 0) {
+                    // Asegurar que los ratings sean números antes de insertarlos
+                    const commentsWithNumbers = initialComments.map(c => ({
+                        ...c,
+                        // Asignamos un nuevo ObjectId si no existe (aunque MongoDB lo hace)
+                        _id: new ObjectId(),
+                        Rating: parseInt(c.Rating) || 0, 
+                        createdAt: new Date()
+                    }));
+                    
+                    const result = await ComentariesColl.insertMany(commentsWithNumbers);
+                    // Guardar los ObjectIds de los comentarios recién creados
+                    commentIds.push(...Object.values(result.insertedIds)); 
+                }
+
+                // 3. Preparar la película para la inserción, reemplazando los comentarios con referencias
+                const movieData = { 
+                    ...movie, 
+                    // 🔑 CRÍTICO: Reemplazar el array de objetos con el array de ObjectIds
+                    comments: commentIds 
+                };
+                
+                delete movieData._id; 
+                moviesToInsert.push(movieData);
+            }
+            
+            // 4. Insertar las películas con las referencias de comentarios
+            await SoftflixColl.insertMany(moviesToInsert);
+            console.log("✅ Initial insertion completed successfully with comment references.");
         } else {
             console.log("✅ Database ready (empty).");
         }
@@ -155,17 +197,6 @@ async function initDB(app) {
     } catch (error) {
         console.error('❌ CRITICAL ERROR in initDB. Make sure MongoDB is running on localhost:27017.', error.message);
         throw new Error();
-    }
-}
-
-async function cleanupDB() {
-    try {
-        await client.connect();
-        const db = client.db('Softflix');
-        const result = await db.collection('Softflix').deleteMany({});
-        console.log(`\n🧹 DB CLEANUP: Deleted ${result.deletedCount} documents from 'Softflix'.`);
-    } catch (err) {
-        console.error('❌ ERROR deleting data from the database:', err.message);
     }
 }
 

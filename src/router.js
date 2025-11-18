@@ -42,7 +42,6 @@ router.get('/indice', async (req, res) => {
         // 🔑 INDEX CORRECTION: Use ONLY coverPath for the listing poster.
         const normalizedFilms = films.map(f => ({
             ...f,
-            // Now coverPath is always correctly populated with the /Uploads/ prefix
             posterUrl: f.coverPath,
         }));
 
@@ -173,7 +172,7 @@ router.post("/addFilm", (req, res) => {
                 actor3ImagePath: getFilePath('fotoActor3'),
                 duration: body.duration,
                 language: Array.isArray(body.language) ? body.language : (body.language ? [body.language] : []),
-                comentary: []
+                comments: []
             };
 
             // 4. Insert into the database
@@ -217,7 +216,7 @@ router.post("/addFilm", (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ Movie Detail Route (/Ej/:id)
+// ➡️ Movie Detail Route (/Ej/:id) - CORREGIDA
 // ----------------------------------------------------
 router.get('/Ej/:id', async (req, res) => {
     try {
@@ -231,9 +230,9 @@ router.get('/Ej/:id', async (req, res) => {
             {
                 $lookup: {
                     from: "comentaries",
-                    localField: "comments",   // IDs of the added comments
+                    localField: "comments",   // IDs of the added comments
                     foreignField: "_id",
-                    as: "reviewsData"         // Array of new comment objects
+                    as: "reviewsData"         // Array of new comment objects
                 }
             }
         ]).toArray();
@@ -268,24 +267,18 @@ router.get('/Ej/:id', async (req, res) => {
 
         // 2. Data normalization for the template
 
-        // 🔑 CRITICAL STEP: Separate old comments (objects) from IDs.
-        let oldComments = [];
-        if (Array.isArray(film.comments)) {
-            // An old comment is a complete object (it has the 'User_name' property).
-            // A new comment is an ObjectId (it doesn't have 'User_name' as a top-level property).
-            oldComments = film.comments.filter(item =>
-                typeof item === 'object' && item !== null && item.User_name !== undefined
-            );
-        }
-
-        // Get the new comments (fetched by $lookup in reviewsData)
-        const newComments = Array.isArray(film.reviewsData) ? film.reviewsData : [];
+        // 🔑 CORRECCIÓN: SOLO USAMOS EL RESULTADO DEL LOOKUP (newComments / reviewsData). 
+        // El código de oldComments no es necesario si la base de datos se inicializa correctamente.
+        const validReviews = Array.isArray(film.reviewsData) ? film.reviewsData : [];
 
         const filmNormalized = {
             ...film,
+            
+            // 🔑 CRÍTICO: PASAR EL ID DE LA PELÍCULA CON UN NOMBRE DE VARIABLE CLARO.
+            movieId: film._id.toString(), // <-- Usado en ej.html como {{movieId}}
 
-            // 🔑 CORRECTION: Concatenate the old and new comments.
-            reviews: oldComments.concat(newComments),
+            // 🔑 USAR SOLO LA LISTA LIMPIA DE COMENTARIOS CON ID VÁLIDO.
+            reviews: validReviews,
 
             // Main poster
             poster: film.coverPath || film.cover || film.mainImagePath || null,
@@ -303,190 +296,9 @@ router.get('/Ej/:id', async (req, res) => {
 });
 
 
-// ... (rest of router.js routes)
-
-router.get('/add', (req, res) => {
-    res.render('add');
-});
-//----------------------------------------
-//Router post to addComment
-router.post('/addComment', async (req, res) => {
-    try {
-        const { userName, rating, reviewText, movieId } = req.body;
-
-        if (!userName || !rating || !reviewText || !movieId) {
-            return res.status(400).send('Missing required fields');
-        }
-
-        const db = req.app.locals.db;
-        if (!db) {
-            return res.status(500).send('Database not initialized');
-        }
-
-        // 1. Insert the comment into the 'comentaries' collection
-        const comentaryCollection = db.collection('comentaries');
-        const result = await comentaryCollection.insertOne({
-            User_name: userName,
-            description: reviewText,
-            Rating: Number(rating),
-            movieId: new ObjectId(movieId),
-            createdAt: new Date()
-        });
-
-        // 2. Update the movie's 'comments' array (Reference Model)
-        const moviesCollection = db.collection('Softflix');
-        await moviesCollection.updateOne(
-            { _id: new ObjectId(movieId) },
-            { $push: { comments: result.insertedId } }
-        );
-
-        console.log(`✅ Comment saved with ID: ${result.insertedId}`);
-        res.redirect(`/Ej/${movieId}`);
-
-    } catch (err) {
-        console.error('❌ ERROR saving comment:', err);
-        res.status(500).send(`Error saving comment: ${err.message}`);
-    }
-});
-
 // ----------------------------------------------------
-// ➖ Route to render delete confirmation page
-router.post('/deleteFilm', async (req, res) => {
-    try {
-        const { movieId } = req.body;
-        if (!movieId) return res.status(400).send('movieId is required');
-
-        const db = req.app.locals.db;
-        const moviesColl = db.collection('Softflix');
-
-        const oid = new ObjectId(movieId);
-        const movie = await moviesColl.findOne({ _id: oid });
-        if (!movie) return res.status(404).send('Movie not found');
-
-        // Render the confirmation page
-        return res.render('confirm', {
-            type: 'delete movie',              // Used in the view to display the message
-            title: movie.title,             // Title to display on the page
-            routeDetalle: `/deleteFilm/${movieId}/confirmed`, // Route that performs the actual deletion
-            action: 'delete',
-            actiontype: 'movie'
-
-        });
-
-    } catch (err) {
-        console.error('Error preparing delete confirmation:', err);
-        return res.status(500).send('Error preparing delete confirmation');
-    }
-});
-
-// ➖ Route that executes the actual deletion when Confirm is clicked
-router.get('/deleteFilm/:id/confirmed', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const db = req.app.locals.db;
-        const moviesColl = db.collection('Softflix');
-        const commentsColl = db.collection('comentaries');
-
-        const oid = new ObjectId(id);
-        const movie = await moviesColl.findOne({ _id: oid });
-        if (!movie) return res.status(404).send('Movie not found');
-
-        // Delete associated files
-        const pathsToDelete = [
-            movie.coverPath, movie.titlePhotoPath, movie.filmPhotoPath,
-            movie.directorImagePath, movie.actor1ImagePath, movie.actor2ImagePath, movie.actor3ImagePath
-        ].filter(p => p && p.startsWith('/Uploads/'));
-
-        for (const rel of pathsToDelete) {
-            const relClean = rel.replace(/^\/Uploads\//, '');
-            const fullPath = path.join(process.cwd(), 'Public', 'Uploads', relClean);
-            if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-        }
-
-        // Delete associated reviews
-        await commentsColl.deleteMany({ movieId: oid });
-
-        // Delete the movie itself
-        await moviesColl.deleteOne({ _id: oid });
-
-        console.log(`Movie ${id} and its reviews deleted.`);
-        return res.redirect('/indice');
-
-    } catch (err) {
-        console.error('Error deleting movie:', err);
-        return res.status(500).send('Error deleting the movie');
-    }
-});
-
-
-// =======================================================
-// // ➡️ POST /Ej/:id/addReview → Add a review (UNIFIED MODEL) with confirmation
-router.post('/Ej/:id/addReview', async (req, res) => {
-    try {
-        const movieId = req.params.id;
-        const db = req.app.locals.db;
-
-        // 1. Validate required fields
-        const { userName, rating, reviewText } = req.body;
-        if (!userName || !rating || !reviewText || !movieId) {
-            return res.render('error', {
-                message: 'All required fields must be completed for the review.',
-                redirect: `/Ej/${movieId}`,
-                buttonText: 'Return to the form'
-            });
-        }
-
-        // 2. Insert the review into 'comentaries'
-        const comentaryCollection = db.collection('comentaries');
-        const result = await comentaryCollection.insertOne({
-            User_name: userName,
-            description: reviewText,
-            Rating: parseInt(rating),
-            movieId: new ObjectId(movieId),
-            createdAt: new Date()
-        });
-
-        // 3. Update the movie document: add review ID to 'comments' array
-        const moviesCollection = db.collection('Softflix');
-        await moviesCollection.updateOne(
-            { _id: new ObjectId(movieId) },
-            { $push: { comments: result.insertedId } }
-        );
-
-        console.log(`✅ Review saved with ID: ${result.insertedId} and linked to movie.`);
-
-        // 4. Render the confirmation page instead of redirect
-        const movie = await moviesCollection.findOne({ _id: new ObjectId(movieId) });
-        if (!movie) {
-            return res.render('error', {
-                message: 'Movie not found for confirmation.',
-                redirect: '/indice',
-                buttonText: 'Return to Index'
-            });
-        }
-
-        return res.render('confirm', {
-            type: 'review',
-            action: 'added',
-            title: `Review by ${userName}`,
-            actiontype: 'review',
-            routeDetalle: `/Ej/${movieId}`
-        });
-
-    } catch (err) {
-        console.error('❌ ERROR adding review (Unified Model):', err);
-        return res.render('error', {
-            message: `Error adding the review: ${err.message}`,
-            redirect: `/Ej/${req.params.id}`,
-            buttonText: 'Return to the form'
-        });
-    }
-});
-
-
-// =======================================================
-// ➡️ GET /edit/:id → Load the edit page
-// =======================================================
+// ➡️ Movie Edit (GET /edit/:id) - EXISTENTE
+// ----------------------------------------------------
 router.get('/edit/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
@@ -565,9 +377,9 @@ router.get('/edit/:id', async (req, res) => {
     }
 });
 
-// ➡️ POST /editFilm → Save the edition of a movie 
-// =======================================================
-
+// ----------------------------------------------------
+// ➡️ POST /editFilm/:id → Save the edition of a movie (MULTIPLE FILES) - CORREGIDA
+// ----------------------------------------------------
 router.post("/editFilm/:id", (req, res) => {
     const uploadMiddleware = req.app.locals.upload.fields([
         { name: 'cover', maxCount: 1 },
@@ -595,7 +407,7 @@ router.post("/editFilm/:id", (req, res) => {
             const files = req.files;
             const body = req.body;
 
-            const movieId = req.params.id;
+            const movieId = req.params.id; // 🔑 CORRECCIÓN: Obtenemos el ID de req.params
             if (!movieId) {
                 return res.render("error", {
                     mensaje: "Movie ID not received.",
@@ -650,10 +462,10 @@ router.post("/editFilm/:id", (req, res) => {
             console.log("✅ Movie updated:", movieId);
 
             // Redirect to detail page
-            res.render('confirm',{
+            res.render('confirm', {
                 type: 'Edited Film',
-                action : 'edit',
-                actiontype:'film',
+                action: 'edit',
+                actiontype: 'film',
                 title: body.title,
                 routeDetalle: `/Ej/${movieId}`
             });
@@ -669,7 +481,10 @@ router.post("/editFilm/:id", (req, res) => {
     });
 });
 
-// ➡️ GET /editComment/:movieId/:commentId → Cargar el formulario de edición de comentarios
+
+// ----------------------------------------------------
+// ➡️ GET /editComment/:movieId/:commentId → Cargar el formulario de edición de comentarios - EXISTENTE
+// ----------------------------------------------------
 router.get('/editComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -705,7 +520,7 @@ router.get('/editComment/:movieId/:commentId', async (req, res) => {
 
 
 
-// ➡️ POST /updateComment/:movieId/:commentId → Actualizar el comentario en la DB
+// ➡️ POST /updateComment/:movieId/:commentId → Actualizar el comentario en la DB - EXISTENTE
 router.post('/updateComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -745,7 +560,7 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 });
 
 
-// ➡️ POST /deleteComment/:movieId/:commentId → Eliminar un comentario específico
+// ➡️ POST /deleteComment/:movieId/:commentId → Eliminar un comentario específico - EXISTENTE
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -767,7 +582,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
             { _id: oidMovie },
-            { $pull: { comments: oidComment } } 
+            { $pull: { comments: oidComment } }
         );
 
         console.log(`✅ Comentario ${commentId} eliminado y referencia removida de la Película ${movieId}.`);
@@ -781,5 +596,118 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     }
 });
 
+
+router.get('/add', (req, res) => {
+    res.render('add');
+});
+//----------------------------------------
+//Router post to addComment
+router.post('/addComment', async (req, res) => {
+    try {
+        const { userName, rating, reviewText, movieId } = req.body;
+
+        if (!userName || !rating || !reviewText || !movieId) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        const db = req.app.locals.db;
+        if (!db) {
+            return res.status(500).send('Database not initialized');
+        }
+
+        // 1. Insert the comment into the 'comentaries' collection
+        const comentaryCollection = db.collection('comentaries');
+        const result = await comentaryCollection.insertOne({
+            User_name: userName,
+            description: reviewText,
+            Rating: Number(rating),
+            movieId: new ObjectId(movieId),
+            createdAt: new Date()
+        });
+
+        // 2. Update the movie's 'comments' array (Reference Model)
+        const moviesCollection = db.collection('Softflix');
+        await moviesCollection.updateOne(
+            { _id: new ObjectId(movieId) },
+            { $push: { comments: result.insertedId } }
+        );
+
+        console.log(`✅ Comment saved with ID: ${result.insertedId}`);
+        res.redirect(`/Ej/${movieId}`);
+
+    } catch (err) {
+        console.error('❌ ERROR saving comment:', err);
+        res.status(500).send(`Error saving comment: ${err.message}`);
+    }
+});
+
+// ----------------------------------------------------
+// ➖ Route to render delete confirmation page
+router.post('/deleteFilm', async (req, res) => {
+    try {
+        const { movieId } = req.body;
+        if (!movieId) return res.status(400).send('movieId is required');
+
+        const db = req.app.locals.db;
+        const moviesColl = db.collection('Softflix');
+
+        const oid = new ObjectId(movieId);
+        const movie = await moviesColl.findOne({ _id: oid });
+        if (!movie) return res.status(404).send('Movie not found');
+
+        // Render the confirmation page
+        return res.render('confirm', {
+            type: 'delete movie',              // Used in the view to display the message
+            title: movie.title,             // Title to display on the page
+            routeDetalle: `/deleteFilm/${movieId}/confirmed`, // Route that performs the actual deletion
+            action: 'delete',
+            actiontype: 'movie'
+
+        });
+
+    } catch (err) {
+        console.error('Error preparing delete confirmation:', err);
+        return res.status(500).send('Error preparing delete confirmation');
+    }
+});
+
+// ➖ Route that executes the actual deletion when Confirm is clicked
+router.get('/deleteFilm/:id/confirmed', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const db = req.app.locals.db;
+        const moviesColl = db.collection('Softflix');
+        const commentsColl = db.collection('comentaries');
+
+        const oid = new ObjectId(id);
+        const movie = await moviesColl.findOne({ _id: oid });
+        if (!movie) return res.status(404).send('Movie not found');
+
+        // Delete associated files
+        const pathsToDelete = [
+            movie.coverPath, movie.titlePhotoPath, movie.filmPhotoPath,
+            movie.directorImagePath, movie.actor1ImagePath, movie.actor2ImagePath, movie.actor3ImagePath
+        ].filter(p => p && p.startsWith('/Uploads/'));
+
+        for (const rel of pathsToDelete) {
+            const relClean = rel.replace(/^\/Uploads\//, '');
+            const fullPath = path.join(process.cwd(), 'Public', 'Uploads', relClean);
+            if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+        }
+
+        // Delete associated reviews
+        await commentsColl.deleteMany({ movieId: oid });
+
+        // Delete the movie itself
+        await moviesColl.deleteOne({ _id: oid });
+
+        console.log(`Movie ${id} and its reviews deleted.`);
+        return res.redirect('/indice');
+
+    } catch (err) {
+        console.error('Error deleting movie:', err);
+        return res.status(500).send('Error deleting the movie');
+    }
+});
 
 export default router;
