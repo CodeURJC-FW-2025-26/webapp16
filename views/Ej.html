@@ -14,6 +14,13 @@
 <body>
     {{> header }}
 
+    <section class="title-photo-section">
+        {{#titlePhotoPath}}
+        <img src="{{titlePhotoPath}}" alt="Foto de Título de la Película" class="img-fluid w-100 mb-5"
+            style="object-fit: cover; max-height: 450px;">
+        {{/titlePhotoPath}}
+    </section>
+
     <div class="container maincontainer my-4">
         <div class="row align-items-start">
             <div class="col-12 col-md-7">
@@ -33,97 +40,109 @@
                             <span>{{releaseYear}}</span>
                         </div>
                         <div class="badge bg-secondary">
-                            {{#genre}}{{.}}{{/genre}}
+                            {{#genre}}
+                            <span>{{.}}</span>
+                            {{/genre}}
                         </div>
                     </div>
-                    <p><small>{{description}}</small></p>
-
-                    <p class="extra-pequeno">
-                        Genre: {{#genre}}{{.}}, {{/genre}}<br>
-                        Languages: {{#language}}{{.}}, {{/language}}<br>
-                        Casting: {{#cast}}{{.}}, {{/cast}}<br>
-                        Director: {{director}}
+                    <p class="lead mt-4">**Director:** {{director}}</p>
+                    <p class="text-justify">{{description}}</p>
+                    <p>
+                        **Cast:** {{#cast}}
+                        <span>{{.}}</span>
+                        {{/cast}}
                     </p>
-       
-                    <div class="d-flex flex-column gap-2 mt-3">
-                        <a href="/edit/{{_id}}" class="btn btn-outline-dark btn-lg">
-                            <i class="bi-pencil-fill me-1"></i> Edit
-                        </a>
-                        <form method="POST" action="/deleteFilm"style="display:inline-block;margin-right:8px;">
-                            <input type="hidden" name="movieId" value="{{_id}}">
-                            <button type="submit" class="btn btn-outline-danger btn-lg">
-                                <i class="bi-trash-fill"></i> Delete
-                            </button>
-                        </form>
-                        <a href="/indice" class="btn btn-outline-dark btn-lg">
-                            <i class="bi bi-house-fill me-1"></i> Return
-                        </a>
-                    </div>
+                    <p>
+                        **Language:**
+                        {{#language}}
+                        <span class="badge bg-info text-dark me-1">{{.}}</span>
+                        {{/language}}
+                    </p>
+
                 </div>
             </div>
-
-            <div class="col-12 col-md-5 d-flex justify-content-center">
-                <div class="imagen">
-                    <img src="{{poster}}" alt="Poster de {{title}}" class="img-fluid">
-                </div>
+            <div class="col-12 col-md-5 mt-4 mt-md-0">
+                {{#filmPhotoPath}}
+                <img src="{{filmPhotoPath}}" alt="Foto de Escena Principal" class="img-fluid rounded shadow">
+                {{/filmPhotoPath}}
             </div>
         </div>
     </div>
 
-    <p class="extra-pequeno"><strong>Director:</strong></p>
-    <ul class="reparto">
-        <li>
-            <img src="{{directorImagePath}}" alt="{{director}}">
-            <span>{{director}}</span>
-        </li>
-    </ul>
+    <hr class="my-5">
 
-    <p class="extra-pequeno"><strong>Cast:</strong></p>
-    <ul class="reparto">
-        {{#cast}}
-        <li>
-            <img src="{{imagePath}}" alt="{{.}}">
-            <span>{{.}}</span>
-        </li>
-        {{/cast}}
-    </ul>
+    <section class="gallery-cast container">
+        <h2 class="text-center mb-4">Reparto y Escenas Secundarias</h2>
+        <div class="row text-center justify-content-center">
 
-    <section class="user-reviews container my-5">
-        <h4>USER REVIEWS</h4>
-        {{#reviews}}
-        <div class="review p-3 mb-3 border rounded shadow-sm d-flex justify-content-between align-items-start bg-light">
-            <div class="review-content">
-                <div class="user-info d-flex align-items-center mb-1">
-                    <img src="/User/User.png" alt="{{userName}}"
-                        style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                    <strong>{{userName}}</strong>
-                    <span class="badge bg-warning text-dark ms-3">⭐ {{rating}}/5</span>
-                </div>
-                <p class="mb-1">{{text}}</p>
+            <div class="col-6 col-md-2 mb-4">
+                {{#directorImagePath}}
+                <img src="{{directorImagePath}}" alt="Director: {{director}}" class="img-fluid rounded-circle shadow"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+                {{/directorImagePath}}
+                <p class="mt-2 small text-muted">Director</p>
             </div>
-            <div class="review-actions d-flex gap-2">
-                <a href="/deleteComment/{{movie.url_slug}}/{{_id}}" class="btn btn-sm btn-outline-primary"
-                    title="Edit Review">
-                    <i class="bi bi-pencil-fill"></i> Edit
-                </a>
-    
-                <form action="/deleteComment/{{movie.url_slug}}/{{_id}}" method="POST"class="m-0">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Review">
-                        <i class="bi bi-trash-fill"></i> Delete
-                    </button>
-                </form>
+
+            {{#actor1ImagePath}}
+            <div class="col-6 col-md-2 mb-4">
+                <img src="{{actor1ImagePath}}" alt="Actor 1" class="img-fluid rounded-circle shadow"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+                <p class="mt-2 small text-muted">Actor 1</p>
+            </div>
+            {{/actor1ImagePath}}
+
+            {{#actor2ImagePath}}
+            <div class="col-6 col-md-2 mb-4">
+                <img src="{{actor2ImagePath}}" alt="Actor 2" class="img-fluid rounded-circle shadow"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+                <p class="mt-2 small text-muted">Actor 2</p>
+            </div>
+            {{/actor2ImagePath}}
+
+            {{#actor3ImagePath}}
+            <div class="col-6 col-md-2 mb-4">
+                <img src="{{actor3ImagePath}}" alt="Actor 3" class="img-fluid rounded-circle shadow"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+                <p class="mt-2 small text-muted">Actor 3</p>
+            </div>
+            {{/actor3ImagePath}}
+        </div>
+    </section>
+
+    <hr class="my-5">
+
+    <section class="container mb-5">
+        <h2 class="text-center mb-4">Reviews ({{comments.length}})</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                {{#comments}}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-1">{{userName}}</h5>
+                            <span class="badge bg-warning text-dark">⭐ {{rating}}/5</span>
+                        </div>
+                        <p class="card-text">{{text}}</p>
+                        {{#_id}}
+                        <a href="/editReview/{{url_slug}}/{{_id}}"
+                            class="btn btn-sm btn-outline-primary me-2">Editar</a>
+                        <form method="POST" action="/deleteReview/{{url_slug}}/{{_id}}" style="display:inline;"
+                            onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta reseña?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                        {{/_id}}
+                    </div>
+                </div>
+                {{/comments}}
             </div>
         </div>
-        {{/reviews}}
-    
-        {{^reviews}}
-        <p>No hay reseñas aún.</p>
-        {{/reviews}}
     </section>
 
     <main class="container my-5">
         <h2 class="text-center mb-4">Add New Review</h2>
-        <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;" method="POST" action="/Ej/{{_id}}/addReview">
+        <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;" method="POST"
+            action="/Ej/{{url_slug}}/addReview">
             <div class="mb-3">
                 <label for="userName" class="form-label">User name</label>
                 <input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name"
@@ -144,13 +163,14 @@
                     <i class="bi bi-save me-1"></i> Save
                 </button>
                 <a href="/indice" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-circle me-1"></i> Cancel
+                    <i class="bi bi-arrow-left me-1"></i> Back to Index
                 </a>
             </div>
         </form>
     </main>
 
-    {{> footer }}
+    {{> footer}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
