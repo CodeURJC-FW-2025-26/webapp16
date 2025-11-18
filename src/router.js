@@ -42,8 +42,7 @@ router.get('/indice', async (req, res) => {
         // 🔑 CORRECCIÓN DEL ÍNDICE: Usar SOLAMENTE coverPath para la portada del listado.
         const normalizedFilms = films.map(f => ({
             ...f,
-            // Antes usaba: f.coverPath || f.directorImagePath, lo que causaba el fallo.
-            // Ahora usamos solo coverPath, si es null no mostrará imagen (comportamiento correcto).
+            // Ahora coverPath siempre está correctamente poblado con el prefijo /Uploads/
             posterUrl: f.coverPath,
         }));
 
@@ -134,7 +133,7 @@ router.post("/addFilm", (req, res) => {
                 if (req.files) {
                     Object.keys(req.files).forEach(key => {
                          req.files[key].forEach(file => {
-                            fs.unlinkSync(file.path); // Usar Sync para simpleza, si falla no importa mucho aquí
+                            fs.unlinkSync(file.path); 
                          });
                     });
                 }
@@ -148,8 +147,7 @@ router.post("/addFilm", (req, res) => {
 
             // 2. Función auxiliar para obtener la ruta de un archivo específico
             const getFilePath = (fieldName) => {
-                // Usa path.basename(file.path) para obtener el nombre de archivo que Multer genera.
-                // Y añade el prefijo /Uploads/ para que Express lo sirva correctamente.
+                // Genera la ruta con el prefijo /Uploads/ para consistencia.
                 return files && files[fieldName] && files[fieldName][0]
                     ? `/Uploads/${files[fieldName][0].filename}`
                     : null;
@@ -164,6 +162,7 @@ router.post("/addFilm", (req, res) => {
                 rating: body.rating ? Number(body.rating) : undefined,
                 ageClassification,
                 director,
+                // Las rutas de los archivos subidos (new films) usan getFilePath()
                 coverPath: getFilePath('cover'),
                 titlePhotoPath: getFilePath('titlePhoto'),
                 filmPhotoPath: getFilePath('filmPhoto'),
@@ -234,16 +233,13 @@ router.get('/Ej/:id', async (req, res) => {
 
         for (let i = 0; i < castNames.length; i++) {
             const name = castNames[i];
+            
+            // La ruta de la DB ya está corregida en Database.js (con /Uploads/)
+            const imagePath = film[`actor${i + 1}ImagePath`]; 
 
-            // 🔑 CLAVE: Ahora film.actorNImagePath ya contiene la ruta con /Uploads/ (del fix de Database.js)
-            const imagePath = film[`actor${i + 1}ImagePath`];
-
-            // Generar ruta de fallback (solo si la ruta no existe)
             if (name) {
                 castArray.push({
                     name: name,
-                    // Si el path de la DB está vacío (null), usamos un fallback que requiere carpeta genérica
-                    // Si usamos la corrección del data.json, este campo estará lleno.
                     imagePath: imagePath
                 });
             }
@@ -253,17 +249,15 @@ router.get('/Ej/:id', async (req, res) => {
         const filmNormalized = {
             ...film,
 
+            // Intentamos recuperar reviews o comments, pero esperamos que los nuevos vengan en 'comments'
             reviews: Array.isArray(film.reviews)
                 ? film.reviews
                 : (Array.isArray(film.comments) ? film.comments : (Array.isArray(film.comentary) ? film.comentary : [])),
 
-            // Poster principal: coverPath ya es correcto (con /Uploads/)
+            // Poster principal
             poster: film.coverPath || film.cover || film.mainImagePath || null,
 
-            // Director: directorImagePath ya es correcto (con /Uploads/)
-            directorImagePath: film.directorImagePath || film.fotoDirector,
-
-            cast: castArray, // Pasa el array de objetos con la ruta de imagen
+            cast: castArray, 
             language: Array.isArray(film.language) ? film.language : (film.language || []),
         };
 
@@ -305,7 +299,7 @@ router.post('/addComment', async (req, res) => {
             createdAt: new Date()
         });
 
-        // 2. Actualizar el array 'comments' de la película 
+        // 2. Actualizar el array 'comments' de la película (Modelo de Referencia)
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
             { _id: new ObjectId(movieId) },
@@ -313,7 +307,6 @@ router.post('/addComment', async (req, res) => {
         );
 
         console.log(`✅ Comentario guardado con ID: ${result.insertedId}`);
-        // Redirigir de vuelta a la página de la película (Asegúrate que '/Ej/' existe)
         res.redirect(`/Ej/${movieId}`);
 
     } catch (err) {
@@ -340,15 +333,15 @@ router.post('/deleteFilm', async (req, res) => {
         const movie = await moviesColl.findOne({ _id: oid });
         if (!movie) return res.status(404).send('Película no encontrada');
 
-        // Eliminar archivos asociados (si existen)
+        // Eliminar archivos asociados (solo aquellos con el prefijo /Uploads/)
         const pathsToDelete = [
             movie.coverPath, movie.titlePhotoPath, movie.filmPhotoPath, 
             movie.directorImagePath, movie.actor1ImagePath, movie.actor2ImagePath, movie.actor3ImagePath
-        ].filter(p => p && p.startsWith('/Uploads/')); // Solo borrar archivos subidos
+        ].filter(p => p && p.startsWith('/Uploads/'));
 
         for (const rel of pathsToDelete) {
             if (!rel) continue;
-            // Quitamos el prefijo /Uploads/ (y el slash inicial) y construimos la ruta absoluta
+            // Quitamos el prefijo /Uploads/ y construimos la ruta absoluta en Public/Uploads
             const relClean = rel.replace(/^\/Uploads\//, '');
             const fullPath = path.join(process.cwd(), 'Public', 'Uploads', relClean);
 
@@ -379,33 +372,43 @@ router.post('/deleteFilm', async (req, res) => {
 
 
 // =======================================================
-// ➡️ POST /Ej/:id/addReview → Manejar la adición de reseñas (Modelo de datos INCONSISTENTE)
+// ➡️ POST /Ej/:id/addReview → Manejar la adición de reseñas (MODELO UNIFICADO)
 // =======================================================
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
         const movieId = req.params.id;
         const db = req.app.locals.db;
-        const collection = db.collection('Softflix');
 
-        // Los nombres de campo (userName, rating, reviewText) coinciden con el formulario corregido de Ej.html
-        const newReview = {
-            userName: req.body.userName,
-            rating: parseInt(req.body.rating),
-            text: req.body.reviewText, 
-            date: new Date()
-        };
+        // 1. Validar campos requeridos
+        const { userName, rating, reviewText } = req.body;
+        if (!userName || !rating || !reviewText || !movieId) {
+            return res.status(400).send('Faltan campos requeridos para la reseña.');
+        }
 
-        // Añadir la nueva reseña al array 'reviews' en MongoDB
-        await collection.updateOne(
+        // 2. Insertar el comentario como un documento separado en 'comentaries'
+        const comentaryCollection = db.collection('comentaries');
+        const result = await comentaryCollection.insertOne({
+            User_name: userName,
+            description: reviewText,
+            Rating: parseInt(rating),
+            movieId: new ObjectId(movieId),
+            createdAt: new Date()
+        });
+
+        // 3. Actualizar la película: Añadir la referencia (ID) al array 'comments' (Modelo Unificado)
+        const moviesCollection = db.collection('Softflix');
+        await moviesCollection.updateOne(
             { _id: new ObjectId(movieId) },
-            { $push: { reviews: newReview } }
+            { $push: { comments: result.insertedId } } 
         );
 
+        console.log(`✅ Reseña guardada con ID: ${result.insertedId} y referenciada en la película.`);
+        
         // Redirigir al usuario de vuelta a la página de detalle
         res.redirect(`/Ej/${movieId}`);
 
     } catch (err) {
-        console.error('❌ ERROR al añadir la reseña:', err);
+        console.error('❌ ERROR al añadir la reseña (Modelo Unificado):', err);
         res.status(500).send(`Error al añadir la reseña: ${err.message}`);
     }
 });

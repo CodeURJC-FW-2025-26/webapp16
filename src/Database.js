@@ -12,23 +12,13 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
-
 // 🔑 FUNCIÓN AUXILIAR: Añade el prefijo '/Uploads' a la ruta.
 const addUploadPrefix = (p) => {
     if (!p) return null;
-    // Asumimos que las rutas en data.json vienen sin /Uploads
-    if (p.startsWith('/Uploads/')) return p;
-    // Si la ruta no tiene el prefijo, lo añadimos
+    // Evita duplicar el prefijo si ya existe
+    if (p.startsWith('/Uploads/')) return p; 
     return `/Uploads${p}`;
 };
-
-// Función auxiliar para registrar rutas usadas (no utilizada en esta versión optimizada, pero es bueno mantenerla)
-const addAndTrack = (p, tracker) => {
-    const fullPath = addUploadPrefix(p);
-    if (fullPath) tracker.add(fullPath); // El Set tracker es redundante con la asignación directa, pero se puede mantener si se implementa lógica más compleja
-    return fullPath;
-};
-
 
 // 💡 CRÍTICO: Función de transformación que asigna imágenes por tipo explícito
 const generateImagePaths = (movie) => {
@@ -45,24 +35,15 @@ const generateImagePaths = (movie) => {
     const comments = movie.Comentary || movie.comments;
 
     const castString = movie.Casting || movie.cast;
-    // Creamos el array de actores.
     const castArray = castString
         ? (Array.isArray(castString) ? castString : castString.split(',').map(name => name.trim()))
         : [];
 
-    // --- 2. Inicialización de Variables de Rutas ---
-    let directorImagePath = null;
-    let coverPath = null; // Renombrado de 'cover' a 'coverPath' para ser consistente
-    let titlePhotoPath = null;
-    let filmPhotoPath = null;
-    let actor1ImagePath = null;
-    let actor2ImagePath = null;
-    let actor3ImagePath = null;
-
+    // --- 2. Inicialización de Variables y Mapeo ---
+    let paths = {};
     const allImages = movie.images || [];
 
-    // 🔑 Mapeo de campos explícitos en el JSON a las variables de salida de la DB
-    // Esto es el corazón de la solución.
+    // Mapeo de campos explícitos en el JSON a los campos de salida de la DB
     const fieldMap = {
         'cover': 'coverPath',
         'director': 'directorImagePath',
@@ -73,28 +54,27 @@ const generateImagePaths = (movie) => {
         'actor3ImagePath': 'actor3ImagePath',
     };
 
-    // --- 3. Asignación directa basada en 'type' ---
-    for (const img of allImages) {
-        const targetField = fieldMap[img.type];
-        if (targetField) {
-            const path = addUploadPrefix(img.name);
-
-            // Asignamos el valor a la variable local correcta
-            if (targetField === 'coverPath') coverPath = path;
-            else if (targetField === 'directorImagePath') directorImagePath = path;
-            else if (targetField === 'titlePhotoPath') titlePhotoPath = path;
-            else if (targetField === 'filmPhotoPath') filmPhotoPath = path;
-            else if (targetField === 'actor1ImagePath') actor1ImagePath = path;
-            else if (targetField === 'actor2ImagePath') actor2ImagePath = path;
-            else if (targetField === 'actor3ImagePath') actor3ImagePath = path;
-        }
+    // --- 3. Asignación basada en 'type' del data.json ---
+    if (allImages.length > 0) {
+        allImages.forEach(img => {
+            const targetField = fieldMap[img.type];
+            if (targetField) {
+                // Aplicamos el prefijo /Uploads/ a todas las rutas que provienen de data.json
+                paths[targetField] = addUploadPrefix(img.name); 
+            }
+        });
     }
 
+    // 🔑 Mapeo del director (Generamos una ruta de fallback si no se encontró una específica)
+    if (!paths.directorImagePath && director) {
+        const safeName = director.replace(/\s/g, '_');
+        // Ruta de fallback (incluyendo el prefijo /Uploads/)
+        paths.directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
+    }
 
     // --- 4. Devolvemos el objeto final para MongoDB ---
     return {
         title: title,
-        url_slug: title.toLowerCase().replace(/\s+/g, '-'),
         description: description,
         releaseYear: releaseYear ? Number(releaseYear) : undefined,
         genre: genre,
@@ -102,20 +82,19 @@ const generateImagePaths = (movie) => {
         ageClassification: ageClassification,
         director: director,
 
-        // Rutas de imágenes (Asignación estable)
-        directorImagePath: directorImagePath,
-        coverPath: coverPath,
-
-        actor1ImagePath: actor1ImagePath,
-        actor2ImagePath: actor2ImagePath,
-        actor3ImagePath: actor3ImagePath,
-
-        titlePhotoPath: titlePhotoPath,
-        filmPhotoPath: filmPhotoPath,
+        // Rutas de imágenes
+        coverPath: paths.coverPath || null,
+        directorImagePath: paths.directorImagePath || null, 
+        
+        actor1ImagePath: paths.actor1ImagePath || null,
+        actor2ImagePath: paths.actor2ImagePath || null,
+        actor3ImagePath: paths.actor3ImagePath || null,
+        
+        titlePhotoPath: paths.titlePhotoPath || null,
+        filmPhotoPath: paths.filmPhotoPath || null,
 
         cast: castArray,
         duration: duration,
-        // Aseguramos que el idioma sea un array, aunque venga como string.
         language: Array.isArray(movie.Language) ? movie.Language : (movie.Language ? [movie.Language] : []),
         comments: comments || []
     };
@@ -134,7 +113,6 @@ try {
     console.log(`Cargadas ${initialMovies.length} películas del data.json.`);
 } catch (error) {
     console.error("❌ Error al cargar o parsear data.json:", error.message);
-    // Si data.json falla, al menos el array initialMovies es [] y la DB se inicializará vacía.
 }
 
 
@@ -156,6 +134,7 @@ async function initDB(app) {
         const count = await Softflix.countDocuments();
 
         // 💡 CRÍTICO: Borramos los datos antiguos e insertamos los nuevos
+        // Esto garantiza que los cambios de ruta se apliquen al reiniciar.
         if (count > 0) {
             console.log(`🧹 Limpiando los ${count} documentos existentes para recargar...`);
             await Softflix.deleteMany({});
