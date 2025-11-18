@@ -13,7 +13,6 @@ router.get('/', (req, res) => {
 // ➡️ Ruta Principal de Películas (Indice)
 // ----------------------------------------------------
 
-// Lógica de paginación y filtrado (simplificada para el ejemplo)
 const ITEMS_PER_PAGE = 6;
 
 router.get('/indice', async (req, res) => {
@@ -40,11 +39,12 @@ router.get('/indice', async (req, res) => {
             .limit(ITEMS_PER_PAGE)
             .toArray();
 
-        // Normalizar las rutas de las imágenes para el índice
+        // 🔑 CORRECCIÓN DEL ÍNDICE: Usar SOLAMENTE coverPath para la portada del listado.
         const normalizedFilms = films.map(f => ({
             ...f,
-            // Prioridad: coverPath (Nuevo/Estandarizado) > directorImagePath (Fallback para datos iniciales)
-            posterUrl: f.coverPath || f.directorImagePath,
+            // Antes usaba: f.coverPath || f.directorImagePath, lo que causaba el fallo.
+            // Ahora usamos solo coverPath, si es null no mostrará imagen (comportamiento correcto).
+            posterUrl: f.coverPath,
         }));
 
         // ... (lógica de paginación y géneros)
@@ -87,8 +87,11 @@ router.get('/indice', async (req, res) => {
     }
 });
 
+// ----------------------------------------------------
+// ➡️ Ruta POST para Añadir Película (con Multer)
+// ----------------------------------------------------
 router.post("/addFilm", (req, res) => {
-    // Middleware para subir los archivos
+    // El objeto Multer ya está en app.locals.upload
     const uploadMiddleware = req.app.locals.upload.fields([
         { name: 'cover', maxCount: 1 },
         { name: 'titlePhoto', maxCount: 1 },
@@ -112,7 +115,7 @@ router.post("/addFilm", (req, res) => {
         try {
             const files = req.files;
             const body = req.body;
-            // 1. ERRORS
+            
             // 1.1 Validación de campos obligatorios
             const { title, description, releaseYear, director, cast, genre, ageClassification } = body;
             if (!title || !description || !releaseYear || !director || !cast || !genre || !ageClassification) {
@@ -123,24 +126,36 @@ router.post("/addFilm", (req, res) => {
                 });
             }
 
-            // 1.2 TITTLE OR NAME DUPLICATED
+            // 🔑 CORRECCIÓN VALIDACIÓN DUPLICADOS: Si existe la película, renderea error.
             const existingMovie = await req.app.locals.db.collection('Softflix').findOne({ title: title });
-            if (existingMovie){
-            return res.render('error', {
-                mensaje: `There is already a movie with that title "${title}". Please, choose antoher tittle for the movie.`,
-                rutaBoton: '/add',
-                textoBoton: ' Return to the form'
-            });
+            
+            if (existingMovie) {
+                // Borrar archivos si se subieron antes de la comprobación
+                if (req.files) {
+                    Object.keys(req.files).forEach(key => {
+                         req.files[key].forEach(file => {
+                            fs.unlinkSync(file.path); // Usar Sync para simpleza, si falla no importa mucho aquí
+                         });
+                    });
+                }
+                return res.render('error', {
+                    mensaje: `There is already a movie with that title "${title}". Please, choose another title for the movie.`,
+                    rutaBoton: '/add',
+                    textoBoton: ' Return to the form'
+                });
             }
+
 
             // 2. Función auxiliar para obtener la ruta de un archivo específico
             const getFilePath = (fieldName) => {
+                // Usa path.basename(file.path) para obtener el nombre de archivo que Multer genera.
+                // Y añade el prefijo /Uploads/ para que Express lo sirva correctamente.
                 return files && files[fieldName] && files[fieldName][0]
                     ? `/Uploads/${files[fieldName][0].filename}`
                     : null;
             };
 
-            // 3. Rutas de las imágenes
+            // 3. Objeto de la Película a Insertar
             const movie = {
                 title,
                 description,
@@ -166,14 +181,13 @@ router.post("/addFilm", (req, res) => {
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
 
-            // 🔑 CAMBIO CLAVE: Insertamos y capturamos el resultado (ID)
             const result = await collection.insertOne(movie);
 
             // 5. Redirigir si todo va bien
             res.redirect('/indice');
 
         } catch (err) {
-            // 6. Borrar archivos si falla
+            // 6. Borrar archivos si falla (Rollback)
             if (req.files) {
                 Object.keys(req.files).forEach(key => {
                     req.files[key].forEach(file => {
@@ -193,6 +207,7 @@ router.post("/addFilm", (req, res) => {
         }
     });
 });
+
 // ----------------------------------------------------
 // ➡️ Ruta de Detalle de Película (/Ej/:id)
 // ----------------------------------------------------
@@ -220,18 +235,16 @@ router.get('/Ej/:id', async (req, res) => {
         for (let i = 0; i < castNames.length; i++) {
             const name = castNames[i];
 
-            // Usamos el campo estandarizado
-            const uploadedImagePath = film[`actor${i + 1}ImagePath`];
+            // 🔑 CLAVE: Ahora film.actorNImagePath ya contiene la ruta con /Uploads/ (del fix de Database.js)
+            const imagePath = film[`actor${i + 1}ImagePath`];
 
-            // Generar ruta de fallback (para datos iniciales de data.json)
-            const safeName = name ? name.replace(/\s/g, '_') : 'unknown';
-            const defaultImagePath = `/Imagenes/Actors/${safeName}.jpg`;
-
+            // Generar ruta de fallback (solo si la ruta no existe)
             if (name) {
                 castArray.push({
                     name: name,
-                    // Prioridad: Ruta subida > Ruta de fallback
-                    imagePath: uploadedImagePath || defaultImagePath
+                    // Si el path de la DB está vacío (null), usamos un fallback que requiere carpeta genérica
+                    // Si usamos la corrección del data.json, este campo estará lleno.
+                    imagePath: imagePath
                 });
             }
         }
@@ -244,10 +257,10 @@ router.get('/Ej/:id', async (req, res) => {
                 ? film.reviews
                 : (Array.isArray(film.comments) ? film.comments : (Array.isArray(film.comentary) ? film.comentary : [])),
 
-            // Poster principal: coverPath siempre debe funcionar ahora
+            // Poster principal: coverPath ya es correcto (con /Uploads/)
             poster: film.coverPath || film.cover || film.mainImagePath || null,
 
-            // Director: directorImagePath siempre debe funcionar ahora
+            // Director: directorImagePath ya es correcto (con /Uploads/)
             directorImagePath: film.directorImagePath || film.fotoDirector,
 
             cast: castArray, // Pasa el array de objetos con la ruta de imagen
@@ -263,7 +276,7 @@ router.get('/Ej/:id', async (req, res) => {
 });
 
 
-// ... (rest of router.js, including /indice route)
+// ... (rest of router.js routes)
 
 router.get('/add', (req, res) => {
     res.render('add');
@@ -292,16 +305,16 @@ router.post('/addComment', async (req, res) => {
             createdAt: new Date()
         });
 
-        // 2. Actualizar el array 'comments' de la película (Asegúrate que el campo es 'comments' y no 'comentary')
+        // 2. Actualizar el array 'comments' de la película 
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
             { _id: new ObjectId(movieId) },
-            { $push: { comments: result.insertedId } } // Usamos 'comments' para ser coherente con el modelo JSON
+            { $push: { comments: result.insertedId } } 
         );
 
         console.log(`✅ Comentario guardado con ID: ${result.insertedId}`);
-        // Redirigir de vuelta a la página de la película de ejemplo
-        res.redirect(`/ej`);
+        // Redirigir de vuelta a la página de la película (Asegúrate que '/Ej/' existe)
+        res.redirect(`/Ej/${movieId}`);
 
     } catch (err) {
         console.error('❌ ERROR al guardar comentario:', err);
@@ -328,15 +341,17 @@ router.post('/deleteFilm', async (req, res) => {
         if (!movie) return res.status(404).send('Película no encontrada');
 
         // Eliminar archivos asociados (si existen)
-        // Asume rutas tipo '/Uploads/filename' o '/Uploads/folder/filename'
-        const possiblePaths = [];
-        if (movie.directorImagePath) possiblePaths.push(movie.directorImagePath);
-        if (movie.image_file) possiblePaths.push(movie.image_file);
-        // Normalizar y eliminar cada archivo si existe
-        for (const rel of possiblePaths) {
+        const pathsToDelete = [
+            movie.coverPath, movie.titlePhotoPath, movie.filmPhotoPath, 
+            movie.directorImagePath, movie.actor1ImagePath, movie.actor2ImagePath, movie.actor3ImagePath
+        ].filter(p => p && p.startsWith('/Uploads/')); // Solo borrar archivos subidos
+
+        for (const rel of pathsToDelete) {
             if (!rel) continue;
-            const relClean = rel.replace(/^\//, '');
-            const fullPath = path.join(process.cwd(), 'Public', relClean);
+            // Quitamos el prefijo /Uploads/ (y el slash inicial) y construimos la ruta absoluta
+            const relClean = rel.replace(/^\/Uploads\//, '');
+            const fullPath = path.join(process.cwd(), 'Public', 'Uploads', relClean);
+
             try {
                 if (fs.existsSync(fullPath)) {
                     fs.unlinkSync(fullPath);
@@ -346,6 +361,7 @@ router.post('/deleteFilm', async (req, res) => {
                 console.warn('No se pudo eliminar archivo:', fullPath, e.message);
             }
         }
+
 
         // Eliminar comentarios asociados
         await commentsColl.deleteMany({ movieId: oid });
@@ -363,7 +379,7 @@ router.post('/deleteFilm', async (req, res) => {
 
 
 // =======================================================
-// ➡️ POST /Ej/:id/addReview  → Manejar la adición de reseñas
+// ➡️ POST /Ej/:id/addReview → Manejar la adición de reseñas (Modelo de datos INCONSISTENTE)
 // =======================================================
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
@@ -375,12 +391,11 @@ router.post('/Ej/:id/addReview', async (req, res) => {
         const newReview = {
             userName: req.body.userName,
             rating: parseInt(req.body.rating),
-            text: req.body.reviewText, // Asegúrate de que el name en el HTML es 'reviewText'
+            text: req.body.reviewText, 
             date: new Date()
         };
 
         // Añadir la nueva reseña al array 'reviews' en MongoDB
-        // Usamos 'reviews' como nombre de campo estándar en la DB para las nuevas inserciones.
         await collection.updateOne(
             { _id: new ObjectId(movieId) },
             { $push: { reviews: newReview } }
@@ -397,7 +412,7 @@ router.post('/Ej/:id/addReview', async (req, res) => {
 
 
 // =======================================================
-// ➡️ POST /editFilm/:id → Manejar la edición y subida de archivos
+// ➡️ GET /edit/:id → Cargar la página de edición
 // =======================================================
 router.get('/edit/:id', async (req, res) => {
     try {
@@ -422,7 +437,7 @@ router.get('/edit/:id', async (req, res) => {
             description: film.Description || film.description,
 
             // Campos con nombres potenciales inconsistentes en la DB (Normalización)
-            releaseYear: film.Realase_year || film.releaseYear, // 'Realase_year' parece un error tipográfico
+            releaseYear: film.Realase_year || film.releaseYear, 
             rating: film.Calification || film.rating,
             ageClassification: film.Age_classification || film.ageClassification,
             director: film.Director || film.director,
@@ -459,8 +474,6 @@ router.get('/edit/:id', async (req, res) => {
         res.status(500).send("Error al cargar datos de la película.");
     }
 });
-
-
 
 
 export default router;
