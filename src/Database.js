@@ -34,11 +34,13 @@ const generateImagePaths = (movie) => {
     const description = movie.description;
     const comments = movie.Comentary || movie.comments;
 
+    // 🔑 CORRECCIÓN 1: Extraer el campo 'language' manejando Language/language
+    const language = movie.Language || movie.language;
+
     const castString = movie.Casting || movie.cast;
     const castArray = castString
         ? (Array.isArray(castString) ? castString : castString.split(',').map(name => name.trim()))
         : [];
-
     // --- 2. Variable Initialization and Mapping ---
     let paths = {};
     const allImages = movie.images || [];
@@ -95,7 +97,9 @@ const generateImagePaths = (movie) => {
 
         cast: castArray,
         duration: duration,
-        language: Array.isArray(movie.Language) ? movie.Language : (movie.Language ? [movie.Language] : []),
+        // 🔑 CORRECCIÓN 2: Usar la variable 'language' extraída.
+        // Se asegura de que sea un array o un array vacío si no hay valor.
+        language: Array.isArray(language) ? language : (language ? [language] : []),
         comments: comments || []
     };
 };
