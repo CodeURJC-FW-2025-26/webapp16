@@ -49,7 +49,6 @@ const generateImagePaths = (movie) => {
         // 🔑 CORRECCIÓN 1: Usar la propiedad .name (donde está la ruta en data.json)
         const coverImage = movie.images.find(img => img.type === 'cover');
         if (coverImage) {
-<<<<<<< HEAD
             // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
             cover = addUploadPrefix(coverImage.name);
         }
@@ -59,31 +58,16 @@ const generateImagePaths = (movie) => {
         if (directorImage) {
             // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
             directorImagePath = addUploadPrefix(directorImage.name);
-=======
-            // ✅ APLICAR PREFIJO /Uploads/
-            cover = addUploadPrefix(coverImage.name); 
-        }
-
-        const directorImage = movie.images.find(img => img.type === 'director');
-        if (directorImage) {
-            // ✅ APLICAR PREFIJO /Uploads/
-            directorImagePath = addUploadPrefix(directorImage.name); 
->>>>>>> 10bd03f3ba9d235881724ab206f265d564f0e7fb
         }
     }
 
     // 🔑 Mapeo del director (Generamos una ruta si no se encontró una específica en el array)
     if (!directorImagePath && director) {
         const safeName = director.replace(/\s/g, '_');
-<<<<<<< HEAD
         // 💡 Ajuste de ruta de fallback: Usamos /Uploads/Directors/ (más común)
         // Si tu carpeta es realmente /Public/Uploads/Imagenes/Directors, usa la línea comentada
         directorImagePath = `/Uploads/Directors/${safeName}.jpg`;
         // directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`; // Si esta es tu ruta real
-=======
-        // ✅ APLICAR PREFIJO /Uploads/ a la ruta de fallback
-        directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
->>>>>>> 10bd03f3ba9d235881724ab206f265d564f0e7fb
     }
 
 
@@ -101,18 +85,11 @@ const generateImagePaths = (movie) => {
         directorImagePath: directorImagePath,
         coverPath: cover,
 
-<<<<<<< HEAD
         // Los campos actorXImagePath vienen del data.json original y son null en este punto.
         // Se llenarán al guardar una película manualmente en router.js.
         actor1ImagePath: movie.image_actor1 || null,
         actor2ImagePath: movie.image_actor2 || null,
         actor3ImagePath: movie.image_actor3 || null,
-=======
-        // ✅ CORRECCIÓN FINAL: Aplicar prefijo /Uploads/ a las rutas de actores de data.json
-        actor1ImagePath: addUploadPrefix(movie.image_actor1) || null,
-        actor2ImagePath: addUploadPrefix(movie.image_actor2) || null,
-        actor3ImagePath: addUploadPrefix(movie.image_actor3) || null,
->>>>>>> 10bd03f3ba9d235881724ab206f265d564f0e7fb
 
         titlePhotoPath: null, // Se inicializan a null
         filmPhotoPath: null, // Se inicializan a null
@@ -152,13 +129,10 @@ async function initDB(app) {
 
         if (count === 0) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
-<<<<<<< HEAD
             if (initialMovies.length > 0) {
                 console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA (CORREGIDA): ${initialMovies[0].coverPath}`);
             }
 
-=======
->>>>>>> 10bd03f3ba9d235881724ab206f265d564f0e7fb
             await Softflix.insertMany(initialMovies);
             console.log("✅ Inserción inicial completada con éxito.");
         } else {
