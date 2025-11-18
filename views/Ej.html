@@ -127,12 +127,12 @@
         <div class="review p-3 mb-3 border rounded shadow-sm d-flex justify-content-between align-items-start bg-light">
             <div class="review-content">
                 <div class="user-info d-flex align-items-center mb-1">
-                    <img src="/User/User.png" alt="{{userName}}"
+                    <img src="/User/User.png" alt="{{User_name}}"
                         style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
                     <strong>{{userName}}</strong>
-                    <span class="badge bg-warning text-dark ms-3">⭐ {{rating}}/5</span>
+                    <span class="badge bg-warning text-dark ms-3">⭐ {{Rating}}</span>
                 </div>
-                <p class="mb-1">{{text}}</p>
+                <p class="mb-1">{{description}}</p>
             </div>
             <div class="review-actions d-flex gap-2">
                 <a href="/editComment/{{../_id}}/{{_id}}" class="btn btn-sm btn-outline-primary" title="Edit Review">
