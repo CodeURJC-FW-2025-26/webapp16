@@ -59,8 +59,7 @@
                         <form method="POST" action="/deleteFilm" style="display:inline-block;margin-right:8px;">
                             <input type="hidden" name="movieId" value="{{_id}}">
                             <input type="hidden" name="movieTitle" value="{{title}}">
-                            <button type="submit" class="btn btn-outline-danger btn-lg"
-                                onclick="return confirm('¿Estás seguro de que quieres borrar esta película y sus {{#reviews.length}}{{reviews.length}}{{/reviews.length}}{{^reviews.length}}0{{/reviews.length}} reseñas?');">
+                            <button type="submit" class="btn btn-outline-danger btn-lg">
                                 <i class="bi-trash-fill"></i> Delete
                             </button>
                         </form>

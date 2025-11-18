@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ Ruta Principal de Películas (Indice)
+// ➡️ Main Movies Route (Index)
 // ----------------------------------------------------
 
 const ITEMS_PER_PAGE = 6;
@@ -39,14 +39,14 @@ router.get('/indice', async (req, res) => {
             .limit(ITEMS_PER_PAGE)
             .toArray();
 
-        // 🔑 CORRECCIÓN DEL ÍNDICE: Usar SOLAMENTE coverPath para la portada del listado.
+        // 🔑 INDEX CORRECTION: Use ONLY coverPath for the listing poster.
         const normalizedFilms = films.map(f => ({
             ...f,
-            // Ahora coverPath siempre está correctamente poblado con el prefijo /Uploads/
+            // Now coverPath is always correctly populated with the /Uploads/ prefix
             posterUrl: f.coverPath,
         }));
 
-        // ... (lógica de paginación y géneros)
+        // ... (pagination and genres logic)
         const paginationLinks = [];
         const baseUrl = `/indice?${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ''}${filterGenre ? `genre=${encodeURIComponent(filterGenre)}&` : ''}`;
         for (let i = 1; i <= totalPages; i++) {
@@ -65,7 +65,7 @@ router.get('/indice', async (req, res) => {
             isActive: g._id === filterGenre,
             url: `/indice?genre=${encodeURIComponent(g._id)}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`
         }));
-        // Fin de lógica de paginación y géneros
+        // End of pagination and genres logic
 
         res.render("indice", {
             films: normalizedFilms,
@@ -81,16 +81,16 @@ router.get('/indice', async (req, res) => {
         });
 
     } catch (err) {
-        console.error('❌ ERROR al obtener datos del índice:', err);
-        res.status(500).send('Error al cargar la página principal.');
+        console.error('❌ ERROR retrieving index data:', err);
+        res.status(500).send('Error loading the main page.');
     }
 });
 
 // ----------------------------------------------------
-// ➡️ Ruta POST para Añadir Película (con Multer)
+// ➡️ POST Route for Adding a Movie (with Multer)
 // ----------------------------------------------------
 router.post("/addFilm", (req, res) => {
-    // El objeto Multer ya está en app.locals.upload
+    // The Multer object is already in app.locals.upload
     const uploadMiddleware = req.app.locals.upload.fields([
         { name: 'cover', maxCount: 1 },
         { name: 'titlePhoto', maxCount: 1 },
@@ -103,7 +103,7 @@ router.post("/addFilm", (req, res) => {
 
     uploadMiddleware(req, res, async (err) => {
         if (err) {
-            console.error('❌ ERROR de Subida de Archivos (Multer):', err);
+            console.error('❌ File Upload ERROR (Multer):', err);
             return res.render('error', {
                 mensaje: `Error al procesar los archivos: ${err.message}`,
                 rutaBoton: '/add',
@@ -115,7 +115,7 @@ router.post("/addFilm", (req, res) => {
             const files = req.files;
             const body = req.body;
 
-            // 1.1 Validación de campos obligatorios
+            // 1.1 Validation of required fields
             const { title, description, releaseYear, director, cast, genre, ageClassification } = body;
             if (!title || !description || !releaseYear || !director || !cast || !genre || !ageClassification) {
                 return res.render('error', {
@@ -125,11 +125,11 @@ router.post("/addFilm", (req, res) => {
                 });
             }
 
-            // 🔑 CORRECCIÓN VALIDACIÓN DUPLICADOS: Si existe la película, renderea error.
+            // 🔑 DUPLICATE VALIDATION CORRECTION: If the movie exists, render error.
             const existingMovie = await req.app.locals.db.collection('Softflix').findOne({ title: title });
 
             if (existingMovie) {
-                // Borrar archivos si se subieron antes de la comprobación
+                // Delete files if they were uploaded before the check
                 if (req.files) {
                     Object.keys(req.files).forEach(key => {
                         req.files[key].forEach(file => {
@@ -145,15 +145,15 @@ router.post("/addFilm", (req, res) => {
             }
 
 
-            // 2. Función auxiliar para obtener la ruta de un archivo específico
+            // 2. Auxiliary function to get the path of a specific file
             const getFilePath = (fieldName) => {
-                // Genera la ruta con el prefijo /Uploads/ para consistencia.
+                // Generates the path with the /Uploads/ prefix for consistency.
                 return files && files[fieldName] && files[fieldName][0]
                     ? `/Uploads/${files[fieldName][0].filename}`
                     : null;
             };
 
-            // 3. Objeto de la Película a Insertar
+            // 3. Movie Object to Insert
             const movie = {
                 title,
                 description,
@@ -162,7 +162,7 @@ router.post("/addFilm", (req, res) => {
                 rating: body.rating ? Number(body.rating) : undefined,
                 ageClassification,
                 director,
-                // Las rutas de los archivos subidos (new films) usan getFilePath()
+                // The paths of the uploaded files (new films) use getFilePath()
                 coverPath: getFilePath('cover'),
                 titlePhotoPath: getFilePath('titlePhoto'),
                 filmPhotoPath: getFilePath('filmPhoto'),
@@ -176,36 +176,36 @@ router.post("/addFilm", (req, res) => {
                 comentary: []
             };
 
-            // 4. Insertar en la base de datos
+            // 4. Insert into the database
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
 
             const result = await collection.insertOne(movie);
 
-            // 5. Redirigir si todo va bien
-            // 5. Mostrar página de confirmación
+            // 5. Redirect if everything goes well
+            // 5. Show confirmation page
             return res.render("confirm", {
-               type: 'movie',
-               title: movie.title,
-               entityId: result.insertedId,
-               action: 'add',
-               routeDetalle: `/Ej/${result.insertedId}`
+                type: 'movie',
+                title: movie.title,
+                entityId: result.insertedId,
+                action: 'add',
+                routeDetalle: `/Ej/${result.insertedId}`
             });
 
 
         } catch (err) {
-            // 6. Borrar archivos si falla (Rollback)
+            // 6. Delete files if it fails (Rollback)
             if (req.files) {
                 Object.keys(req.files).forEach(key => {
                     req.files[key].forEach(file => {
                         fs.unlink(file.path, (unlinkErr) => {
-                            if (unlinkErr) console.error(`Error al borrar archivo (${file.filename}):`, unlinkErr);
+                            if (unlinkErr) console.error(`Error deleting file (${file.filename}):`, unlinkErr);
                         });
                     });
                 });
             }
 
-            console.error('❌ ERROR al insertar película en la base de datos:', err);
+            console.error('❌ ERROR inserting movie into the database:', err);
             res.render('error', {
                 mensaje: `Error al guardar la película: ${err.message}`,
                 rutaBoton: '/add',
@@ -216,7 +216,7 @@ router.post("/addFilm", (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ Ruta de Detalle de Película (/Ej/:id)
+// ➡️ Movie Detail Route (/Ej/:id)
 // ----------------------------------------------------
 router.get('/Ej/:id', async (req, res) => {
     try {
@@ -224,15 +224,15 @@ router.get('/Ej/:id', async (req, res) => {
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
 
-        // 1. Usar $lookup en el campo 'comments' para obtener solo los comentarios nuevos (referenciados por ID)
+        // 1. Use $lookup on the 'comments' field to get only the new comments (referenced by ID)
         const filmPipeline = await collection.aggregate([
             { $match: { _id: new ObjectId(movieId) } },
             {
                 $lookup: {
                     from: "comentaries",
-                    localField: "comments",   // IDs de los comentarios añadidos
+                    localField: "comments",   // IDs of the added comments
                     foreignField: "_id",
-                    as: "reviewsData"         // Array de objetos de los nuevos comentarios
+                    as: "reviewsData"         // Array of new comment objects
                 }
             }
         ]).toArray();
@@ -243,7 +243,7 @@ router.get('/Ej/:id', async (req, res) => {
             return res.status(404).send("Película no encontrada");
         }
 
-        // --- Lógica de Cast (Se mantiene) ---
+        // --- Cast Logic (Maintained) ---
         const castArray = [];
         const castNames = Array.isArray(film.cast)
             ? film.cast
@@ -265,28 +265,28 @@ router.get('/Ej/:id', async (req, res) => {
         }
         // -------------------------------------
 
-        // 2. Normalización de datos para la plantilla
+        // 2. Data normalization for the template
 
-        // 🔑 PASO CRÍTICO: Separar los comentarios viejos (objetos) de los IDs.
+        // 🔑 CRITICAL STEP: Separate old comments (objects) from IDs.
         let oldComments = [];
         if (Array.isArray(film.comments)) {
-            // Un comentario viejo es un objeto completo (tiene la propiedad 'User_name').
-            // Un comentario nuevo es un ObjectId (no tiene 'User_name' como propiedad de primer nivel).
+            // An old comment is a complete object (it has the 'User_name' property).
+            // A new comment is an ObjectId (it doesn't have 'User_name' as a top-level property).
             oldComments = film.comments.filter(item =>
                 typeof item === 'object' && item !== null && item.User_name !== undefined
             );
         }
 
-        // Obtener los comentarios nuevos (traídos por $lookup en reviewsData)
+        // Get the new comments (fetched by $lookup in reviewsData)
         const newComments = Array.isArray(film.reviewsData) ? film.reviewsData : [];
 
         const filmNormalized = {
             ...film,
 
-            // 🔑 CORRECCIÓN: Concatenar los viejos y los nuevos comentarios.
+            // 🔑 CORRECTION: Concatenate the old and new comments.
             reviews: oldComments.concat(newComments),
 
-            // Poster principal
+            // Main poster
             poster: film.coverPath || film.cover || film.mainImagePath || null,
 
             cast: castArray,
@@ -296,7 +296,7 @@ router.get('/Ej/:id', async (req, res) => {
         res.render('Ej', { ...filmNormalized });
 
     } catch (err) {
-        console.error('❌ ERROR al cargar el detalle de la película:', err);
+        console.error('❌ ERROR loading movie detail:', err);
         res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
     }
 });
@@ -321,7 +321,7 @@ router.post('/addComment', async (req, res) => {
             return res.status(500).send('Database not initialized');
         }
 
-        // 1. Insertar el comentario en la colección 'comentaries'
+        // 1. Insert the comment into the 'comentaries' collection
         const comentaryCollection = db.collection('comentaries');
         const result = await comentaryCollection.insertOne({
             User_name: userName,
@@ -331,18 +331,18 @@ router.post('/addComment', async (req, res) => {
             createdAt: new Date()
         });
 
-        // 2. Actualizar el array 'comments' de la película (Modelo de Referencia)
+        // 2. Update the movie's 'comments' array (Reference Model)
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
             { _id: new ObjectId(movieId) },
             { $push: { comments: result.insertedId } }
         );
 
-        console.log(`✅ Comentario guardado con ID: ${result.insertedId}`);
+        console.log(`✅ Comment saved with ID: ${result.insertedId}`);
         res.redirect(`/Ej/${movieId}`);
 
     } catch (err) {
-        console.error('❌ ERROR al guardar comentario:', err);
+        console.error('❌ ERROR saving comment:', err);
         res.status(500).send(`Error al guardar comentario: ${err.message}`);
     }
 });
@@ -415,20 +415,20 @@ router.get('/deleteFilm/:id/confirmed', async (req, res) => {
 });
 
 // =======================================================
-// ➡️ POST /Ej/:id/addReview → Manejar la adición de reseñas (MODELO UNIFICADO)
+// ➡️ POST /Ej/:id/addReview → Handle review addition (UNIFIED MODEL)
 // =======================================================
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
         const movieId = req.params.id;
         const db = req.app.locals.db;
 
-        // 1. Validar campos requeridos
+        // 1. Validate required fields
         const { userName, rating, reviewText } = req.body;
         if (!userName || !rating || !reviewText || !movieId) {
             return res.status(400).send('Faltan campos requeridos para la reseña.');
         }
 
-        // 2. Insertar el comentario como un documento separado en 'comentaries'
+        // 2. Insert the comment as a separate document into 'comentaries'
         const comentaryCollection = db.collection('comentaries');
         const result = await comentaryCollection.insertOne({
             User_name: userName,
@@ -438,27 +438,27 @@ router.post('/Ej/:id/addReview', async (req, res) => {
             createdAt: new Date()
         });
 
-        // 3. Actualizar la película: Añadir la referencia (ID) al array 'comments' (Modelo Unificado)
+        // 3. Update the movie: Add the reference (ID) to the 'comments' array (Unified Model)
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
             { _id: new ObjectId(movieId) },
             { $push: { comments: result.insertedId } }
         );
 
-        console.log(`✅ Reseña guardada con ID: ${result.insertedId} y referenciada en la película.`);
+        console.log(`✅ Review saved with ID: ${result.insertedId} and referenced in the movie.`);
 
-        // Redirigir al usuario de vuelta a la página de detalle
+        // Redirect the user back to the detail page
         res.redirect(`/Ej/${movieId}`);
 
     } catch (err) {
-        console.error('❌ ERROR al añadir la reseña (Modelo Unificado):', err);
+        console.error('❌ ERROR adding review (Unified Model):', err);
         res.status(500).send(`Error al añadir la reseña: ${err.message}`);
     }
 });
 
 
 // =======================================================
-// ➡️ GET /edit/:id → Cargar la página de edición
+// ➡️ GET /edit/:id → Load the edit page
 // =======================================================
 router.get('/edit/:id', async (req, res) => {
     try {
@@ -466,33 +466,49 @@ router.get('/edit/:id', async (req, res) => {
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
 
+        // 1. Find the movie by ID
         const film = await collection.findOne({ _id: new ObjectId(movieId) });
 
         if (!film) {
-            return res.status(404).send("Película no encontrada");
+            return res.status(404).send("Película no encontrada para edición.");
         }
 
-        // 1. Normalizar y preparar los datos para la plantilla 'add.html'
+        // --- 2. Data normalization for the 'add.html' template ---
+
+        // Ensure that genre and language arrays exist for flag logic
         const genreArray = Array.isArray(film.genre) ? film.genre : (film.genre ? [film.genre] : []);
         const languageArray = Array.isArray(film.language) ? film.language : (film.language ? [film.language] : []);
 
+        // Normalize the 3 actor fields and their image paths
+        const castArray = Array.isArray(film.cast) ? film.cast : (film.cast ? [film.cast] : []);
+
+        // Create a data structure that the 'add.html' template can easily use
         const filmNormalized = {
-            // Campos base (títulos y descripción)
-            _id: film._id,
-            title: film.Title || film.title,
-            description: film.Description || film.description,
+            // The ID is critical for the POST edit form. Convert to string.
+            _id: film._id.toString(),
 
-            // Campos con nombres potenciales inconsistentes en la DB (Normalización)
-            releaseYear: film.Realase_year || film.releaseYear,
-            rating: film.Calification || film.rating,
-            ageClassification: film.Age_classification || film.ageClassification,
-            director: film.Director || film.director,
-            duration: film.Duration || film.duration,
+            // Main fields (use the normalized fields that should already exist)
+            title: film.title,
+            description: film.description,
+            releaseYear: film.releaseYear,
+            rating: film.rating,
+            ageClassification: film.ageClassification,
+            director: film.director,
+            duration: film.duration,
 
-            // Casting (Aseguramos que sea un array para precargar los tres campos)
-            cast: Array.isArray(film.cast) ? film.cast : (film.cast ? [film.cast] : []),
+            // Casting: Pass the fields separately to pre-fill the 3 form inputs
+            actor1: castArray[0] || '',
+            actor2: castArray[1] || '',
+            actor3: castArray[2] || '',
+            actor1ImagePath: film.actor1ImagePath || '',
+            actor2ImagePath: film.actor2ImagePath || '',
+            actor3ImagePath: film.actor3ImagePath || '',
 
-            // Flags para Checkboxes (Género)
+            // Existing image paths to show if a new one is not uploaded
+            coverPath: film.coverPath || film.cover || film.mainImagePath || '',
+            titlePhotoPath: film.titlePhotoPath || '',
+
+            // Flags for Checkboxes (Genre) - Crucial for pre-selection
             isAction: genreArray.includes('Action'),
             isComedy: genreArray.includes('Comedy'),
             isHorror: genreArray.includes('Horror'),
@@ -501,7 +517,7 @@ router.get('/edit/:id', async (req, res) => {
             isAdventure: genreArray.includes('Adventure'),
             isOtherGenre: genreArray.includes('Other'),
 
-            // Flags para Checkboxes (Idioma)
+            // Flags for Checkboxes (Language) - Crucial for pre-selection
             isEnglish: languageArray.includes('English'),
             isSpanish: languageArray.includes('Spanish'),
             isFrench: languageArray.includes('French'),
@@ -509,15 +525,16 @@ router.get('/edit/:id', async (req, res) => {
             isOtherLanguage: languageArray.includes('Other'),
         };
 
-        // 2. Renderizar la vista
+        // 3. Render the view
         res.render("add", {
-            editing: true,
-            film: filmNormalized // Enviamos el objeto normalizado
+            editing: true, // Flag to change the form title and POST action
+            film: filmNormalized // Object with all pre-loaded data
         });
 
     } catch (err) {
-        console.error("❌ Error al cargar película para editar:", err);
-        res.status(500).send("Error al cargar datos de la película.");
+        console.error("❌ Error loading movie for editing:", err);
+        // Redirect to an error page in case of server/DB failure
+        res.redirect('/error');
     }
 });
 

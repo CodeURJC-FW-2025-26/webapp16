@@ -23,7 +23,8 @@
             <h1>Walter Mity</h1>
             <p>Walter Mitty, photo editor at Life magazine,</p>
             <p>has spent his whole life taking little "mental vacations"</p>
-            <p>to escape...</p>
+            <p>to escape his boring existence, lapses in which he</p>
+            <p>becomes the imaginary protagonist of fantastic adventures.</p>
         </ul>
     </div>
     <div class="container my-4">
@@ -73,7 +74,7 @@
             {{/films}}
             {{^films}}
             <div class="col-12">
-                <p class="text-center">No se encontraron películas para la búsqueda/filtro actual.</p>
+                <p class="text-center">No movies were found for the current search/filter.</p>
             </div>
             {{/films}}
         </div>
@@ -83,8 +84,8 @@
         <nav aria-label="Paginación de películas">
             <ul class="pagination">
                 <li class="page-item {{#isPrevDisabled}}disabled{{/isPrevDisabled}}">
-                    <a class="page-link" href="{{prevUrl}}" aria-label="Anterior">
-                        <span aria-hidden="true">&laquo; Anterior</span>
+                    <a class="page-link" href="{{prevUrl}}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; Previous</span>
                     </a>
                 </li>
                 {{#pagination}}
@@ -94,8 +95,8 @@
                 {{/pagination}}
 
                 <li class="page-item {{#isNextDisabled}}disabled{{/isNextDisabled}}">
-                    <a class="page-link" href="{{nextUrl}}" aria-label="Siguiente">
-                        <span aria-hidden="true">Siguiente &raquo;</span>
+                    <a class="page-link" href="{{nextUrl}}" aria-label="Next">
+                        <span aria-hidden="true">Next &raquo;</span>
                     </a>
                 </li>
             </ul>

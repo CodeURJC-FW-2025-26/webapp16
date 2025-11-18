@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from "url";
 
-// 💡 EXPORTAR EL CLIENTE: Necesario para el hook de cierre en app.js
+// 💡 EXPORT THE CLIENT: Needed for the closing hook in app.js
 const uri = 'mongodb://localhost:27017/Softflix';
 const client = new MongoClient(uri);
 
@@ -12,18 +12,18 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
-// 🔑 FUNCIÓN AUXILIAR: Añade el prefijo '/Uploads' a la ruta.
+// 🔑 HELPER FUNCTION: Adds the '/Uploads' prefix to the path.
 const addUploadPrefix = (p) => {
     if (!p) return null;
-    // Evita duplicar el prefijo si ya existe
+    // Prevents duplicating the prefix if it already exists
     if (p.startsWith('/Uploads/')) return p;
     return `/Uploads${p}`;
 };
 
-// 💡 CRÍTICO: Función de transformación que asigna imágenes por tipo explícito
+// 💡 CRITICAL: Transformation function that assigns images by explicit type
 const generateImagePaths = (movie) => {
 
-    // --- 1. Extracción y Normalización de Datos ---
+    // --- 1. Data Extraction and Normalization ---
     const title = movie.Title || movie.title;
     const releaseYear = movie.Realase_year || movie.releaseYear;
     const genre = movie.Gender || movie.genre;
@@ -39,11 +39,11 @@ const generateImagePaths = (movie) => {
         ? (Array.isArray(castString) ? castString : castString.split(',').map(name => name.trim()))
         : [];
 
-    // --- 2. Inicialización de Variables y Mapeo ---
+    // --- 2. Variable Initialization and Mapping ---
     let paths = {};
     const allImages = movie.images || [];
 
-    // Mapeo de campos explícitos en el JSON a los campos de salida de la DB
+    // Mapping of explicit fields in the JSON to the output fields in the DB
     const fieldMap = {
         'cover': 'coverPath',
         'director': 'directorImagePath',
@@ -54,25 +54,25 @@ const generateImagePaths = (movie) => {
         'actor3ImagePath': 'actor3ImagePath',
     };
 
-    // --- 3. Asignación basada en 'type' del data.json ---
+    // --- 3. Assignment based on 'type' from data.json ---
     if (allImages.length > 0) {
         allImages.forEach(img => {
             const targetField = fieldMap[img.type];
             if (targetField) {
-                // Aplicamos el prefijo /Uploads/ a todas las rutas que provienen de data.json
+                // We apply the /Uploads/ prefix to all paths coming from data.json
                 paths[targetField] = addUploadPrefix(img.name);
             }
         });
     }
 
-    // 🔑 Mapeo del director (Generamos una ruta de fallback si no se encontró una específica)
+    // 🔑 Director Mapping (We generate a fallback path if a specific one wasn't found)
     if (!paths.directorImagePath && director) {
         const safeName = director.replace(/\s/g, '_');
-        // Ruta de fallback (incluyendo el prefijo /Uploads/)
+        // Fallback path (including the /Uploads/ prefix)
         paths.directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
     }
 
-    // --- 4. Devolvemos el objeto final para MongoDB ---
+    // --- 4. Return the final object for MongoDB ---
     return {
         title: title,
         description: description,
@@ -82,7 +82,7 @@ const generateImagePaths = (movie) => {
         ageClassification: ageClassification,
         director: director,
 
-        // Rutas de imágenes
+        // Image paths
         coverPath: paths.coverPath || null,
         directorImagePath: paths.directorImagePath || null,
 
@@ -101,28 +101,28 @@ const generateImagePaths = (movie) => {
 };
 
 // -------------------------------------------------------------------------
-// 🛠️ Carga Inicial de Películas
+// 🛠️ Initial Movie Load
 // -------------------------------------------------------------------------
 
-// Cargar películas iniciales de forma síncrona
+// Load initial movies synchronously
 let initialMovies = [];
 try {
     const rawData = fs.readFileSync(JSON_PATH);
     const data = JSON.parse(rawData);
     initialMovies = data.map(generateImagePaths);
-    console.log(`Cargadas ${initialMovies.length} películas del data.json.`);
+    console.log(`Loaded ${initialMovies.length} movies from data.json.`);
 } catch (error) {
-    console.error("❌ Error al cargar o parsear data.json:", error.message);
+    console.error("❌ Error loading or parsing data.json:", error.message);
 }
 
 
 // -------------------------------------------------------------------------
-// 💾 Funciones de Conexión y Limpieza de DB
+// 💾 DB Connection and Cleanup Functions
 // -------------------------------------------------------------------------
 
 async function initDB(app) {
     if (initialMovies.length === 0) {
-        console.warn("⚠️ data.json no contiene películas. La base de datos se inicializará vacía.");
+        console.warn("⚠️ data.json contains no movies. The database will be initialized empty.");
     }
 
     try {
@@ -133,24 +133,24 @@ async function initDB(app) {
         app.locals.db = db;
         const count = await Softflix.countDocuments();
 
-        // 💡 CRÍTICO: Borramos los datos antiguos e insertamos los nuevos
-        // Esto garantiza que los cambios de ruta se apliquen al reiniciar.
+        // 💡 CRITICAL: Delete old data and insert new data
+        // This ensures that path changes are applied upon restart.
         if (count > 0) {
-            console.log(`🧹 Limpiando los ${count} documentos existentes para recargar...`);
+            console.log(`🧹 Cleaning up ${count} existing documents for reloading...`);
             await Softflix.deleteMany({});
         }
 
         if (initialMovies.length > 0) {
-            console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
+            console.log(`✨ Inserting ${initialMovies.length} initial movies into Softflix...`);
             await Softflix.insertMany(initialMovies);
-            console.log("✅ Inserción inicial completada con éxito.");
+            console.log("✅ Initial insertion completed successfully.");
         } else {
-            console.log("✅ Base de datos lista (vacía).");
+            console.log("✅ Database ready (empty).");
         }
 
     } catch (error) {
-        console.error('❌ ERROR CRÍTICO en initDB. Asegúrate de que MongoDB está corriendo en localhost:27017.', error.message);
-        throw new Error("Fallo la conexión a la base de datos o la inserción inicial.");
+        console.error('❌ CRITICAL ERROR in initDB. Make sure MongoDB is running on localhost:27017.', error.message);
+        throw new Error();
     }
 }
 
@@ -159,9 +159,9 @@ async function cleanupDB() {
         await client.connect();
         const db = client.db('Softflix');
         const result = await db.collection('Softflix').deleteMany({});
-        console.log(`\n🧹 LIMPIEZA DB: Se eliminaron ${result.deletedCount} documentos de 'Softflix'.`);
+        console.log(`\n🧹 DB CLEANUP: Deleted ${result.deletedCount} documents from 'Softflix'.`);
     } catch (err) {
-        console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
+        console.error('❌ ERROR deleting data from the database:', err.message);
     }
 }
 
@@ -169,9 +169,9 @@ export async function closeDB() {
     if (client) {
         try {
             await client.close();
-            console.log("Conexión a MongoDB cerrada.");
+            console.log("MongoDB connection closed.");
         } catch (err) {
-            console.error('Error cerrando el cliente MongoDB:', err.message);
+            console.error('Error closing MongoDB client:', err.message);
         }
     }
 }
