@@ -677,4 +677,103 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     }
 });
 
+// ======================================================= 
+// ➡️ POST /editFilm → Save the edition of a movie 
+// =======================================================
+
+router.post("/editFilm/:id", (req, res) => {
+    const uploadMiddleware = req.app.locals.upload.fields([
+        { name: 'cover', maxCount: 1 },
+        { name: 'titlePhoto', maxCount: 1 },
+        { name: 'filmPhoto', maxCount: 1 },
+        { name: 'fotoDirector', maxCount: 1 },
+        { name: 'fotoActor1', maxCount: 1 },
+        { name: 'fotoActor2', maxCount: 1 },
+        { name: 'fotoActor3', maxCount: 1 },
+    ]);
+
+    uploadMiddleware(req, res, async (err) => {
+        if (err) {
+            console.error("❌ Multer error:", err);
+            return res.render("error", {
+                mensaje: `Error processing files: ${err.message}`,
+                rutaBoton: "/indice",
+                textoBoton: "Return"
+            });
+        }
+
+        try {
+            const db = req.app.locals.db;
+            const collection = db.collection("Softflix");
+            const files = req.files;
+            const body = req.body;
+
+            const movieId = req.params.id;
+            if (!movieId) {
+                return res.render("error", {
+                    mensaje: "Movie ID not received.",
+                    rutaBoton: "/indice",
+                    textoBoton: "Return"
+                });
+            }
+
+            // Helper → Keep old image if no new one uploaded
+            const getUpdatedPath = (fieldName, oldValue) => {
+                return files && files[fieldName] && files[fieldName][0]
+                    ? `/Uploads/${files[fieldName][0].filename}`
+                    : oldValue || null;
+            };
+
+            // Create fields to update
+            const updatedMovie = {
+                title: body.title,
+                description: body.description,
+                releaseYear: Number(body.releaseYear),
+                director: body.director,
+                ageClassification: body.ageClassification,
+                duration: body.duration,
+                rating: body.rating ? Number(body.rating) : undefined,
+                genre: Array.isArray(body.genre) ? body.genre : [body.genre],
+                language: Array.isArray(body.language) ? body.language : [body.language],
+
+                cast: [
+                    body.actor1 || "",
+                    body.actor2 || "",
+                    body.actor3 || ""
+                ],
+
+                coverPath: getUpdatedPath("cover", body.oldCoverPath),
+                titlePhotoPath: getUpdatedPath("titlePhoto", body.oldTitlePhotoPath),
+                filmPhotoPath: getUpdatedPath("filmPhoto", body.oldFilmPhotoPath),
+                directorImagePath: getUpdatedPath("fotoDirector", body.oldDirectorImagePath),
+                actor1ImagePath: getUpdatedPath("fotoActor1", body.oldActor1ImagePath),
+                actor2ImagePath: getUpdatedPath("fotoActor2", body.oldActor2ImagePath),
+                actor3ImagePath: getUpdatedPath("fotoActor3", body.oldActor3ImagePath)
+            };
+
+            // Clean empty strings in cast
+            updatedMovie.cast = updatedMovie.cast.filter(x => x.trim() !== "");
+
+            // Update in DB
+            await collection.updateOne(
+                { _id: new ObjectId(movieId) },
+                { $set: updatedMovie }
+            );
+
+            console.log("✅ Movie updated:", movieId);
+
+            // Redirect to detail page
+            res.redirect(`/Ej/${movieId}`);
+
+        } catch (err) {
+            console.error("❌ Error saving movie edition:", err);
+            res.render("error", {
+                mensaje: `Error saving changes: ${err.message}`,
+                rutaBoton: "/indice",
+                textoBoton: "Return"
+            });
+        }
+    });
+});
+
 export default router;
