@@ -387,11 +387,11 @@
                 "type": "actor3ImagePath"
             },
             {
-                "name": "/Spiderman farfromhome/spider-man-far-from-home.jpg",
+                "name": "/Spidermanfarfromhome/spider-man-far-from-home.jpg",
                 "type": "filmPhotoPath"
             },
             {
-                "name": "/Spiderman farfromhome/Titulo-SpidermanFFH.jpg",
+                "name": "/Spidermanfarfromhome/Titulo-SpidermanFFH.jpg",
                 "type": "titlePhotoPath"
             }
         ],
