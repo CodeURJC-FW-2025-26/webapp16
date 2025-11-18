@@ -188,6 +188,7 @@ router.post("/addFilm", (req, res) => {
                type: 'movie',
                title: movie.title,
                entityId: result.insertedId,
+               action: 'add',
                routeDetalle: `/Ej/${result.insertedId}`
             });
 
@@ -323,60 +324,71 @@ router.post('/addComment', async (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➖ Ruta para borrar una película (y sus comentarios/archivos)
-// ----------------------------------------------------
+// ➖ Route to render delete confirmation page
 router.post('/deleteFilm', async (req, res) => {
     try {
         const { movieId } = req.body;
-        if (!movieId) return res.status(400).send('movieId es requerido');
+        if (!movieId) return res.status(400).send('movieId is required');
 
         const db = req.app.locals.db;
-        if (!db) return res.status(500).send('Database not initialized');
-
         const moviesColl = db.collection('Softflix');
-        const commentsColl = db.collection('comentaries');
 
         const oid = new ObjectId(movieId);
         const movie = await moviesColl.findOne({ _id: oid });
-        if (!movie) return res.status(404).send('Película no encontrada');
+        if (!movie) return res.status(404).send('Movie not found');
 
-        // Eliminar archivos asociados (solo aquellos con el prefijo /Uploads/)
+        // Render the confirmation page
+        return res.render('confirm', {
+            type: 'delete movie',              // Used in the view to display the message
+            title: movie.title,             // Title to display on the page
+            routeDetalle: `/deleteFilm/${movieId}/confirmed`, // Route that performs the actual deletion
+            action: 'delete'
+        });
+
+    } catch (err) {
+        console.error('Error preparing delete confirmation:', err);
+        return res.status(500).send('Error preparing delete confirmation');
+    }
+});
+
+// ➖ Route that executes the actual deletion when Confirm is clicked
+router.get('/deleteFilm/:id/confirmed', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const db = req.app.locals.db;
+        const moviesColl = db.collection('Softflix');
+        const commentsColl = db.collection('comentaries');
+
+        const oid = new ObjectId(id);
+        const movie = await moviesColl.findOne({ _id: oid });
+        if (!movie) return res.status(404).send('Movie not found');
+
+        // Delete associated files
         const pathsToDelete = [
             movie.coverPath, movie.titlePhotoPath, movie.filmPhotoPath,
             movie.directorImagePath, movie.actor1ImagePath, movie.actor2ImagePath, movie.actor3ImagePath
         ].filter(p => p && p.startsWith('/Uploads/'));
 
         for (const rel of pathsToDelete) {
-            if (!rel) continue;
-            // Quitamos el prefijo /Uploads/ y construimos la ruta absoluta en Public/Uploads
             const relClean = rel.replace(/^\/Uploads\//, '');
             const fullPath = path.join(process.cwd(), 'Public', 'Uploads', relClean);
-
-            try {
-                if (fs.existsSync(fullPath)) {
-                    fs.unlinkSync(fullPath);
-                    console.log(`Archivo eliminado: ${fullPath}`);
-                }
-            } catch (e) {
-                console.warn('No se pudo eliminar archivo:', fullPath, e.message);
-            }
+            if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
         }
 
-
-        // Eliminar comentarios asociados
+        // Delete associated reviews
         await commentsColl.deleteMany({ movieId: oid });
 
-        // Finalmente, eliminar la película
+        // Delete the movie itself
         await moviesColl.deleteOne({ _id: oid });
 
-        console.log(`Película ${movieId} y sus comentarios eliminados.`);
+        console.log(`Movie ${id} and its reviews deleted.`);
         return res.redirect('/indice');
+
     } catch (err) {
-        console.error('Error al borrar película:', err);
-        return res.status(500).send('Error al borrar la película');
+        console.error('Error deleting movie:', err);
+        return res.status(500).send('Error deleting the movie');
     }
 });
-
 
 // =======================================================
 // ➡️ POST /Ej/:id/addReview → Manejar la adición de reseñas (MODELO UNIFICADO)
