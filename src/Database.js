@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 import fs from 'fs';
-import path, { resolve } from 'path';
+import path from 'path';
 import { fileURLToPath } from "url";
 
 // 💡 EXPORTAR EL CLIENTE: Necesario para el hook de cierre en app.js
@@ -12,12 +12,11 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
-// 🔑 FUNCIÓN AUXILIAR: Añade el prefijo '/Uploads' a la ruta.
+// 🔑 FUNCIÓN AUXILIAR RESTAURADA: Añade el prefijo '/Uploads' a la ruta.
 const addUploadPrefix = (p) => {
     if (!p) return null;
-    // Si la ruta ya empieza con /Uploads/, no la volvemos a añadir
-    if (p.startsWith('/Uploads/')) return p;
-    // De lo contrario, añade el prefijo. Asumimos que la ruta de data.json empieza con /
+    // Evita duplicar el prefijo si ya existe
+    if (p.startsWith('/Uploads/')) return p; 
     return `/Uploads${p}`;
 };
 
@@ -49,25 +48,22 @@ const generateImagePaths = (movie) => {
         // 🔑 CORRECCIÓN 1: Usar la propiedad .name (donde está la ruta en data.json)
         const coverImage = movie.images.find(img => img.type === 'cover');
         if (coverImage) {
-            // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
-            cover = addUploadPrefix(coverImage.name);
+            // ✅ APLICAR PREFIJO /Uploads/ (RESTAURO LÓGICA)
+            cover = addUploadPrefix(coverImage.name); 
         }
 
-        // El director en data.json tiene 'type': 'director', lo buscamos.
         const directorImage = movie.images.find(img => img.type === 'director');
         if (directorImage) {
-            // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
-            directorImagePath = addUploadPrefix(directorImage.name);
+            // ✅ APLICAR PREFIJO /Uploads/ (RESTAURO LÓGICA)
+            directorImagePath = addUploadPrefix(directorImage.name); 
         }
     }
 
     // 🔑 Mapeo del director (Generamos una ruta si no se encontró una específica en el array)
     if (!directorImagePath && director) {
         const safeName = director.replace(/\s/g, '_');
-        // 💡 Ajuste de ruta de fallback: Usamos /Uploads/Directors/ (más común)
-        // Si tu carpeta es realmente /Public/Uploads/Imagenes/Directors, usa la línea comentada
-        directorImagePath = `/Uploads/Directors/${safeName}.jpg`;
-        // directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`; // Si esta es tu ruta real
+        // ✅ APLICAR PREFIJO /Uploads/ a la ruta de fallback (RESTAURO LÓGICA)
+        directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
     }
 
 
@@ -85,11 +81,10 @@ const generateImagePaths = (movie) => {
         directorImagePath: directorImagePath,
         coverPath: cover,
 
-        // Los campos actorXImagePath vienen del data.json original y son null en este punto.
-        // Se llenarán al guardar una película manualmente en router.js.
-        actor1ImagePath: movie.image_actor1 || null,
-        actor2ImagePath: movie.image_actor2 || null,
-        actor3ImagePath: movie.image_actor3 || null,
+        // ✅ CORRECCIÓN CLAVE: Aplicar prefijo /Uploads/ a las rutas de actores de data.json (RESTAURO LÓGICA)
+        actor1ImagePath: addUploadPrefix(movie.image_actor1) || null,
+        actor2ImagePath: addUploadPrefix(movie.image_actor2) || null,
+        actor3ImagePath: addUploadPrefix(movie.image_actor3) || null,
 
         titlePhotoPath: null, // Se inicializan a null
         filmPhotoPath: null, // Se inicializan a null
@@ -115,6 +110,7 @@ try {
 
 
 async function initDB(app) {
+    // Si no hay películas, no inicializar
     if (initialMovies.length === 0) {
         return;
     }
@@ -130,7 +126,8 @@ async function initDB(app) {
         if (count === 0) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
             if (initialMovies.length > 0) {
-                console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA (CORREGIDA): ${initialMovies[0].coverPath}`);
+                 // Este log ahora debería mostrar la ruta corregida
+                console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA (CORREGIDA): ${initialMovies[0].coverPath || initialMovies[0].directorImagePath}`);
             }
 
             await Softflix.insertMany(initialMovies);
@@ -141,6 +138,7 @@ async function initDB(app) {
 
     } catch (error) {
         console.error('❌ ERROR CRÍTICO en initDB. Asegúrate de que MongoDB está corriendo en localhost:27017.', error.message);
+        // 💡 CRÍTICO: Relanzar el error para que app.js lo capture y detenga el servidor
         throw new Error("Fallo la conexión a la base de datos o la inserción inicial.");
     }
 }
@@ -154,6 +152,7 @@ async function cleanupDB() {
     } catch (err) {
         console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
     }
+    // No cerramos el cliente aquí si se va a re-utilizar inmediatamente en initDB
 }
 
 export async function closeDB() {
