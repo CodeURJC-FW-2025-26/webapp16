@@ -12,16 +12,16 @@
     {{> header }}
 
     <div class="container text-center mt-5">
-    <h2>Confirm Movie</h2>
+    <h2>Confirm {{type}}
 
-    <p>Movie: <strong>{{movieTitle}}</strong></p>
+    </h2> 
+    <p>Are you sure you want to add this {{type}}: "{{title}}"?
 
-    <a href="{{rutaDetalle}}" class="btn btn-success mt-3">
-        Confirm
+    </p> 
+    <a href="{{routeDetalle}}" class="btn btn-success mt-3"> Confirm 
+
     </a>
-</div>
-
-<div style="height: 80vh; visibility: hidden;">.</div>
-    {{> footer }}
+    </div>
+     {{> footer }}
 </body>
 </html>

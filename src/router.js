@@ -185,9 +185,10 @@ router.post("/addFilm", (req, res) => {
             // 5. Redirigir si todo va bien
             // 5. Mostrar página de confirmación
             return res.render("confirm", {
-                movieTitle: movie.title,
-                movieId: result.insertedId,
-                rutaDetalle: `/Ej/${result.insertedId}`
+               type: 'movie',
+               title: movie.title,
+               entityId: result.insertedId,
+               routeDetalle: `/Ej/${result.insertedId}`
             });
 
 
