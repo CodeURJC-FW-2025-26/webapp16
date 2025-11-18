@@ -12,6 +12,15 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
+// 🔑 NUEVA FUNCIÓN AUXILIAR: Añade el prefijo '/Uploads' a la ruta.
+const addUploadPrefix = (p) => {
+    if (!p) return null;
+    // Si la ruta ya empieza con /Uploads/, no la volvemos a añadir
+    if (p.startsWith('/Uploads/')) return p; 
+    // De lo contrario, añade el prefijo.
+    return `/Uploads${p}`;
+};
+
 
 // 💡 CRÍTICO: Función de transformación con limpieza robusta de rutas.
 const generateImagePaths = (movie) => {
@@ -40,13 +49,15 @@ const generateImagePaths = (movie) => {
         // 🔑 CORRECCIÓN 1: Usar la propiedad .name (donde está la ruta en data.json)
         const coverImage = movie.images.find(img => img.type === 'cover');
         if (coverImage) {
-            cover = coverImage.name; // <--- CORREGIDO: USAR .name
+            // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
+            cover = addUploadPrefix(coverImage.name); 
         }
 
         // El director en data.json no tiene type: 'director', así que solo buscamos si existe.
         const directorImage = movie.images.find(img => img.type === 'director');
         if (directorImage) {
-            directorImagePath = directorImage.name; // <--- USAR .name
+            // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
+            directorImagePath = addUploadPrefix(directorImage.name); 
         }
     }
 
@@ -54,8 +65,8 @@ const generateImagePaths = (movie) => {
     if (!directorImagePath && director) {
         // Asumimos una estructura estándar si la ruta no está en data.json
         const safeName = director.replace(/\s/g, '_');
-        // NOTA: Si tus imágenes de director están en /Uploads, usa /Uploads/Directors
-        directorImagePath = `/Imagenes/Directors/${safeName}.jpg`;
+        // ✅ APLICAR CORRECCIÓN: La ruta de fallback también debe estar en /Uploads
+        directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
     }
 
 
@@ -69,7 +80,7 @@ const generateImagePaths = (movie) => {
         ageClassification: ageClassification,
         director: director,
 
-        // 🔑 Rutas de imágenes (estandarizadas y corregidas)
+        // 🔑 Rutas de imágenes (estandarizadas y corregidas con /Uploads/)
         directorImagePath: directorImagePath,
         coverPath: cover,
 
@@ -119,7 +130,7 @@ async function initDB(app) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
             if (initialMovies.length > 0) {
                 // Este log ahora debería mostrar: /Uploads/Interstellar/...
-                console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA: ${initialMovies[0].directorImagePath}`);
+                console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA (CORREGIDA): ${initialMovies[0].coverPath}`);
             }
 
             await Softflix.insertMany(initialMovies);
