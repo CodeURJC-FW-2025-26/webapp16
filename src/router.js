@@ -224,13 +224,26 @@ router.get('/Ej/:id', async (req, res) => {
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
 
-        const film = await collection.findOne({ _id: new ObjectId(movieId) });
+        // 1. Usar $lookup en el campo 'comments' para obtener solo los comentarios nuevos (referenciados por ID)
+        const filmPipeline = await collection.aggregate([
+            { $match: { _id: new ObjectId(movieId) } },
+            {
+                $lookup: {
+                    from: "comentaries",
+                    localField: "comments",   // IDs de los comentarios añadidos
+                    foreignField: "_id",
+                    as: "reviewsData"         // Array de objetos de los nuevos comentarios
+                }
+            }
+        ]).toArray();
+
+        const film = filmPipeline[0];
 
         if (!film) {
             return res.status(404).send("Película no encontrada");
         }
 
-        // 1. Lógica para crear el array de casting (objetos con nombre y ruta de imagen)
+        // --- Lógica de Cast (Se mantiene) ---
         const castArray = [];
         const castNames = Array.isArray(film.cast)
             ? film.cast
@@ -241,8 +254,6 @@ router.get('/Ej/:id', async (req, res) => {
 
         for (let i = 0; i < castNames.length; i++) {
             const name = castNames[i];
-
-            // La ruta de la DB ya está corregida en Database.js (con /Uploads/)
             const imagePath = film[`actor${i + 1}ImagePath`];
 
             if (name) {
@@ -252,15 +263,28 @@ router.get('/Ej/:id', async (req, res) => {
                 });
             }
         }
+        // -------------------------------------
 
         // 2. Normalización de datos para la plantilla
+
+        // 🔑 PASO CRÍTICO: Separar los comentarios viejos (objetos) de los IDs.
+        let oldComments = [];
+        if (Array.isArray(film.comments)) {
+            // Un comentario viejo es un objeto completo (tiene la propiedad 'User_name').
+            // Un comentario nuevo es un ObjectId (no tiene 'User_name' como propiedad de primer nivel).
+            oldComments = film.comments.filter(item =>
+                typeof item === 'object' && item !== null && item.User_name !== undefined
+            );
+        }
+
+        // Obtener los comentarios nuevos (traídos por $lookup en reviewsData)
+        const newComments = Array.isArray(film.reviewsData) ? film.reviewsData : [];
+
         const filmNormalized = {
             ...film,
 
-            // Intentamos recuperar reviews o comments, pero esperamos que los nuevos vengan en 'comments'
-            reviews: Array.isArray(film.reviews)
-                ? film.reviews
-                : (Array.isArray(film.comments) ? film.comments : (Array.isArray(film.comentary) ? film.comentary : [])),
+            // 🔑 CORRECCIÓN: Concatenar los viejos y los nuevos comentarios.
+            reviews: oldComments.concat(newComments),
 
             // Poster principal
             poster: film.coverPath || film.cover || film.mainImagePath || null,
