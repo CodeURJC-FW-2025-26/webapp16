@@ -154,7 +154,7 @@ router.post("/addFilm", (req, res) => {
                 description: req.body.description,
                 releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
 
-                // CRÍTICO: Asegura que siempre sea un array, incluso si se selecciona un solo elemento
+                // CRÍTICO: Asegura que siempre sea un array
                 genre: Array.isArray(req.body.genre) ? req.body.genre : (req.body.genre ? [req.body.genre] : []),
 
                 rating: req.body.rating ? Number(req.body.rating) : undefined,
@@ -170,6 +170,7 @@ router.post("/addFilm", (req, res) => {
                 // CRÍTICO: Asegura que 'cast' siempre sea un array
                 cast: Array.isArray(req.body.cast) ? req.body.cast : (req.body.cast ? [req.body.cast] : []),
 
+                // Paths de imágenes de casting/director
                 directorImagePath: directorImagePath,
                 actor1ImagePath: actor1ImagePath,
                 actor2ImagePath: actor2ImagePath,
@@ -179,14 +180,17 @@ router.post("/addFilm", (req, res) => {
                 // CRÍTICO: Asegura que 'language' siempre sea un array
                 language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
 
-                comentary: []
+                comments: [] // Se podría usar 'comments' para consistencia con otras rutas
             };
 
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
-            await collection.insertOne(movie);
 
-            res.redirect('/indice');
+            // 🔑 CAMBIO CLAVE: Insertamos y capturamos el resultado (ID)
+            const result = await collection.insertOne(movie);
+
+            // 🔑 CAMBIO CLAVE: Redirigimos a la página de detalle (/Ej/:id) usando el ID insertado
+            res.redirect(`/Ej/${result.insertedId}`);
 
         } catch (err) {
             // 5. Borrar archivos si falla la inserción en la base de datos
