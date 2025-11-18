@@ -18,8 +18,7 @@
                 <h2 class="mb-4">Add/Edit film</h2>
                 <form role="form" method="post"
                     action="{{#editing}}/editFilm/{{film._id}}{{/editing}}{{^editing}}/addFilm{{/editing}}"
-                    enctype="multipart/form-data"
-                    onsubmit="return confirm('Are you sure you want to {{#editing}}update this film{{/editing}}{{^editing}}add this film to de catalog{{/editing}}?');">
+                    enctype="multipart/form-data">
                     <div class="mb-3 form-group">
                         <label for="title" class="form-label">Title of the film</label>
                         <input type="text" class="form-control" id="title" name="title"
