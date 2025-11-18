@@ -26,7 +26,7 @@ router.get('/indice', async (req, res) => {
 
         const query = {};
         if (searchQuery) query.title = { $regex: new RegExp(searchQuery, 'i') };
-        if (filterGenre && filterGenre !== 'Todos') query.genre = filterGenre;
+        if (filterGenre && filterGenre !== 'All') query.genre = filterGenre;
 
         const totalItems = await collection.countDocuments(query);
         const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -105,9 +105,9 @@ router.post("/addFilm", (req, res) => {
         if (err) {
             console.error('❌ File Upload ERROR (Multer):', err);
             return res.render('error', {
-                mensaje: `Error al procesar los archivos: ${err.message}`,
+                mensaje: `Error procesing files: ${err.message}`,
                 rutaBoton: '/add',
-                textoBoton: 'Volver al formulario'
+                textoBoton: 'Return to the form'
             });
         }
 
@@ -207,9 +207,9 @@ router.post("/addFilm", (req, res) => {
 
             console.error('❌ ERROR inserting movie into the database:', err);
             res.render('error', {
-                mensaje: `Error al guardar la película: ${err.message}`,
+                mensaje: `Error saving the film: ${err.message}`,
                 rutaBoton: '/add',
-                textoBoton: 'Volver al formulario'
+                textoBoton: 'Return to the form'
             });
         }
     });
@@ -240,7 +240,7 @@ router.get('/Ej/:id', async (req, res) => {
         const film = filmPipeline[0];
 
         if (!film) {
-            return res.status(404).send("Película no encontrada");
+            return res.status(404).send("Film not found");
         }
 
         // --- Cast Logic (Maintained) ---
@@ -313,7 +313,7 @@ router.post('/addComment', async (req, res) => {
         const { userName, rating, reviewText, movieId } = req.body;
 
         if (!userName || !rating || !reviewText || !movieId) {
-            return res.status(400).send('Faltan campos requeridos.');
+            return res.status(400).send('Missing required fields');
         }
 
         const db = req.app.locals.db;
@@ -343,7 +343,7 @@ router.post('/addComment', async (req, res) => {
 
     } catch (err) {
         console.error('❌ ERROR saving comment:', err);
-        res.status(500).send(`Error al guardar comentario: ${err.message}`);
+        res.status(500).send(`Error saving comment: ${err.message}`);
     }
 });
 
@@ -492,7 +492,7 @@ router.get('/edit/:id', async (req, res) => {
         const film = await collection.findOne({ _id: new ObjectId(movieId) });
 
         if (!film) {
-            return res.status(404).send("Película no encontrada para edición.");
+            return res.status(404).send("Film not found for edition");
         }
 
         // --- 2. Data normalization for the 'add.html' template ---
