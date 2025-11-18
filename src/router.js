@@ -107,8 +107,7 @@ router.get('/indice', async (req, res) => {
 
 
 router.post("/addFilm", (req, res) => {
-
-    // 1. Definir el middleware con upload.fields() para esperar los 7 campos de archivo
+    // Middleware para subir los archivos
     const uploadMiddleware = req.app.locals.upload.fields([
         { name: 'cover', maxCount: 1 },
         { name: 'titlePhoto', maxCount: 1 },
@@ -122,15 +121,26 @@ router.post("/addFilm", (req, res) => {
     uploadMiddleware(req, res, async (err) => {
         if (err) {
             console.error('❌ ERROR de Subida de Archivos (Multer):', err);
-            return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
+            return res.render('error', {
+                mensaje: `Error al procesar los archivos: ${err.message}`,
+                rutaBoton: '/add',
+                textoBoton: 'Volver al formulario'
+            });
         }
 
         try {
-            if (!req.body) {
-                return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
-            }
-
             const files = req.files;
+            const body = req.body;
+
+            // 1. Validación de campos obligatorios
+            const { title, description, releaseYear, director, cast, genre, ageClassification } = body;
+            if (!title || !description || !releaseYear || !director || !cast || !genre || !ageClassification) {
+                return res.render('error', {
+                    mensaje: 'Todos los campos obligatorios deben ser completados.',
+                    rutaBoton: '/add',
+                    textoBoton: 'Volver al formulario'
+                });
+            }
 
             // 2. Función auxiliar para obtener la ruta de un archivo específico
             const getFilePath = (fieldName) => {
@@ -139,72 +149,58 @@ router.post("/addFilm", (req, res) => {
                     : null;
             };
 
-            // 3. Extraer todas las rutas de las imágenes subidas
-            const coverPath = getFilePath('cover');
-            const titlePhotoPath = getFilePath('titlePhoto');
-            const filmPhotoPath = getFilePath('filmPhoto');
-            const directorImagePath = getFilePath('fotoDirector');
-            const actor1ImagePath = getFilePath('fotoActor1');
-            const actor2ImagePath = getFilePath('fotoActor2');
-            const actor3ImagePath = getFilePath('fotoActor3');
-
-            // 4. Crear el objeto movie - LÓGICA DE ARRAY CORREGIDA
+            // 3. Rutas de las imágenes
             const movie = {
-                title: req.body.title,
-                description: req.body.description,
-                releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
-
-                // CRÍTICO: Asegura que siempre sea un array, incluso si se selecciona un solo elemento
-                genre: Array.isArray(req.body.genre) ? req.body.genre : (req.body.genre ? [req.body.genre] : []),
-
-                rating: req.body.rating ? Number(req.body.rating) : undefined,
-                ageClassification: req.body.ageClassification,
-                director: req.body.director,
-
-                // Imágenes de la película
-                coverPath: coverPath,
-                titlePhotoPath: titlePhotoPath,
-                filmPhotoPath: filmPhotoPath,
-
-                // Información de casting
-                // CRÍTICO: Asegura que 'cast' siempre sea un array
-                cast: Array.isArray(req.body.cast) ? req.body.cast : (req.body.cast ? [req.body.cast] : []),
-
-                directorImagePath: directorImagePath,
-                actor1ImagePath: actor1ImagePath,
-                actor2ImagePath: actor2ImagePath,
-                actor3ImagePath: actor3ImagePath,
-
-                duration: req.body.duration,
-                // CRÍTICO: Asegura que 'language' siempre sea un array
-                language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
-
+                title,
+                description,
+                releaseYear: Number(releaseYear),
+                genre: Array.isArray(genre) ? genre : [genre],
+                rating: body.rating ? Number(body.rating) : undefined,
+                ageClassification,
+                director,
+                coverPath: getFilePath('cover'),
+                titlePhotoPath: getFilePath('titlePhoto'),
+                filmPhotoPath: getFilePath('filmPhoto'),
+                cast: Array.isArray(cast) ? cast : [cast],
+                directorImagePath: getFilePath('fotoDirector'),
+                actor1ImagePath: getFilePath('fotoActor1'),
+                actor2ImagePath: getFilePath('fotoActor2'),
+                actor3ImagePath: getFilePath('fotoActor3'),
+                duration: body.duration,
+                language: Array.isArray(body.language) ? body.language : (body.language ? [body.language] : []),
                 comentary: []
             };
 
+            // 4. Insertar en la base de datos
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
             await collection.insertOne(movie);
 
+            // 5. Redirigir si todo va bien
             res.redirect('/indice');
 
         } catch (err) {
-            // 5. Borrar archivos si falla la inserción en la base de datos
-            const files = req.files;
-            if (files) {
-                Object.keys(files).forEach(key => {
-                    files[key].forEach(file => {
+            // 6. Borrar archivos si falla
+            if (req.files) {
+                Object.keys(req.files).forEach(key => {
+                    req.files[key].forEach(file => {
                         fs.unlink(file.path, (unlinkErr) => {
-                            if (unlinkErr) console.error(`Error al borrar archivo subido (${file.filename}):`, unlinkErr);
+                            if (unlinkErr) console.error(`Error al borrar archivo (${file.filename}):`, unlinkErr);
                         });
                     });
                 });
             }
+
             console.error('❌ ERROR al insertar película en la base de datos:', err);
-            res.status(500).send(`Error al guardar la película: ${err.message}`);
+            res.render('error', {
+                mensaje: `Error al guardar la película: ${err.message}`,
+                rutaBoton: '/add',
+                textoBoton: 'Volver al formulario'
+            });
         }
     });
 });
+
 
 // ... (rest of router.js, including /indice route)
 
