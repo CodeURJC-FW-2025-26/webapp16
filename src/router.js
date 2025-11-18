@@ -112,16 +112,24 @@ router.post("/addFilm", (req, res) => {
         try {
             const files = req.files;
             const body = req.body;
-
-            // 1. Validación de campos obligatorios
+            // 1. ERRORS
+            // 1.1 Validación de campos obligatorios
             const { title, description, releaseYear, director, cast, genre, ageClassification } = body;
             if (!title || !description || !releaseYear || !director || !cast || !genre || !ageClassification) {
                 return res.render('error', {
-                    mensaje: 'Todos los campos obligatorios deben ser completados.',
+                    mensaje: 'All required fields must be completed.',
                     rutaBoton: '/add',
-                    textoBoton: 'Volver al formulario'
+                    textoBoton: 'Return to the form'
                 });
             }
+
+            // 1.2 TITTLE OR NAME DUPLICATED
+            const existingMovie = await req.app.locals.db.collection('Softflix').findOne({ title: title });
+            return res.render('error', {
+                mensaje: `There is already a movie with that title "${title}". Please, choose antoher tittle for the movie.`,
+                rutaBoton: '/add',
+                textoBoton: ' Return to the form'
+            });
 
             // 2. Función auxiliar para obtener la ruta de un archivo específico
             const getFilePath = (fieldName) => {
