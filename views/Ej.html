@@ -95,11 +95,11 @@
         {{#reviews}}
         <div class="review">
             <div class="user-info">
-                <img src="/Imagenes/User/user.jpg" alt="{{userName}}">
-                <strong>{{User_name}}</strong>
+                <img src="/User/user.jpg" alt="{{userName}}">
+                <strong>{{userName}}</strong>
             </div>
-            <p>{{description}}</p>
-            <p>⭐ {{Rating}}</p>
+            <p>{{text}}</p>
+            <p>⭐ {{rating}}</p>
         </div>
         {{/reviews}}
         {{^reviews}}
@@ -112,7 +112,7 @@
         <form class="mx-auto shadow p-4 rounded" style="max-width: 600px;" method="POST" action="/Ej/{{_id}}/addReview">
             <div class="mb-3">
                 <label for="userName" class="form-label">User name</label>
-                <input type="text" class="form-control" id="userName" name="review" placeholder="Enter your name"
+                <input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name"
                     required>
             </div>
             <div class="mb-3">
@@ -121,8 +121,8 @@
             </div>
             <div class="mb-3">
                 <label for="reviewText" class="form-label">Review</label>
-                <textarea class="form-control" id="reviewText" name="review" rows="4" placeholder="Write your review..."
-                    required></textarea>
+                <textarea class="form-control" id="reviewText" name="reviewText" rows="4"
+                    placeholder="Write your review..." required></textarea>
             </div>
 
             <div class="d-flex justify-content-between mt-4">

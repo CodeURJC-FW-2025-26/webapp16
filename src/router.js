@@ -317,56 +317,80 @@ router.get('/Ej/:id', async (req, res) => {
             return res.status(404).send("Película no encontrada");
         }
 
-        // 1. Lógica para crear el array de casting (Array de Objetos)
+        // 1. Lógica para crear el array de casting 
         const castArray = [];
-        // Itera sobre los campos Actor1, Actor2, Actor3 que se guardaron en Database.js
         for (let i = 1; i <= 3; i++) {
-            const actorNameKey = `Actor${i}`;
-            const actorImageKey = `image_actor${i}`;
-
-            const name = film[actorNameKey];
-            const imagePath = film[actorImageKey];
-
+            const name = film[`Actor${i}`];
+            const imagePath = film[`image_actor${i}`];
             if (name) {
-                // Se genera un objeto { name: 'Nombre', imagePath: 'ruta' }
-                castArray.push({
-                    name: name,
-                    // Ruta de la imagen, o una ruta por defecto si el campo está vacío
-                    imagePath: imagePath || '/path/to/default/actor.jpg'
-                });
+                // Aquí usamos el objeto si tu HTML lo espera, o solo el nombre si usa {{#cast}}{{.}}{{/cast}}
+                // Para simplificar, asumiremos que tu HTML funciona con strings de nombres.
+                castArray.push(name);
             }
         }
 
         // 2. Normalización de datos para la plantilla
         const filmNormalized = {
             ...film,
-            // (Tu normalización existente para otros campos)
+
             title: film.Title || film.title,
             rating: film.Calification || film.rating,
             ageClassification: film.Age_classification || film.ageClassification,
             duration: film.Duration || film.duration,
             releaseYear: film.Realase_year || film.releaseYear,
             director: film.Director || film.director,
+
+            // Asignamos el nombre 'reviews' buscando en todas las posibles claves
+            reviews: Array.isArray(film.reviews)
+                ? film.reviews
+                : (Array.isArray(film.comments)
+                    ? film.comments
+                    : (Array.isArray(film.comentary) ? film.comentary : [])),
+
             poster: film.cover || film.bannerImage || film.image_file || film.coverPath || film.mainImagePath || null,
-            reviews: film.comments || film.reviews || film.comentary || [],
-
-            // 🔑 CRÍTICO: Asignar el array de objetos 'cast'
-            cast: castArray,
-
-            // CRÍTICO: Asegurar que 'language' existe (array de strings)
+            cast: Array.isArray(film.cast) ? film.cast : castArray,
             language: Array.isArray(film.language) ? film.language : (film.language || []),
-
             directorImagePath: film.directorImagePath || film.fotoDirector
         };
 
-        // Renderizar la vista
-        res.render('Ej', {
-            ...filmNormalized,
-        });
+        res.render('Ej', { ...filmNormalized });
 
     } catch (err) {
         console.error('❌ ERROR al cargar el detalle de la película:', err);
         res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
+    }
+});
+
+// =======================================================
+// ➡️ POST /Ej/:id/addReview  → Manejar la adición de reseñas
+// =======================================================
+router.post('/Ej/:id/addReview', async (req, res) => {
+    try {
+        const movieId = req.params.id;
+        const db = req.app.locals.db;
+        const collection = db.collection('Softflix');
+
+        // Los nombres de campo (userName, rating, reviewText) coinciden con el formulario corregido de Ej.html
+        const newReview = {
+            userName: req.body.userName,
+            rating: parseInt(req.body.rating),
+            text: req.body.reviewText, // Asegúrate de que el name en el HTML es 'reviewText'
+            date: new Date()
+        };
+
+        // Añadir la nueva reseña al array 'reviews' en MongoDB
+        // Usamos 'reviews' como nombre de campo estándar en la DB para las nuevas inserciones.
+        await collection.updateOne(
+            { _id: new ObjectId(movieId) },
+            { $push: { reviews: newReview } }
+        );
+
+        // Redirigir al usuario de vuelta a la página de detalle
+        res.redirect(`/Ej/${movieId}`);
+
+    } catch (err) {
+        console.error('❌ ERROR al añadir la reseña:', err);
+        res.status(500).send(`Error al añadir la reseña: ${err.message}`);
     }
 });
 
