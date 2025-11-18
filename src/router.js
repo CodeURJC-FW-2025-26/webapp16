@@ -189,7 +189,8 @@ router.post("/addFilm", (req, res) => {
                 title: movie.title,
                 entityId: result.insertedId,
                 action: 'add',
-                routeDetalle: `/Ej/${result.insertedId}`
+                routeDetalle: `/Ej/${result.insertedId}`,
+                actiontype: 'movie'
             });
 
 
@@ -366,7 +367,9 @@ router.post('/deleteFilm', async (req, res) => {
             type: 'delete movie',              // Used in the view to display the message
             title: movie.title,             // Title to display on the page
             routeDetalle: `/deleteFilm/${movieId}/confirmed`, // Route that performs the actual deletion
-            action: 'delete'
+            action: 'delete',
+            actiontype: 'movie'
+
         });
 
     } catch (err) {
@@ -465,6 +468,7 @@ router.post('/Ej/:id/addReview', async (req, res) => {
             type: 'review',
             action: 'added',
             title: `Review by ${userName}`,
+            actiontype: 'review',
             routeDetalle: `/Ej/${movieId}`
         });
 
