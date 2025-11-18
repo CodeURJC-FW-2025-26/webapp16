@@ -49,7 +49,7 @@ app.locals.upload = multer({ storage: storage });
 // ----------------------------------------------------
 // 🛠️ CONFIGURACIÓN MUSTACHE Y PARSERS
 // ----------------------------------------------------
-app.engine("html", mustacheExpress(partialsPath));
+app.engine("html", mustacheExpress(partialsPath, ".html"));
 app.set("view engine", "html");
 app.set("views", viewsPath);
 app.use(express.urlencoded({ extended: true }));

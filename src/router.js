@@ -88,114 +88,101 @@ router.get('/indice', async (req, res) => {
 });
 
 router.post("/addFilm", (req, res) => {
-
-    // 1. Configuración de Multer para recibir todos los campos de archivo
+    // Middleware para subir los archivos
     const uploadMiddleware = req.app.locals.upload.fields([
-        { name: 'cover', maxCount: 1 },         // Portada principal
-        { name: 'titlePhoto', maxCount: 1 },    // Foto del título
-        { name: 'filmPhoto', maxCount: 1 },     // Foto de la película (escena o banner)
-        { name: 'fotoDirector', maxCount: 1 },  // Foto del director
-        { name: 'fotoActor1', maxCount: 1 },    // Foto del Actor 1
-        { name: 'fotoActor2', maxCount: 1 },    // Foto del Actor 2
-        { name: 'fotoActor3', maxCount: 1 },    // Foto del Actor 3
+        { name: 'cover', maxCount: 1 },
+        { name: 'titlePhoto', maxCount: 1 },
+        { name: 'filmPhoto', maxCount: 1 },
+        { name: 'fotoDirector', maxCount: 1 },
+        { name: 'fotoActor1', maxCount: 1 },
+        { name: 'fotoActor2', maxCount: 1 },
+        { name: 'fotoActor3', maxCount: 1 },
     ]);
 
     uploadMiddleware(req, res, async (err) => {
         if (err) {
             console.error('❌ ERROR de Subida de Archivos (Multer):', err);
-            // 💡 Si el error es Multer, puedes redirigir a un formulario con mensaje de error
-            return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
+            return res.render('error', {
+                mensaje: `Error al procesar los archivos: ${err.message}`,
+                rutaBoton: '/add',
+                textoBoton: 'Volver al formulario'
+            });
         }
 
         try {
-            if (!req.body) {
-                return res.status(400).send('No se recibió cuerpo (req.body) en la solicitud');
+            const files = req.files;
+            const body = req.body;
+
+            // 1. Validación de campos obligatorios
+            const { title, description, releaseYear, director, cast, genre, ageClassification } = body;
+            if (!title || !description || !releaseYear || !director || !cast || !genre || !ageClassification) {
+                return res.render('error', {
+                    mensaje: 'Todos los campos obligatorios deben ser completados.',
+                    rutaBoton: '/add',
+                    textoBoton: 'Volver al formulario'
+                });
             }
 
-            const files = req.files;
-
-            // 🔑 Función auxiliar CRÍTICA: Convierte la ruta absoluta de Multer a una URL pública
-            // Maneja subcarpetas quitando el prefijo estático 'Public/'
+            // 2. Función auxiliar para obtener la ruta de un archivo específico
             const getFilePath = (fieldName) => {
-                const file = files && files[fieldName] && files[fieldName][0];
-                if (!file) return null;
-
-                // 1. Normaliza separadores de ruta (útil en Windows)
-                let publicPath = file.path.replace(/\\/g, '/');
-
-                // 2. Elimina el directorio raíz estático ('Public/')
-                // Transforma 'Public/Uploads/subcarpeta/foto.jpg' en '/Uploads/subcarpeta/foto.jpg'
-                // Esto es crucial para que el navegador pueda acceder al archivo.
-                publicPath = publicPath.replace(/^[./]*Public\//i, '/');
-
-                return publicPath;
+                return files && files[fieldName] && files[fieldName][0]
+                    ? `/Uploads/${files[fieldName][0].filename}`
+                    : null;
             };
 
-            // 3. Extracción de rutas (mapeo CORRECTO de los campos de Multer a las variables estandarizadas)
-            const coverPath = getFilePath('cover');
-            const titlePhotoPath = getFilePath('titlePhoto');
-            const filmPhotoPath = getFilePath('filmPhoto'); // ✅ CORRECCIÓN: Ahora mapea el campo 'filmPhoto'
-            const directorImagePath = getFilePath('fotoDirector');
-            const actor1ImagePath = getFilePath('fotoActor1');
-            const actor2ImagePath = getFilePath('fotoActor2');
-            const actor3ImagePath = getFilePath('fotoActor3');
-
-            // 4. Crear el objeto movie con datos del formulario
+            // 3. Rutas de las imágenes
             const movie = {
-                title: req.body.title,
-                description: req.body.description,
-                releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
-
-                // Asegura que los campos con múltiples selecciones sean arrays
-                genre: Array.isArray(req.body.genre) ? req.body.genre : (req.body.genre ? [req.body.genre] : []),
-
-                rating: req.body.rating ? Number(req.body.rating) : undefined,
-                ageClassification: req.body.ageClassification,
-                director: req.body.director,
-
-                // 🔑 Rutas de Imágenes (estandarizadas y mapeadas correctamente)
-                coverPath: coverPath,
-                titlePhotoPath: titlePhotoPath,
-                filmPhotoPath: filmPhotoPath,
-                directorImagePath: directorImagePath,
-                actor1ImagePath: actor1ImagePath,
-                actor2ImagePath: actor2ImagePath,
-                actor3ImagePath: actor3ImagePath,
-
-                // Casting
-                cast: Array.isArray(req.body.cast) ? req.body.cast : (req.body.cast ? [req.body.cast] : []),
-
-                duration: req.body.duration,
-                language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
-                comments: []
+                title,
+                description,
+                releaseYear: Number(releaseYear),
+                genre: Array.isArray(genre) ? genre : [genre],
+                rating: body.rating ? Number(body.rating) : undefined,
+                ageClassification,
+                director,
+                coverPath: getFilePath('cover'),
+                titlePhotoPath: getFilePath('titlePhoto'),
+                filmPhotoPath: getFilePath('filmPhoto'),
+                cast: Array.isArray(cast) ? cast : [cast],
+                directorImagePath: getFilePath('fotoDirector'),
+                actor1ImagePath: getFilePath('fotoActor1'),
+                actor2ImagePath: getFilePath('fotoActor2'),
+                actor3ImagePath: getFilePath('fotoActor3'),
+                duration: body.duration,
+                language: Array.isArray(body.language) ? body.language : (body.language ? [body.language] : []),
+                comentary: []
             };
 
+            // 4. Insertar en la base de datos
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
 
+            // 🔑 CAMBIO CLAVE: Insertamos y capturamos el resultado (ID)
             const result = await collection.insertOne(movie);
 
-            // Redirección a la página de detalle con el nuevo ID
-            res.redirect(`/Ej/${result.insertedId}`);
+            // 5. Redirigir si todo va bien
+            res.redirect('/indice');
 
         } catch (err) {
-            // 💡 Manejo de errores: Borrar archivos subidos si falla la inserción en la DB
-            const files = req.files;
-            if (files) {
-                Object.keys(files).forEach(key => {
-                    files[key].forEach(file => {
+            // 6. Borrar archivos si falla
+            if (req.files) {
+                Object.keys(req.files).forEach(key => {
+                    req.files[key].forEach(file => {
                         fs.unlink(file.path, (unlinkErr) => {
-                            if (unlinkErr) console.error(`Error al borrar archivo subido (${file.filename}):`, unlinkErr);
+                            if (unlinkErr) console.error(`Error al borrar archivo (${file.filename}):`, unlinkErr);
                         });
                     });
                 });
             }
+
             console.error('❌ ERROR al insertar película en la base de datos:', err);
-            res.status(500).send(`Error al guardar la película: ${err.message}`);
+            res.render('error', {
+                mensaje: `Error al guardar la película: ${err.message}`,
+                rutaBoton: '/add',
+                textoBoton: 'Volver al formulario'
+            });
         }
     });
 });
-
 // ----------------------------------------------------
 // ➡️ Ruta de Detalle de Película (/Ej/:id)
 // ----------------------------------------------------
