@@ -414,9 +414,9 @@ router.get('/deleteFilm/:id/confirmed', async (req, res) => {
     }
 });
 
+
 // =======================================================
-// ➡️ POST /Ej/:id/addReview → Handle review addition (UNIFIED MODEL)
-// =======================================================
+// // ➡️ POST /Ej/:id/addReview → Add a review (UNIFIED MODEL) with confirmation
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
         const movieId = req.params.id;
@@ -425,10 +425,14 @@ router.post('/Ej/:id/addReview', async (req, res) => {
         // 1. Validate required fields
         const { userName, rating, reviewText } = req.body;
         if (!userName || !rating || !reviewText || !movieId) {
-            return res.status(400).send('Faltan campos requeridos para la reseña.');
+            return res.render('error', {
+                message: 'All required fields must be completed for the review.',
+                redirect: `/Ej/${movieId}`,
+                buttonText: 'Return to the form'
+            });
         }
 
-        // 2. Insert the comment as a separate document into 'comentaries'
+        // 2. Insert the review into 'comentaries'
         const comentaryCollection = db.collection('comentaries');
         const result = await comentaryCollection.insertOne({
             User_name: userName,
@@ -438,21 +442,39 @@ router.post('/Ej/:id/addReview', async (req, res) => {
             createdAt: new Date()
         });
 
-        // 3. Update the movie: Add the reference (ID) to the 'comments' array (Unified Model)
+        // 3. Update the movie document: add review ID to 'comments' array
         const moviesCollection = db.collection('Softflix');
         await moviesCollection.updateOne(
             { _id: new ObjectId(movieId) },
             { $push: { comments: result.insertedId } }
         );
 
-        console.log(`✅ Review saved with ID: ${result.insertedId} and referenced in the movie.`);
+        console.log(`✅ Review saved with ID: ${result.insertedId} and linked to movie.`);
 
-        // Redirect the user back to the detail page
-        res.redirect(`/Ej/${movieId}`);
+        // 4. Render the confirmation page instead of redirect
+        const movie = await moviesCollection.findOne({ _id: new ObjectId(movieId) });
+        if (!movie) {
+            return res.render('error', {
+                message: 'Movie not found for confirmation.',
+                redirect: '/indice',
+                buttonText: 'Return to Index'
+            });
+        }
+
+        return res.render('confirm', {
+            type: 'review',
+            action: 'added',
+            title: `Review by ${userName}`,
+            routeDetalle: `/Ej/${movieId}`
+        });
 
     } catch (err) {
         console.error('❌ ERROR adding review (Unified Model):', err);
-        res.status(500).send(`Error al añadir la reseña: ${err.message}`);
+        return res.render('error', {
+            message: `Error adding the review: ${err.message}`,
+            redirect: `/Ej/${req.params.id}`,
+            buttonText: 'Return to the form'
+        });
     }
 });
 
