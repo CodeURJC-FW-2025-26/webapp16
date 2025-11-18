@@ -103,6 +103,69 @@
 
 # Practica 2
 
+--
+
+## 💻 Technology Stack
+
+This project was built using the following technology stack:
+
+* **Backend:** Node.js
+* **Database:** MongoDB
+* **Package Manager:** npm
+
+---
+
+##  Execution Instructions
+
+To download, build, and run the web application, follow the steps below. The application is designed to clean and reload the database (using `data.json`) every time the server starts.
+
+---
+
+### 1.  Prerequisites
+
+Ensure you have the following components installed on your system:
+
+* **Node.js:** Recommended version **18+ (LTS)**.
+* **Package Manager:** `npm` (included with Node.js).
+* **MongoDB:** The MongoDB server must be running on the default port (**27017**). The application is configured to connect to `mongodb://localhost:27017/Softflix`.
+
+---
+
+### 2.  Download and Installation
+
+Use the command line to download the code from the repository and install all project dependencies.
+
+``bash
+# 1. Clone the repository
+git clone <REPOSITORY_URL>
+
+# 2. Access the project directory
+cd <DIRECTORY_NAME>
+
+# 3. Install all dependencies
+npm install
+
+### 3.  Application Execution
+
+Once the dependencies are installed and the MongoDB server is running, you can start the application.
+
+> **Critical Flow:** When the application starts, a process runs that deletes all existing documents and reloads the data from `data.json` into the database, ensuring a clean initial state on every execution.
+
+``bash
+# 1. Ensure MongoDB is running on localhost:27017
+# (This step must be performed outside the application console)
+
+# 2. Start the application server:
+node app.js
+
+#### Access
+
+Once you see the message `Server running at http://localhost:3000` in the console, you can access the application in your web browser:
+
+* **Access URL:** `http://localhost:3000`
+
+---
+
 #  File Structure and Responsibilities
 
 This section details the function of each key file in the website's implementation, adhering to the **Model-View-Controller (MVC)** architecture.
