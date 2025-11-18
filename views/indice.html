@@ -28,37 +28,34 @@
     </div>
     <div class="container my-4">
         <div class="row">
-            <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
-                <form method="GET" action="/indice" class="d-flex w-100" style="max-width: 450px;">
-                    <input type="text" name="search" class="form-control me-2" placeholder="Buscar por Título..."
-                        value="{{currentSearch}}">
-                    {{#currentFilter}}<input type="hidden" name="genre" value="{{currentFilter}}">{{/currentFilter}}
-                    <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+            <div class="col-12 d-flex flex-column flex-md-row justify-content-between">
+                <form class="d-flex mb-3 mb-md-0 w-100 me-md-3" role="search" method="get" action="/indice">
+                    <input class="form-control me-2" type="search" placeholder="Search by title" aria-label="Search"
+                        name="search" value="{{currentSearch}}">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
                     {{#currentSearch}}
-                    <a href="/indice{{#currentFilter}}?genre={{currentFilter}}{{/currentFilter}}"
-                        class="btn btn-outline-secondary ms-1" title="Limpiar búsqueda">X</a>
+                    <a href="/indice" class="btn btn-outline-secondary ms-2">Clear</a>
                     {{/currentSearch}}
                 </form>
 
-                <a href="/add" class="btn btn-primary d-flex align-items-center gap-2">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>Add New Film</span>
-                </a>
-            </div>
-            <div class="col-12 mb-4 d-flex flex-wrap gap-2 align-items-center">
-                <span class="me-2 fw-bold">Filtrar por Género:</span>
-
-                <a href="/indice{{#currentSearch}}?search={{currentSearch}}{{/currentSearch}}"
-                    class="btn btn-sm {{^currentFilter}}btn-success{{/currentFilter}}{{#currentFilter}}btn-outline-secondary{{/currentFilter}}">
-                    Todos
-                </a>
-
-                {{#genres}}
-                <a href="{{url}}"
-                    class="btn btn-sm {{#isActive}}btn-success{{/isActive}}{{^isActive}}btn-outline-secondary{{/isActive}}">
-                    {{name}}
-                </a>
-                {{/genres}}
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="genreFilterDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        {{#currentFilter}}
+                        {{currentFilter}}
+                        {{/currentFilter}}
+                        {{^currentFilter}}
+                        Genre: Todos
+                        {{/currentFilter}}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="genreFilterDropdown">
+                        <li><a class="dropdown-item {{^currentFilter}}active{{/currentFilter}}"
+                                href="/indice?search={{currentSearch}}">Todos</a></li>
+                        {{#genres}}
+                        <li><a class="dropdown-item {{#isActive}}active{{/isActive}}" href="{{url}}">{{name}}</a></li>
+                        {{/genres}}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -67,8 +64,7 @@
             {{#films}}
             <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
                 <a href="/Ej/{{_id}}">
-                    <img src="{{directorImagePath}}" alt="{{title}}" class="gallery-img">
-                </a>
+                    <img src="{{posterUrl}}" alt="{{title}}" class="gallery-img"> </a>
             </div>
             {{/films}}
             {{^films}}
@@ -103,6 +99,7 @@
     </div>
     {{/hasPagination}}
     {{> footer}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

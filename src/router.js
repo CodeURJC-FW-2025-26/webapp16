@@ -21,79 +21,61 @@ router.get('/indice', async (req, res) => {
         const db = req.app.locals.db;
         const collection = db.collection('Softflix');
 
-        // 1. Obtener parámetros de query
         const currentPage = parseInt(req.query.page) || 1;
         const searchQuery = req.query.search ? req.query.search.trim() : null;
         const filterGenre = req.query.genre ? req.query.genre.trim() : null;
 
-        // 2. Construir el objeto de consulta (query)
         const query = {};
+        if (searchQuery) query.title = { $regex: new RegExp(searchQuery, 'i') };
+        if (filterGenre && filterGenre !== 'Todos') query.genre = filterGenre;
 
-        if (searchQuery) {
-            // Búsqueda insensible a mayúsculas/minúsculas en el campo 'title'
-            query.title = { $regex: new RegExp(searchQuery, 'i') };
-        }
-
-        if (filterGenre && filterGenre !== 'Todos') {
-            // Filtra por género dentro del array 'genre'
-            query.genre = filterGenre;
-        }
-
-        // 3. Obtener el total de documentos para la paginación
         const totalItems = await collection.countDocuments(query);
         const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-        // 4. Calcular el offset
         const skip = (currentPage - 1) * ITEMS_PER_PAGE;
 
-        // 5. Obtener las películas de la página actual
         const films = await collection.find(query)
-            .sort({ releaseYear: -1 }) // Opcional: ordenar por año de estreno
+            .sort({ releaseYear: -1 })
             .skip(skip)
             .limit(ITEMS_PER_PAGE)
             .toArray();
 
-        // 6. Generar enlaces de paginación
+        // Normalizar las rutas de las imágenes para el índice
+        const normalizedFilms = films.map(f => ({
+            ...f,
+            // Prioridad: coverPath (Nuevo/Estandarizado) > directorImagePath (Fallback para datos iniciales)
+            posterUrl: f.coverPath || f.directorImagePath,
+        }));
+
+        // ... (lógica de paginación y géneros)
         const paginationLinks = [];
         const baseUrl = `/indice?${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ''}${filterGenre ? `genre=${encodeURIComponent(filterGenre)}&` : ''}`;
-
         for (let i = 1; i <= totalPages; i++) {
-            paginationLinks.push({
-                page: i,
-                url: `${baseUrl}page=${i}`,
-                isCurrent: i === currentPage
-            });
+            paginationLinks.push({ page: i, url: `${baseUrl}page=${i}`, isCurrent: i === currentPage });
         }
-
-        // 7. Generar URLs para Anterior y Siguiente
         const prevPage = Math.max(1, currentPage - 1);
         const nextPage = Math.min(totalPages, currentPage + 1);
 
-        // 8. Obtener la lista de géneros disponibles para los botones de filtro
         const genresCursor = await collection.aggregate([
             { $unwind: "$genre" },
             { $group: { _id: "$genre" } },
             { $sort: { _id: 1 } }
         ]).toArray();
-
         const availableGenres = genresCursor.map(g => ({
             name: g._id,
             isActive: g._id === filterGenre,
-            // URL que mantiene la búsqueda y aplica el filtro
             url: `/indice?genre=${encodeURIComponent(g._id)}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`
         }));
+        // Fin de lógica de paginación y géneros
 
-        // 9. Renderizar la vista
         res.render("indice", {
-            films: films,
+            films: normalizedFilms,
             pagination: paginationLinks,
             hasPagination: totalPages > 1,
-            // Navegación Anterior/Siguiente
             prevUrl: `${baseUrl}page=${prevPage}`,
             nextUrl: `${baseUrl}page=${nextPage}`,
             isPrevDisabled: currentPage <= 1,
             isNextDisabled: currentPage >= totalPages,
-            // Estado del Buscador/Filtro
             currentSearch: searchQuery,
             currentFilter: filterGenre,
             genres: availableGenres
@@ -105,23 +87,23 @@ router.get('/indice', async (req, res) => {
     }
 });
 
-
 router.post("/addFilm", (req, res) => {
 
-    // 1. Definir el middleware con upload.fields() para esperar los 7 campos de archivo
+    // 1. Configuración de Multer para recibir todos los campos de archivo
     const uploadMiddleware = req.app.locals.upload.fields([
-        { name: 'cover', maxCount: 1 },
-        { name: 'titlePhoto', maxCount: 1 },
-        { name: 'filmPhoto', maxCount: 1 },
-        { name: 'fotoDirector', maxCount: 1 },
-        { name: 'fotoActor1', maxCount: 1 },
-        { name: 'fotoActor2', maxCount: 1 },
-        { name: 'fotoActor3', maxCount: 1 },
+        { name: 'cover', maxCount: 1 },         // Portada principal
+        { name: 'titlePhoto', maxCount: 1 },    // Foto del título
+        { name: 'filmPhoto', maxCount: 1 },     // Foto de la película (escena o banner)
+        { name: 'fotoDirector', maxCount: 1 },  // Foto del director
+        { name: 'fotoActor1', maxCount: 1 },    // Foto del Actor 1
+        { name: 'fotoActor2', maxCount: 1 },    // Foto del Actor 2
+        { name: 'fotoActor3', maxCount: 1 },    // Foto del Actor 3
     ]);
 
     uploadMiddleware(req, res, async (err) => {
         if (err) {
             console.error('❌ ERROR de Subida de Archivos (Multer):', err);
+            // 💡 Si el error es Multer, puedes redirigir a un formulario con mensaje de error
             return res.status(500).send(`Error al procesar el archivo: ${err.message}`);
         }
 
@@ -132,68 +114,72 @@ router.post("/addFilm", (req, res) => {
 
             const files = req.files;
 
-            // 2. Función auxiliar para obtener la ruta de un archivo específico
+            // 🔑 Función auxiliar CRÍTICA: Convierte la ruta absoluta de Multer a una URL pública
+            // Maneja subcarpetas quitando el prefijo estático 'Public/'
             const getFilePath = (fieldName) => {
-                return files && files[fieldName] && files[fieldName][0]
-                    ? `/Uploads/${files[fieldName][0].filename}`
-                    : null;
+                const file = files && files[fieldName] && files[fieldName][0];
+                if (!file) return null;
+
+                // 1. Normaliza separadores de ruta (útil en Windows)
+                let publicPath = file.path.replace(/\\/g, '/');
+
+                // 2. Elimina el directorio raíz estático ('Public/')
+                // Transforma 'Public/Uploads/subcarpeta/foto.jpg' en '/Uploads/subcarpeta/foto.jpg'
+                // Esto es crucial para que el navegador pueda acceder al archivo.
+                publicPath = publicPath.replace(/^[./]*Public\//i, '/');
+
+                return publicPath;
             };
 
-            // 3. Extraer todas las rutas de las imágenes subidas
+            // 3. Extracción de rutas (mapeo CORRECTO de los campos de Multer a las variables estandarizadas)
             const coverPath = getFilePath('cover');
             const titlePhotoPath = getFilePath('titlePhoto');
-            const filmPhotoPath = getFilePath('filmPhoto');
+            const filmPhotoPath = getFilePath('filmPhoto'); // ✅ CORRECCIÓN: Ahora mapea el campo 'filmPhoto'
             const directorImagePath = getFilePath('fotoDirector');
             const actor1ImagePath = getFilePath('fotoActor1');
             const actor2ImagePath = getFilePath('fotoActor2');
             const actor3ImagePath = getFilePath('fotoActor3');
 
-            // 4. Crear el objeto movie - LÓGICA DE ARRAY CORREGIDA
+            // 4. Crear el objeto movie con datos del formulario
             const movie = {
                 title: req.body.title,
                 description: req.body.description,
                 releaseYear: req.body.releaseYear ? Number(req.body.releaseYear) : undefined,
 
-                // CRÍTICO: Asegura que siempre sea un array
+                // Asegura que los campos con múltiples selecciones sean arrays
                 genre: Array.isArray(req.body.genre) ? req.body.genre : (req.body.genre ? [req.body.genre] : []),
 
                 rating: req.body.rating ? Number(req.body.rating) : undefined,
                 ageClassification: req.body.ageClassification,
                 director: req.body.director,
 
-                // Imágenes de la película
+                // 🔑 Rutas de Imágenes (estandarizadas y mapeadas correctamente)
                 coverPath: coverPath,
                 titlePhotoPath: titlePhotoPath,
                 filmPhotoPath: filmPhotoPath,
-
-                // Información de casting
-                // CRÍTICO: Asegura que 'cast' siempre sea un array
-                cast: Array.isArray(req.body.cast) ? req.body.cast : (req.body.cast ? [req.body.cast] : []),
-
-                // Paths de imágenes de casting/director
                 directorImagePath: directorImagePath,
                 actor1ImagePath: actor1ImagePath,
                 actor2ImagePath: actor2ImagePath,
                 actor3ImagePath: actor3ImagePath,
 
-                duration: req.body.duration,
-                // CRÍTICO: Asegura que 'language' siempre sea un array
-                language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
+                // Casting
+                cast: Array.isArray(req.body.cast) ? req.body.cast : (req.body.cast ? [req.body.cast] : []),
 
-                comments: [] // Se podría usar 'comments' para consistencia con otras rutas
+                duration: req.body.duration,
+                language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
+                comments: []
             };
 
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
 
-            // 🔑 CAMBIO CLAVE: Insertamos y capturamos el resultado (ID)
             const result = await collection.insertOne(movie);
 
-            // 🔑 CAMBIO CLAVE: Redirigimos a la página de detalle (/Ej/:id) usando el ID insertado
+            // Redirección a la página de detalle con el nuevo ID
             res.redirect(`/Ej/${result.insertedId}`);
 
         } catch (err) {
-            // 5. Borrar archivos si falla la inserción en la base de datos
+            // 💡 Manejo de errores: Borrar archivos subidos si falla la inserción en la DB
             const files = req.files;
             if (files) {
                 Object.keys(files).forEach(key => {
@@ -209,6 +195,76 @@ router.post("/addFilm", (req, res) => {
         }
     });
 });
+
+// ----------------------------------------------------
+// ➡️ Ruta de Detalle de Película (/Ej/:id)
+// ----------------------------------------------------
+router.get('/Ej/:id', async (req, res) => {
+    try {
+        const movieId = req.params.id;
+        const db = req.app.locals.db;
+        const collection = db.collection('Softflix');
+
+        const film = await collection.findOne({ _id: new ObjectId(movieId) });
+
+        if (!film) {
+            return res.status(404).send("Película no encontrada");
+        }
+
+        // 1. Lógica para crear el array de casting (objetos con nombre y ruta de imagen)
+        const castArray = [];
+        const castNames = Array.isArray(film.cast)
+            ? film.cast
+            : ((film.Actor1 || film.Actor2 || film.Actor3)
+                ? [film.Actor1, film.Actor2, film.Actor3].filter(n => n)
+                : []);
+
+
+        for (let i = 0; i < castNames.length; i++) {
+            const name = castNames[i];
+
+            // Usamos el campo estandarizado
+            const uploadedImagePath = film[`actor${i + 1}ImagePath`];
+
+            // Generar ruta de fallback (para datos iniciales de data.json)
+            const safeName = name ? name.replace(/\s/g, '_') : 'unknown';
+            const defaultImagePath = `/Imagenes/Actors/${safeName}.jpg`;
+
+            if (name) {
+                castArray.push({
+                    name: name,
+                    // Prioridad: Ruta subida > Ruta de fallback
+                    imagePath: uploadedImagePath || defaultImagePath
+                });
+            }
+        }
+
+        // 2. Normalización de datos para la plantilla
+        const filmNormalized = {
+            ...film,
+
+            reviews: Array.isArray(film.reviews)
+                ? film.reviews
+                : (Array.isArray(film.comments) ? film.comments : (Array.isArray(film.comentary) ? film.comentary : [])),
+
+            // Poster principal: coverPath siempre debe funcionar ahora
+            poster: film.coverPath || film.cover || film.mainImagePath || null,
+
+            // Director: directorImagePath siempre debe funcionar ahora
+            directorImagePath: film.directorImagePath || film.fotoDirector,
+
+            cast: castArray, // Pasa el array de objetos con la ruta de imagen
+            language: Array.isArray(film.language) ? film.language : (film.language || []),
+        };
+
+        res.render('Ej', { ...filmNormalized });
+
+    } catch (err) {
+        console.error('❌ ERROR al cargar el detalle de la película:', err);
+        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
+    }
+});
+
 
 // ... (rest of router.js, including /indice route)
 
@@ -308,62 +364,6 @@ router.post('/deleteFilm', async (req, res) => {
     }
 });
 
-
-router.get('/Ej/:id', async (req, res) => {
-    try {
-        const movieId = req.params.id;
-        const db = req.app.locals.db;
-        const collection = db.collection('Softflix');
-
-        const film = await collection.findOne({ _id: new ObjectId(movieId) });
-
-        if (!film) {
-            return res.status(404).send("Película no encontrada");
-        }
-
-        // 1. Lógica para crear el array de casting 
-        const castArray = [];
-        for (let i = 1; i <= 3; i++) {
-            const name = film[`Actor${i}`];
-            const imagePath = film[`image_actor${i}`];
-            if (name) {
-                // Aquí usamos el objeto si tu HTML lo espera, o solo el nombre si usa {{#cast}}{{.}}{{/cast}}
-                // Para simplificar, asumiremos que tu HTML funciona con strings de nombres.
-                castArray.push(name);
-            }
-        }
-
-        // 2. Normalización de datos para la plantilla
-        const filmNormalized = {
-            ...film,
-
-            title: film.Title || film.title,
-            rating: film.Calification || film.rating,
-            ageClassification: film.Age_classification || film.ageClassification,
-            duration: film.Duration || film.duration,
-            releaseYear: film.Realase_year || film.releaseYear,
-            director: film.Director || film.director,
-
-            // Asignamos el nombre 'reviews' buscando en todas las posibles claves
-            reviews: Array.isArray(film.reviews)
-                ? film.reviews
-                : (Array.isArray(film.comments)
-                    ? film.comments
-                    : (Array.isArray(film.comentary) ? film.comentary : [])),
-
-            poster: film.cover || film.bannerImage || film.image_file || film.coverPath || film.mainImagePath || null,
-            cast: Array.isArray(film.cast) ? film.cast : castArray,
-            language: Array.isArray(film.language) ? film.language : (film.language || []),
-            directorImagePath: film.directorImagePath || film.fotoDirector
-        };
-
-        res.render('Ej', { ...filmNormalized });
-
-    } catch (err) {
-        console.error('❌ ERROR al cargar el detalle de la película:', err);
-        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
-    }
-});
 
 // =======================================================
 // ➡️ POST /Ej/:id/addReview  → Manejar la adición de reseñas

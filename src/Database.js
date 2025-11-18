@@ -28,50 +28,63 @@ const generateImagePaths = (movie) => {
 
     // 🔑 Desglosar el campo 'cast' (string) en un array de nombres.
     const castString = movie.Casting || movie.cast;
-    const castArray = castString ? castString.split(',').map(name => name.trim()) : [];
+    const castArray = castString
+        ? (Array.isArray(castString) ? castString : castString.split(',').map(name => name.trim()))
+        : [];
 
     let directorImagePath = null;
     let cover = null;
 
     if (movie.images && Array.isArray(movie.images)) {
-        const directorImage = movie.images.find(img => img.type === 'director');
-        if (directorImage) {
-            directorImagePath = directorImage.path;
-        }
+
+        // 🔑 CORRECCIÓN 1: Usar la propiedad .name (donde está la ruta en data.json)
         const coverImage = movie.images.find(img => img.type === 'cover');
         if (coverImage) {
-            cover = coverImage.path;
+            cover = coverImage.name; // <--- CORREGIDO: USAR .name
+        }
+
+        // El director en data.json no tiene type: 'director', así que solo buscamos si existe.
+        const directorImage = movie.images.find(img => img.type === 'director');
+        if (directorImage) {
+            directorImagePath = directorImage.name; // <--- USAR .name
         }
     }
+
+    // 🔑 Mapeo del director (Generamos una ruta si no se encontró una específica en el array)
+    if (!directorImagePath && director) {
+        // Asumimos una estructura estándar si la ruta no está en data.json
+        const safeName = director.replace(/\s/g, '_');
+        // NOTA: Si tus imágenes de director están en /Uploads, usa /Uploads/Directors
+        directorImagePath = `/Imagenes/Directors/${safeName}.jpg`;
+    }
+
 
     // Este es el objeto final que se inserta en MongoDB:
     return {
         title: title,
-        Realase_year: releaseYear,
-        Gender: genre,
-        Calification: rating,
-        Age_classification: ageClassification,
-        Director: director,
-        Duration: duration,
         description: description,
-        Comentary: comments,
+        releaseYear: releaseYear ? Number(releaseYear) : undefined,
+        genre: genre,
+        rating: rating ? Number(rating) : undefined,
+        ageClassification: ageClassification,
+        director: director,
+
+        // 🔑 Rutas de imágenes (estandarizadas y corregidas)
         directorImagePath: directorImagePath,
-        cover: cover,
+        coverPath: cover,
 
-        // 🔑 Mapeo de Actores
-        Actor1: castArray[0] || null,
-        Actor2: castArray[1] || null,
-        Actor3: castArray[2] || null,
+        // ... (otros campos)
+        actor1ImagePath: movie.image_actor1 || null,
+        actor2ImagePath: movie.image_actor2 || null,
+        actor3ImagePath: movie.image_actor3 || null,
 
-        // Campos de imagen (se mantienen null para datos de data.json)
-        image_actor1: movie.image_actor1 || null,
-        image_actor2: movie.image_actor2 || null,
-        image_actor3: movie.image_actor3 || null,
+        titlePhotoPath: null, // Se inicializan a null
+        filmPhotoPath: null, // Se inicializan a null
 
-        // 🔑 Campo de Idioma (array)
-        language: Array.isArray(movie.language)
-            ? movie.language
-            : (movie.language ? [movie.language] : []),
+        cast: castArray,
+        duration: duration,
+        language: Array.isArray(movie.Language) ? movie.Language : (movie.Language ? [movie.Language] : []),
+        comments: comments || []
     };
 };
 
