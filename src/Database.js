@@ -12,18 +12,28 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
-// 🔑 FUNCIÓN AUXILIAR RESTAURADA: Añade el prefijo '/Uploads' a la ruta.
+
+// 🔑 FUNCIÓN AUXILIAR: Añade el prefijo '/Uploads' a la ruta.
 const addUploadPrefix = (p) => {
     if (!p) return null;
-    // Evita duplicar el prefijo si ya existe
-    if (p.startsWith('/Uploads/')) return p; 
+    // Asumimos que las rutas en data.json vienen sin /Uploads
+    if (p.startsWith('/Uploads/')) return p;
+    // Si la ruta no tiene el prefijo, lo añadimos
     return `/Uploads${p}`;
 };
 
+// Función auxiliar para registrar rutas usadas (no utilizada en esta versión optimizada, pero es bueno mantenerla)
+const addAndTrack = (p, tracker) => {
+    const fullPath = addUploadPrefix(p);
+    if (fullPath) tracker.add(fullPath); // El Set tracker es redundante con la asignación directa, pero se puede mantener si se implementa lógica más compleja
+    return fullPath;
+};
 
-// 💡 CRÍTICO: Función de transformación con limpieza robusta de rutas.
+
+// 💡 CRÍTICO: Función de transformación que asigna imágenes por tipo explícito
 const generateImagePaths = (movie) => {
 
+    // --- 1. Extracción y Normalización de Datos ---
     const title = movie.Title || movie.title;
     const releaseYear = movie.Realase_year || movie.releaseYear;
     const genre = movie.Gender || movie.genre;
@@ -34,42 +44,57 @@ const generateImagePaths = (movie) => {
     const description = movie.description;
     const comments = movie.Comentary || movie.comments;
 
-    // 🔑 Desglosar el campo 'cast' (string) en un array de nombres.
     const castString = movie.Casting || movie.cast;
+    // Creamos el array de actores.
     const castArray = castString
         ? (Array.isArray(castString) ? castString : castString.split(',').map(name => name.trim()))
         : [];
 
+    // --- 2. Inicialización de Variables de Rutas ---
     let directorImagePath = null;
-    let cover = null;
+    let coverPath = null; // Renombrado de 'cover' a 'coverPath' para ser consistente
+    let titlePhotoPath = null;
+    let filmPhotoPath = null;
+    let actor1ImagePath = null;
+    let actor2ImagePath = null;
+    let actor3ImagePath = null;
 
-    if (movie.images && Array.isArray(movie.images)) {
+    const allImages = movie.images || [];
 
-        // 🔑 CORRECCIÓN 1: Usar la propiedad .name (donde está la ruta en data.json)
-        const coverImage = movie.images.find(img => img.type === 'cover');
-        if (coverImage) {
-            // ✅ APLICAR PREFIJO /Uploads/ (RESTAURO LÓGICA)
-            cover = addUploadPrefix(coverImage.name); 
-        }
+    // 🔑 Mapeo de campos explícitos en el JSON a las variables de salida de la DB
+    // Esto es el corazón de la solución.
+    const fieldMap = {
+        'cover': 'coverPath',
+        'director': 'directorImagePath',
+        'titlePhotoPath': 'titlePhotoPath',
+        'filmPhotoPath': 'filmPhotoPath',
+        'actor1ImagePath': 'actor1ImagePath',
+        'actor2ImagePath': 'actor2ImagePath',
+        'actor3ImagePath': 'actor3ImagePath',
+    };
 
-        const directorImage = movie.images.find(img => img.type === 'director');
-        if (directorImage) {
-            // ✅ APLICAR PREFIJO /Uploads/ (RESTAURO LÓGICA)
-            directorImagePath = addUploadPrefix(directorImage.name); 
+    // --- 3. Asignación directa basada en 'type' ---
+    for (const img of allImages) {
+        const targetField = fieldMap[img.type];
+        if (targetField) {
+            const path = addUploadPrefix(img.name);
+
+            // Asignamos el valor a la variable local correcta
+            if (targetField === 'coverPath') coverPath = path;
+            else if (targetField === 'directorImagePath') directorImagePath = path;
+            else if (targetField === 'titlePhotoPath') titlePhotoPath = path;
+            else if (targetField === 'filmPhotoPath') filmPhotoPath = path;
+            else if (targetField === 'actor1ImagePath') actor1ImagePath = path;
+            else if (targetField === 'actor2ImagePath') actor2ImagePath = path;
+            else if (targetField === 'actor3ImagePath') actor3ImagePath = path;
         }
     }
 
-    // 🔑 Mapeo del director (Generamos una ruta si no se encontró una específica en el array)
-    if (!directorImagePath && director) {
-        const safeName = director.replace(/\s/g, '_');
-        // ✅ APLICAR PREFIJO /Uploads/ a la ruta de fallback (RESTAURO LÓGICA)
-        directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
-    }
 
-
-    // Este es el objeto final que se inserta en MongoDB:
+    // --- 4. Devolvemos el objeto final para MongoDB ---
     return {
         title: title,
+        url_slug: title.toLowerCase().replace(/\s+/g, '-'),
         description: description,
         releaseYear: releaseYear ? Number(releaseYear) : undefined,
         genre: genre,
@@ -77,42 +102,49 @@ const generateImagePaths = (movie) => {
         ageClassification: ageClassification,
         director: director,
 
-        // 🔑 Rutas de imágenes (estandarizadas y corregidas con /Uploads/)
+        // Rutas de imágenes (Asignación estable)
         directorImagePath: directorImagePath,
-        coverPath: cover,
+        coverPath: coverPath,
 
-        // ✅ CORRECCIÓN CLAVE: Aplicar prefijo /Uploads/ a las rutas de actores de data.json (RESTAURO LÓGICA)
-        actor1ImagePath: addUploadPrefix(movie.image_actor1) || null,
-        actor2ImagePath: addUploadPrefix(movie.image_actor2) || null,
-        actor3ImagePath: addUploadPrefix(movie.image_actor3) || null,
+        actor1ImagePath: actor1ImagePath,
+        actor2ImagePath: actor2ImagePath,
+        actor3ImagePath: actor3ImagePath,
 
-        titlePhotoPath: null, // Se inicializan a null
-        filmPhotoPath: null, // Se inicializan a null
+        titlePhotoPath: titlePhotoPath,
+        filmPhotoPath: filmPhotoPath,
 
         cast: castArray,
         duration: duration,
+        // Aseguramos que el idioma sea un array, aunque venga como string.
         language: Array.isArray(movie.Language) ? movie.Language : (movie.Language ? [movie.Language] : []),
         comments: comments || []
     };
 };
+
+// -------------------------------------------------------------------------
+// 🛠️ Carga Inicial de Películas
+// -------------------------------------------------------------------------
 
 // Cargar películas iniciales de forma síncrona
 let initialMovies = [];
 try {
     const rawData = fs.readFileSync(JSON_PATH);
     const data = JSON.parse(rawData);
-    // Aplicar la transformación de rutas antes de guardar
     initialMovies = data.map(generateImagePaths);
     console.log(`Cargadas ${initialMovies.length} películas del data.json.`);
 } catch (error) {
-    console.error("❌ Error al cargar o parsear data.json. Asegúrate de que el archivo existe y es JSON válido:", error.message);
+    console.error("❌ Error al cargar o parsear data.json:", error.message);
+    // Si data.json falla, al menos el array initialMovies es [] y la DB se inicializará vacía.
 }
 
 
+// -------------------------------------------------------------------------
+// 💾 Funciones de Conexión y Limpieza de DB
+// -------------------------------------------------------------------------
+
 async function initDB(app) {
-    // Si no hay películas, no inicializar
     if (initialMovies.length === 0) {
-        return;
+        console.warn("⚠️ data.json no contiene películas. La base de datos se inicializará vacía.");
     }
 
     try {
@@ -123,22 +155,22 @@ async function initDB(app) {
         app.locals.db = db;
         const count = await Softflix.countDocuments();
 
-        if (count === 0) {
-            console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
-            if (initialMovies.length > 0) {
-                 // Este log ahora debería mostrar la ruta corregida
-                console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA (CORREGIDA): ${initialMovies[0].coverPath || initialMovies[0].directorImagePath}`);
-            }
+        // 💡 CRÍTICO: Borramos los datos antiguos e insertamos los nuevos
+        if (count > 0) {
+            console.log(`🧹 Limpiando los ${count} documentos existentes para recargar...`);
+            await Softflix.deleteMany({});
+        }
 
+        if (initialMovies.length > 0) {
+            console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
             await Softflix.insertMany(initialMovies);
             console.log("✅ Inserción inicial completada con éxito.");
         } else {
-            console.log(`✅ Softflix ya contiene ${count} películas. Omite la inserción inicial.`);
+            console.log("✅ Base de datos lista (vacía).");
         }
 
     } catch (error) {
         console.error('❌ ERROR CRÍTICO en initDB. Asegúrate de que MongoDB está corriendo en localhost:27017.', error.message);
-        // 💡 CRÍTICO: Relanzar el error para que app.js lo capture y detenga el servidor
         throw new Error("Fallo la conexión a la base de datos o la inserción inicial.");
     }
 }
@@ -152,7 +184,6 @@ async function cleanupDB() {
     } catch (err) {
         console.error('❌ ERROR al borrar datos de la base de datos:', err.message);
     }
-    // No cerramos el cliente aquí si se va a re-utilizar inmediatamente en initDB
 }
 
 export async function closeDB() {

@@ -21,29 +21,26 @@
             },
             {
                 "name": "/Interstellar/anne.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/Interstellar/matthew.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/Interstellar/Interestellartitulo.png",
-                "type": "scene"
+                "type": "titlePhotoPath"
             },
             {
                 "name": "/Interstellar/interstellar.jpg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/Interstellar/jessica.png",
-                "type": "scene"
+                "type": "actor3ImagePath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/Interstellar/matthew.jpg",
-        "image_actor2": "/Interstellar/anne.jpg",
-        "image_actor3": "/Interstellar/jessica.png"
+        "comments": []
     },
     {
         "title": "How to train your dragon",
@@ -67,29 +64,26 @@
             },
             {
                 "name": "/CEATD2/Cate Blanchett.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/CEATD2/Gerard Butler.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/CEATD2/Jay Baruchel.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/CEATD2/Como Entrenar A Tu Dragon 2.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/CEATD2/CoEAD2-Titulo.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/CEATD2/Jay Baruchel.jpg",
-        "image_actor2": "/CEATD2/Gerard Butler.jpg",
-        "image_actor3": "/CEATD2/Cate Blanchett.jpg"
+        "comments": []
     },
     {
         "title": "The secret live of Walter Mity",
@@ -113,29 +107,26 @@
             },
             {
                 "name": "/LVDSWM/Ben Stiller.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/LVDSWM/Kristen Wiig.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/LVDSWM/Jon Daly.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/LVDSWM/La vida Secreta De Walter Mitty.jpg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/LVDSWM/The-Secret-Life-of-Walter-Mitty-Titulo.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/LVDSWM/Ben Stiller.jpg",
-        "image_actor2": "/LVDSWM/Kristen Wiig.jpg",
-        "image_actor3": "/LVDSWM/Jon Daly.jpg"
+        "comments": []
     },
     {
         "title": "Dunkerke",
@@ -159,29 +150,26 @@
             },
             {
                 "name": "/Dunkerque/Aneurin Barnard.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/Dunkerque/Fionn Whitehead.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/Dunkerque/Damien Bonnardjpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/Dunkerque/Dunkerque.jpg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/Dunkerque/Titulo-Dunkerque.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/Dunkerque/Fionn Whitehead.jpg",
-        "image_actor2": "/Dunkerque/Aneurin Barnard.jpg",
-        "image_actor3": "/Dunkerque/Damien Bonnardjpg"
+        "comments": []
     },
     {
         "title": "Megamind",
@@ -205,29 +193,26 @@
             },
             {
                 "name": "/Megamind/Tina Fey.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/Megamind/Brad Pitt.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/Megamind/Will Ferrell.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/Megamind/MEgamind.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/Megamind/Megamind-Titulo.jpeg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/Megamind/Will Ferrell.jpg",
-        "image_actor2": "/Megamind/Brad Pitt.jpg",
-        "image_actor3": "/Megamind/Tina Fey.jpg"
+        "comments": []
     },
     {
         "title": "Tenet",
@@ -251,29 +236,26 @@
             },
             {
                 "name": "/Tenet/Wesc Chataman.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/Tenet/John David-Washington.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/Tenet/Robert Pattinson.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/Tenet/Tenet.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/Tenet/Tenet-titulo.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/Tenet/John David-Washington.jpg",
-        "image_actor2": "/Tenet/Robert Pattinson.jpg",
-        "image_actor3": "/Tenet/Wesc Chataman.jpg"
+        "comments": []
     },
     {
         "title": "Spiderman-Far-From-Home",
@@ -297,29 +279,26 @@
             },
             {
                 "name": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/Spiderman farfromhome/Tom Holland.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/Spidermanfarfromhome/Samuel L. Jackson.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/Spiderman farfromhome/spider-man-far-from-home.jpg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/Spiderman farfromhome/Titulo-SpidermanFFH.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/Spiderman farfromhome/Tom Holland.jpg",
-        "image_actor2": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
-        "image_actor3": "/Spidermanfarfromhome/Samuel L. Jackson.jpg"
+        "comments": []
     },
     {
         "title": "Saving private Ryan",
@@ -343,29 +322,26 @@
             },
             {
                 "name": "/SPR/Tom Sizemon.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/SPR/Tom Hanks.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/SPR/Edward Burns.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/SPR/SSRyan.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/SPR/sSRyan-titulo.jpeg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/SPR/Tom Hanks.jpg",
-        "image_actor2": "/SPR/Tom Sizemon.jpg",
-        "image_actor3": "/SPR/Edward Burns.jpg"
+        "comments": []
     },
     {
         "title": "Súper López",
@@ -389,29 +365,26 @@
             },
             {
                 "name": "/SuperLopez/Dani Rovira.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/SuperLopez/Julin Lopez.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/SuperLopez/Alexandra Jimenez.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/SuperLopez/SuperLopez.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/SuperLopez/SUperLopez-titulo.jpeg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/SuperLopez/Dani Rovira.jpg",
-        "image_actor2": "/SuperLopez/Alexandra Jimenez.jpg",
-        "image_actor3": "/SuperLopez/Julin Lopez.jpg"
+        "comments": []
     },
     {
         "title": "Only the Brave",
@@ -435,29 +408,26 @@
             },
             {
                 "name": "/OnlytheBrave/Josh Brolin.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/OnlytheBrave/Miles Teller.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/OnlytheBrave/Jeff Bridges.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/OnlytheBrave/Only the Brave.jpeg",
-                "type": "scene"
+                "type": "fil"
             },
             {
                 "name": "/OnlytheBrave/Only the Brave-titulo.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/OnlytheBrave/Josh Brolin.jpg",
-        "image_actor2": "/OnlytheBrave/Miles Teller.jpg",
-        "image_actor3": "/OnlytheBrave/Jeff Bridges.jpg"
+        "comments": []
     },
     {
         "title": "The secret soldiers of benghazi",
@@ -481,29 +451,26 @@
             },
             {
                 "name": "/13 horas/John Krasinski.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/13 horas/James Badge Dale.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/13 horas/Pablo Schreiber.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/13 horas/13 Horas.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/13 Horas- titulo.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/13 horas/John Krasinski.jpg",
-        "image_actor2": "/13 horas/James Badge Dale.jpg",
-        "image_actor3": "/13 horas/Pablo Schreiber.jpg"
+        "comments": []
     },
     {
         "title": "1917",
@@ -527,28 +494,25 @@
             },
             {
                 "name": "/1917/George MacKay.jpg",
-                "type": "scene"
+                "type": "actor1ImagePath"
             },
             {
                 "name": "/1917/Daniel Mays.jpg",
-                "type": "scene"
+                "type": "actor2ImagePath"
             },
             {
                 "name": "/1917/Colin Firth.jpg",
-                "type": "scene"
+                "type": "actor3ImagePath"
             },
             {
                 "name": "/1917/1917.jpeg",
-                "type": "scene"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/1917/Titulo-1917.jpg",
-                "type": "scene"
+                "type": "titlePhotoPath"
             }
         ],
-        "comments": [],
-        "image_actor1": "/1917/George MacKay.jpg",
-        "image_actor2": "/1917/Daniel Mays.jpg",
-        "image_actor3": "/1917/Colin Firth.jpg"
+        "comments": []
     }
 ]
