@@ -16,8 +16,8 @@ const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 const addUploadPrefix = (p) => {
     if (!p) return null;
     // Si la ruta ya empieza con /Uploads/, no la volvemos a añadir
-    if (p.startsWith('/Uploads/')) return p; 
-    // De lo contrario, añade el prefijo.
+    if (p.startsWith('/Uploads/')) return p;
+    // De lo contrario, añade el prefijo. Asumimos que la ruta de data.json empieza con /
     return `/Uploads${p}`;
 };
 
@@ -50,14 +50,14 @@ const generateImagePaths = (movie) => {
         const coverImage = movie.images.find(img => img.type === 'cover');
         if (coverImage) {
             // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
-            cover = addUploadPrefix(coverImage.name); 
+            cover = addUploadPrefix(coverImage.name);
         }
 
-        // El director en data.json no tiene type: 'director', así que solo buscamos si existe.
+        // El director en data.json tiene 'type': 'director', lo buscamos.
         const directorImage = movie.images.find(img => img.type === 'director');
         if (directorImage) {
             // ✅ APLICAR CORRECCIÓN: Añadir prefijo /Uploads
-            directorImagePath = addUploadPrefix(directorImage.name); 
+            directorImagePath = addUploadPrefix(directorImage.name);
         }
     }
 
@@ -65,8 +65,10 @@ const generateImagePaths = (movie) => {
     if (!directorImagePath && director) {
         // Asumimos una estructura estándar si la ruta no está en data.json
         const safeName = director.replace(/\s/g, '_');
-        // ✅ APLICAR CORRECCIÓN: La ruta de fallback también debe estar en /Uploads
-        directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`;
+        // 💡 Ajuste de ruta de fallback: Usamos /Uploads/Directors/ (más común)
+        // Si tu carpeta es realmente /Public/Uploads/Imagenes/Directors, usa la línea comentada
+        directorImagePath = `/Uploads/Directors/${safeName}.jpg`;
+        // directorImagePath = `/Uploads/Imagenes/Directors/${safeName}.jpg`; // Si esta es tu ruta real
     }
 
 
@@ -84,7 +86,8 @@ const generateImagePaths = (movie) => {
         directorImagePath: directorImagePath,
         coverPath: cover,
 
-        // ... (otros campos)
+        // Los campos actorXImagePath vienen del data.json original y son null en este punto.
+        // Se llenarán al guardar una película manualmente en router.js.
         actor1ImagePath: movie.image_actor1 || null,
         actor2ImagePath: movie.image_actor2 || null,
         actor3ImagePath: movie.image_actor3 || null,
@@ -129,7 +132,6 @@ async function initDB(app) {
         if (count === 0) {
             console.log(`✨ Insertando ${initialMovies.length} películas iniciales en Softflix...`);
             if (initialMovies.length > 0) {
-                // Este log ahora debería mostrar: /Uploads/Interstellar/...
                 console.log(`RUTA GUARDADA PARA LA PRIMERA PELÍCULA (CORREGIDA): ${initialMovies[0].coverPath}`);
             }
 
