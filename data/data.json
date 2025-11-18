@@ -3,41 +3,43 @@
         "title": "Interstellar",
         "description": "In a future where Earth is slowly dying, humanitys survival depends on venturing into the stars. A former pilot is recruited for a daring mission: to travel through a newly discovered wormhole and search for a new home among the stars.As the crew faces unimaginable challenges across space and time, their journey becomes not only a fight for survival, but also a profound exploration of love, sacrifice, and the very limits of human possibility.",
         "releaseYear": "2014",
-        "genre": ["Science-Fiction"],
+        "genre": "Science-Fiction",
         "rating": "5",
         "ageClassification": "+13",
         "language": ["English", "Spanish"],
         "director": "Christopher Nolan",
-        "cast": ["Matthew McConaughey", "Jessica Chastain", "Anne Hathaway"],
+        "cast": "Matthew McConaughey, Jessica Chastain, Anne Hathaway",
         "duration": "2h 49min",
-        "cover_image": {
+        "images": [
+            {
                 "name": "/Interstellar/INTERSTELLAR.png",
                 "type": "cover"
             },
-        "title_image": {
-                "name": "/Interstellar/Interestellartitulo.png",
-                "type": "scene"
-            },
-        "film_image": {
-                "name": "/Interstellar/interstellar.jpg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/Interstellar/christopher.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
-                "name": "/Interstellar/matthew.jpg",
-                "type": "scene"
-            },
-        "actor2_image": {
-                "name": "/Interstellar/jessica.png",
-                "type": "scene"
-            },
-        "actor3_image": {
+            {
                 "name": "/Interstellar/anne.jpg",
                 "type": "scene"
             },
+            {
+                "name": "/Interstellar/christopher.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Interstellar/matthew.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Interstellar/Interestellartitulo.png",
+                "type": "scene"
+            },
+            {
+                "name": "/Interstellar/interstellar.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Interstellar/jessica.png",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
@@ -49,81 +51,82 @@
         "ageClassification": "+7",
         "language": ["English", "Spanish"],
         "director": "Chris Sanders, Dean DeBlois",
-        "cast": ["Jay Baruchel", "Gerard Butler", "America Ferrara"],
+        "cast": "Jay Baruchel, Gerard Butler, America Ferrara",
         "duration": "1h 38min",
-        
-        "cover_image": {
+        "images": [
+            {
                 "name": "/CEATD2/CEATD.jpg",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/CEATD2/CoEAD2.jpeg",
-                "type": "scene"
-            },
-        "title_image": {
-                "name": "/CEATD2/CoEAD2-Titulo.jpg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/CEATD2/Dean Deblois-director.jpeg",
-                "type": "scene"
-            },
-        "actor1_image": {
-                "name": "/CEATD2/Jay Baruchel.jpg",
-                "type": "scene"
-            },
-        "actor2_image": {
-                "name": "/CEATD2/Gerard Butler.jpg",
-                "type": "scene"
-            },
-        "actor3_image": {
+            {
                 "name": "/CEATD2/Cate Blanchett.jpg",
                 "type": "scene"
             },
-        
-
+            {
+                "name": "/CEATD2/Gerard Butler.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/CEATD2/Jay Baruchel.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/CEATD2/Dean Deblois-director.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/CEATD2/Como Entrenar A Tu Dragon 2.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/CEATD2/CoEAD2-Titulo.jpg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
         "title": "The secret live of Walter Mity",
         "description": "Walter Mitty, photo editor at Life magazine,has spent his whole life taking little \"mental vacations\" to escape his boring existence, moments in which he becomes the imaginary protagonist of fantastic adventures.",
         "releaseYear": "2013",
-        "genre": ["Action", "Comedy"],
+        "genre": "Action, Comedy",
         "rating": "5",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": "Ben Stiller",
-        "cast": ["Ben Stiller", "Kristen Wiig", "Sean Penn"],
+        "cast": "Ben Stiller, Kristen Wiig, Sean Penn",
         "duration": "1h 54min",
-        "title_image": {
-                "name": "/LVDSWM/The-Secret-Life-of-Walter-Mitty-Titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/LVDSWM/LVSDWM.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/LVDSWM/La vida Secreta De Walter Mitty.jpg",
-                "type": "scene"
-            },
-        "director_image": {
+            {
                 "name": "/LVDSWM/Ben Stiller.jpg",
                 "type": "scene"
             },
-        "actor1_image": {
+            {
                 "name": "/LVDSWM/Ben Stiller.jpg",
                 "type": "scene"
             },
-        "actor2_image": {
+            {
                 "name": "/LVDSWM/Kristen Wiig.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/LVDSWM/Jon Daly.jpg",
                 "type": "scene"
             },
- 
+            {
+                "name": "/LVDSWM/La vida Secreta De Walter Mitty.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/LVDSWM/The-Secret-Life-of-Walter-Mitty-Titulo.jpg",
+                "type": "scene"
+            }
+        ],
+        
         "comments": []
         
     },
@@ -131,342 +134,346 @@
         "title": "Dunkerke",
         "description": "Germany advances into France, trapping Allied troops on the beaches of Dunkirk.Under air and ground protection from British and French forces, the troops are slowly evacuated from the beach using any available vessels.",
         "releaseYear": "2017",
-        "genre": ["Action"],
+        "genre": "Action",
         "rating": "3",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": "Christopher Nolan",
-        "cast": ["Harry Styles", "Fionn Whitehead", "Cillian Murphy"],
+        "cast": "Harry Styles, Fionn Whitehead, Cillian Murphy",
         "duration": "1h 46min",
-        "title_image": {
-                "name": "/Dunkerque/Dunkerque-titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/Dunkerque/DUNKERKE.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/Dunkerque/Dunkerque.jpg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/Dunkerque/Christopher Nolan.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
+            {
                 "name": "/Dunkerque/Aneurin Barnard.jpg",
                 "type": "scene"
             },
-        "actor2_image": {
+            {
                 "name": "/Dunkerque/Fionn Whitehead.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/Dunkerque/Damien Bonnardjpg",
                 "type": "scene"
             },
-        
-
-
+            {
+                "name": "/Dunkerque/Christopher Nolan.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Dunkerque/Dunkerque.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Dunkerque/Titulo-Dunkerque.jpg",
+                "type": "scene"
+            }
+            
+        ],
         "comments": []
     },
     {
         "title": "Megamind",
         "description": "Megamind is a supervillain.For years, he has tried to conquer Metro City, but a hero named Metro Man stood in his way.After many attempts, Megamind finally manages to kill him.Suddenly, his life has no meaning.What can a supervillain do without a superhero to fight? Create Titan, a new hero.",
         "releaseYear": "2010",
-        "genre": ["Comedy"],
+        "genre": "Comedy",
         "rating": "4",
         "ageClassification": "All ages",
         "language": ["English", "Spanish"],
         "director": "Tom McGrath",
-        "cast": ["Will Ferrell", "Tom McGrath", "Ben Stiller"],
+        "cast": "Will Ferrell, Tom McGrath, Ben Stiller ",
         "duration": "1h 35min",
-        "title_image": {
-                "name": "/Megamind/Megamind-Titulo.jpeg",
-                "type": "scene"
-            },
-        
-        "cover_image": {
+        "images": [
+            {
                 "name": "/Megamind/MEGAMIND.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/Megamind/Megamind.jpeg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/Megamind/Tom McGrath.jpeg",
-                "type": "scene"
-            },
-        "actor1_image": {
-                "name": "/Megamind/Will Ferrell.jpg",
-                "type": "scene"
-            },
-        "actor2_image": {
+            {
                 "name": "/Megamind/Tina Fey.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/Megamind/Brad Pitt.jpg",
                 "type": "scene"
             },
-
+            {
+                "name": "/Megamind/Will Ferrell.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Megamind/Tom McGrath.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/Megamind/MEgamind.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/Megamind/Megamind-Titulo.jpeg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
         "title": "Tenet",
         "description": "An epic action story revolving around international espionage, time travel, and evolution, in which a secret agent must prevent World War III.",
         "releaseYear": "2020",
-        "genre": ["Science-Fiction"],
+        "genre": "Science-Fiction",
         "rating": "4",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": "Christopher Nolan",
-        "cast": ["John David Washington", "Elizabeth Debicki", "Robert Patinson"],
+        "cast": "John David Washington, Elizabeth Debicki, Robert Patinson",
         "duration": "2h 30min",
-    
-        "title_image": {
-                "name": "/Tenet/Tenet-titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/Tenet/TENET.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/Tenet/Tenet.jpeg",
+            {
+                "name": "/Tenet/Wesc Chataman.jpg",
                 "type": "scene"
             },
-        "director_image": {
-                "name": "/Tenet/Christopher Nolan.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
+            {
                 "name": "/Tenet/John David-Washington.jpg",
                 "type": "scene"
             },
-        "actor2_image": {
-                "name": "/Tenet/Elizabeth Debicki.jpg",
-                "type": "scene"
-            },
-        "actor3_image": {
+            {
                 "name": "/Tenet/Robert Pattinson.jpg",
                 "type": "scene"
             },
-
+            {
+                "name": "/Tenet/Christopher Nolan.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Tenet/Tenet.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/Tenet/Tenet-titulo.jpg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
         "title": "Spiderman-Far-From-Home",
         "description": " Peter Parker decides to take a well-deserved vacation in Europe with MJ, Ned, and the rest of his friends. However, Peter must don the Spider-Man suit once again when Nick Fury entrusts him with a new mission: to stop an attack by creatures that are causing chaos across the continent.",
         "releaseYear": "2019",
-        "genre": ["Science-Fiction"],
+        "genre": "Science-Fiction",
         "rating": "4",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": "Jon Watts",
-        "cast": ["Tom Holland", "Zendaya", "Jake Gyllenhaal"],
+        "cast": "Tom Holland, Zendaya, Jake Gyllenhaal ",
         "duration": " 2h 10min",
-        "title_image": {
-                "name": "/Spidermanfarfromhome/SpidermanFFH-titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/Spidermanfarfromhome/SPIDERMAN.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/Spiderman farfromhome/spider-man-far-from-home.jpg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/Spiderman farfromhome/Jon Watts.jpg",
-                "type": "scene"
-            },  
-        "actor1_image": {
-                "name": "/Spiderman farfromhome/Tom Holland.jpg",
-                "type": "scene"
-            },
-        "actor2_image": {
+            {
                 "name": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
+                "name": "/Spiderman farfromhome/Tom Holland.jpg",
+                "type": "scene"
+            },
+            {
                 "name": "/Spidermanfarfromhome/Samuel L. Jackson.jpg",
                 "type": "scene"
             },
-
-
-
+            {
+                "name": "/Spiderman farfromhome/Jon Watts.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Spiderman farfromhome/spider-man-far-from-home.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/Spiderman farfromhome/Titulo-SpidermanFFH.jpg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
         "title": "Saving private Ryan",
         "description": "Following the Normandy landings, in the midst of World War II, American soldiers must risk their lives to save Private James Ryan, whose three brothers have died in the war.",
         "releaseYear": "1998",
-        "genre": ["Action"],
+        "genre": "Action",
         "rating": "5",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": " Steven Spielberg",
-        "cast": ["Tom Hanks", "Matt Damon", "Vin Diesel"],
+        "cast": "Tom Hanks, Matt Damon, Vin Diesel",
         "duration": "2h 49min",
-        "title_image": {
-                "name": "/SPR/sSRyan-titulo.jpeg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/SPR/SASR.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/SPR/Saving Private Ryan.jpeg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/SPR/Steven Spielberg.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
-                "name": "/SPR/Tom Hanks.jpg",
-                "type": "scene"
-            },
-        "actor2_image": {
-                "name": "/SPR/Edward Burns.jpg",
-                "type": "scene"
-            },
-        "actor3_image": {
+            {
                 "name": "/SPR/Tom Sizemon.jpg",
                 "type": "scene"
             },
+            {
+                "name": "/SPR/Tom Hanks.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/SPR/Edward Burns.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/SPR/Steven Spielberg.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/SPR/SSRyan.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/SPR/sSRyan-titulo.jpeg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
         "title": "Súper López",
         "description": " The planet Chitón is about to fall into the hands of an evil leader.Its inhabitants only hope is the baby Jo-Con-Él, who is sent to Earth in a rocket that does not quite land where his parents intended.",
         "releaseYear": "2018",
-        "genre": ["Comedy"],
+        "genre": "Comedy",
         "rating": "3",
         "ageClassification": "All ages",
         "language": ["English", "Spanish"],
         "director": "Javier Ruiz Caldera",
-        "cast": ["Dani Rovira", "Alexandra Jiménez", "Maribel Verdú"],
+        "cast": "Dani Rovira, Alexandra Jiménez, Maribel Verdú",
         "duration": "1h 48min",
-        "title_image": {
-                "name": "/SuperLopez/SUperLopez-titulo.jpeg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/SuperLopez/SL.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/SuperLopez/SuperLopez.jpeg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/SuperLopez/Javier Ruiz-Director.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
+            {
                 "name": "/SuperLopez/Dani Rovira.jpg",
                 "type": "scene"
             },
-        "actor2_image": {
+            {
                 "name": "/SuperLopez/Julin Lopez.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/SuperLopez/Alexandra Jimenez.jpg",
                 "type": "scene"
             },
- 
-        
+            {
+                "name": "/SuperLopez/Javier Ruiz-Director.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/SuperLopez/SuperLopez.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/SuperLopez/SUperLopez-titulo.jpeg",
+                "type": "scene"
+            }
+
+        ],
         "comments": []
     },
     {
         "title": "Only the Brave",
         "description": " Film based on Sean Flynn,s GQ article about the first municipal fire department to become an elite squad, the Granite Mountain Hotshots, who had to face the massive wildfire that broke out in Yarnell Hill, Arizona, in June 2013.",
         "releaseYear": "2017",
-        "genre": ["Action"],
+        "genre": "Action",
         "rating": "4",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": "Joseph Kosinski",
-        "cast": ["Josh Brolin", "Miles Tiller", "Jeff Bridges"],
+        "cast": "Josh Brolin, Miles Tiller, Jeff Bridges",
         "duration": "2h 13min",
-        "title_image": {
-                "name": "/OnlytheBrave/Only the Brave-titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/OnlytheBrave/OTB.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/OnlytheBrave/Only the Brave.jpeg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/OnlytheBrave/Joseph Kosinski-Director.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
+            {
                 "name": "/OnlytheBrave/Josh Brolin.jpg",
                 "type": "scene"
             },
-        "actor2_image": {
+            {
                 "name": "/OnlytheBrave/Miles Teller.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/OnlytheBrave/Jeff Bridges.jpg",
                 "type": "scene"
             },
- 
+            {
+                "name": "/OnlytheBrave/Joseph Kosinski-Director.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/OnlytheBrave/Only the Brave.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/OnlytheBrave/Only the Brave-titulo.jpg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     },
     {
         "title": "The secret soldiers of benghazi",
         "description": "On September 11, 2012, the United States embassy in the Libyan city of Benghazi was the target of a terrorist attack. Six former elite soldiers, whose mission was to protect the CIA, fought fiercely to defend the embassy staff. ",
         "releaseYear": "2016",
-        "genre": ["Action"],
+        "genre": "Action",
         "rating": "4",
         "ageClassification": "+16",
         "language": ["English", "Spanish"],
         "director": "Michael Bay",
-        "cast": ["John Krasinski", "James Badge Dale", "Max Martini"],
+        "cast": "John Krasinski, James Badge Dale, Max Martini",
         "duration": "2h 24min",
-        "title_image": {
-                "name": "/13 horas/13 Horas- titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/13 horas/LSSDB.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/13 horas/13 Horas.jpeg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/13 horas/Michael Bay.jpg",
-                "type": "scene"
-            },
-        "actor1_image": {
+            {
                 "name": "/13 horas/John Krasinski.jpg",
                 "type": "scene"
             },
-        "actor2_image": {
+            {
                 "name": "/13 horas/James Badge Dale.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/13 horas/Pablo Schreiber.jpg",
                 "type": "scene"
             },
-
+            {
+                "name": "/13 horas/Michael Bay.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/13 horas/13 Horas.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/13 Horas- titulo.jpg",
+                "type": "scene"
+            }
+        ],
         "comments": []
 
     },
@@ -474,42 +481,43 @@
         "title": "1917",
         "description": " The film follows two young British soldiers over the course of a single day in the darkest days of World War I.",
         "releaseYear": "2019",
-        "genre": ["Action"],
+        "genre": "Action",
         "rating": "5",
         "ageClassification": "+12",
         "language": ["English", "Spanish"],
         "director": "Sam Mendes",
-        "cast": ["George MacKay", "Richard Madden"],
+        "cast": "George MacKay, Richard Madden",
         "duration": "1h 59min",
-        "title_image": {                
-                "name": "/1917/1917-titulo.jpg",
-                "type": "scene"
-            },
-        "cover_image": {
+        "images": [
+            {
                 "name": "/1917/1917.png",
                 "type": "cover"
             },
-        "film_image": {
-                "name": "/1917/1917.jpeg",
-                "type": "scene"
-            },
-        "director_image": {
-                "name": "/1917/Sam Mendes- Director.jpg",
-                "type": "scene"
-            },
-        "actor1_image":  {
-                "name": "/1917/Richard Madden.jpg",
-                "type": "scene"
-            },
-        "actor2_image": {
+            {
                 "name": "/1917/George MacKay.jpg",
                 "type": "scene"
             },
-        "actor3_image": {
+            {
                 "name": "/1917/Daniel Mays.jpg",
                 "type": "scene"
             },
-
+            {
+                "name": "/1917/Colin Firth.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/1917/Sam Mendes- Director.jpg",
+                "type": "scene"
+            },
+            {
+                "name": "/1917/1917.jpeg",
+                "type": "scene"
+            },
+            {
+                "name": "/1917/Titulo-1917.jpg",
+                "type": "scene"
+            }
+        ],
         "comments": []
     }
 ]
