@@ -174,7 +174,9 @@ router.post("/addFilm", (req, res) => {
             // 4. Insertar en la base de datos
             const db = req.app.locals.db;
             const collection = db.collection('Softflix');
-            await collection.insertOne(movie);
+
+            // 🔑 CAMBIO CLAVE: Insertamos y capturamos el resultado (ID)
+            const result = await collection.insertOne(movie);
 
             // 5. Redirigir si todo va bien
             res.redirect('/indice');
