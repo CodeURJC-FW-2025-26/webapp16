@@ -32,7 +32,7 @@
                 "type": "titlePhotoPath"
             },
             {
-                "name": "/Interstellar/interstellar.jpg",
+                "name": "/Interstellar/interestellar.jpg",
                 "type": "filmPhotoPath"
             },
             {
@@ -564,7 +564,7 @@
             },
             {
                 "name": "/OnlytheBrave/Only the Brave.jpeg",
-                "type": "fil"
+                "type": "filmPhotoPath"
             },
             {
                 "name": "/OnlytheBrave/Only the Brave-titulo.jpeg",
