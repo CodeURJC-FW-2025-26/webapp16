@@ -14,9 +14,9 @@ const movieSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    Gender: {
+    Gender: [{
         type: String
-    },
+    }],
     Calification: {
         type: String
     },
@@ -26,14 +26,39 @@ const movieSchema = new mongoose.Schema({
     Director: {
         type: String
     },
-    Casting: {
+    Casting: [{
         type: String
-    },
+    }],
     Duration: {
         type: String
     },
     image_file: {
         type: String
+    },
+
+
+    cover_image: {
+        type: String,
+    },
+
+    title_image: {
+        type: String,
+    },
+    film_image: {
+        type: String,
+    },
+
+    director_image: {  
+        type: String,
+    },
+    actor1_image: {
+        type: String,
+    },
+    actor2_image: {
+        type: String,
+    },
+    actor3_image: {
+        type: String,
     },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
