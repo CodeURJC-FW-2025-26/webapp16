@@ -16,11 +16,11 @@
                 "type": "cover"
             },
             {
-                "name": "/Interstellar/anne.jpg",
-                "type": "scene"
+                "name": "/Interstellar/christopher.jpg",
+                "type": "director" 
             },
             {
-                "name": "/Interstellar/christopher.jpg",
+                "name": "/Interstellar/anne.jpg",
                 "type": "scene"
             },
             {
@@ -40,7 +40,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/Interstellar/matthew.jpg",
+        "image_actor2": "/Interstellar/anne.jpg",
+        "image_actor3": "/Interstellar/jessica.png"
     },
     {
         "title": "How to train your dragon",
@@ -59,6 +62,10 @@
                 "type": "cover"
             },
             {
+                "name": "/CEATD2/Dean Deblois-director.jpeg",
+                "type": "director" 
+            },
+            {
                 "name": "/CEATD2/Cate Blanchett.jpg",
                 "type": "scene"
             },
@@ -71,10 +78,6 @@
                 "type": "scene"
             },
             {
-                "name": "/CEATD2/Dean Deblois-director.jpeg",
-                "type": "scene"
-            },
-            {
                 "name": "/CEATD2/Como Entrenar A Tu Dragon 2.jpeg",
                 "type": "scene"
             },
@@ -83,7 +86,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/CEATD2/Jay Baruchel.jpg",
+        "image_actor2": "/CEATD2/Gerard Butler.jpg",
+        "image_actor3": "/CEATD2/Cate Blanchett.jpg"
     },
     {
         "title": "The secret live of Walter Mity",
@@ -103,7 +109,7 @@
             },
             {
                 "name": "/LVDSWM/Ben Stiller.jpg",
-                "type": "scene"
+                "type": "director"
             },
             {
                 "name": "/LVDSWM/Ben Stiller.jpg",
@@ -126,9 +132,10 @@
                 "type": "scene"
             }
         ],
-        
-        "comments": []
-        
+        "comments": [],
+        "image_actor1": "/LVDSWM/Ben Stiller.jpg",
+        "image_actor2": "/LVDSWM/Kristen Wiig.jpg",
+        "image_actor3": "/LVDSWM/Jon Daly.jpg"
     },
     {
         "title": "Dunkerke",
@@ -147,6 +154,10 @@
                 "type": "cover"
             },
             {
+                "name": "/Dunkerque/Christopher Nolan.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/Dunkerque/Aneurin Barnard.jpg",
                 "type": "scene"
             },
@@ -159,10 +170,6 @@
                 "type": "scene"
             },
             {
-                "name": "/Dunkerque/Christopher Nolan.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/Dunkerque/Dunkerque.jpg",
                 "type": "scene"
             },
@@ -170,9 +177,11 @@
                 "name": "/Dunkerque/Titulo-Dunkerque.jpg",
                 "type": "scene"
             }
-            
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/Dunkerque/Fionn Whitehead.jpg",
+        "image_actor2": "/Dunkerque/Aneurin Barnard.jpg",
+        "image_actor3": "/Dunkerque/Damien Bonnardjpg"
     },
     {
         "title": "Megamind",
@@ -191,6 +200,10 @@
                 "type": "cover"
             },
             {
+                "name": "/Megamind/Tom McGrath.jpeg",
+                "type": "director" 
+            },
+            {
                 "name": "/Megamind/Tina Fey.jpg",
                 "type": "scene"
             },
@@ -203,10 +216,6 @@
                 "type": "scene"
             },
             {
-                "name": "/Megamind/Tom McGrath.jpeg",
-                "type": "scene"
-            },
-            {
                 "name": "/Megamind/MEgamind.jpeg",
                 "type": "scene"
             },
@@ -215,7 +224,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/Megamind/Will Ferrell.jpg",
+        "image_actor2": "/Megamind/Brad Pitt.jpg",
+        "image_actor3": "/Megamind/Tina Fey.jpg"
     },
     {
         "title": "Tenet",
@@ -234,6 +246,10 @@
                 "type": "cover"
             },
             {
+                "name": "/Tenet/Christopher Nolan.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/Tenet/Wesc Chataman.jpg",
                 "type": "scene"
             },
@@ -246,10 +262,6 @@
                 "type": "scene"
             },
             {
-                "name": "/Tenet/Christopher Nolan.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/Tenet/Tenet.jpeg",
                 "type": "scene"
             },
@@ -258,7 +270,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/Tenet/John David-Washington.jpg",
+        "image_actor2": "/Tenet/Robert Pattinson.jpg",
+        "image_actor3": "/Tenet/Wesc Chataman.jpg"
     },
     {
         "title": "Spiderman-Far-From-Home",
@@ -277,6 +292,10 @@
                 "type": "cover"
             },
             {
+                "name": "/Spiderman farfromhome/Jon Watts.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
                 "type": "scene"
             },
@@ -289,10 +308,6 @@
                 "type": "scene"
             },
             {
-                "name": "/Spiderman farfromhome/Jon Watts.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/Spiderman farfromhome/spider-man-far-from-home.jpg",
                 "type": "scene"
             },
@@ -301,7 +316,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/Spiderman farfromhome/Tom Holland.jpg",
+        "image_actor2": "/Spidermanfarfromhome/Jake Gyllenhaal.jpg",
+        "image_actor3": "/Spidermanfarfromhome/Samuel L. Jackson.jpg"
     },
     {
         "title": "Saving private Ryan",
@@ -320,6 +338,10 @@
                 "type": "cover"
             },
             {
+                "name": "/SPR/Steven Spielberg.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/SPR/Tom Sizemon.jpg",
                 "type": "scene"
             },
@@ -332,10 +354,6 @@
                 "type": "scene"
             },
             {
-                "name": "/SPR/Steven Spielberg.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/SPR/SSRyan.jpeg",
                 "type": "scene"
             },
@@ -344,7 +362,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/SPR/Tom Hanks.jpg",
+        "image_actor2": "/SPR/Tom Sizemon.jpg",
+        "image_actor3": "/SPR/Edward Burns.jpg"
     },
     {
         "title": "Súper López",
@@ -363,6 +384,10 @@
                 "type": "cover"
             },
             {
+                "name": "/SuperLopez/Javier Ruiz-Director.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/SuperLopez/Dani Rovira.jpg",
                 "type": "scene"
             },
@@ -375,10 +400,6 @@
                 "type": "scene"
             },
             {
-                "name": "/SuperLopez/Javier Ruiz-Director.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/SuperLopez/SuperLopez.jpeg",
                 "type": "scene"
             },
@@ -386,9 +407,11 @@
                 "name": "/SuperLopez/SUperLopez-titulo.jpeg",
                 "type": "scene"
             }
-
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/SuperLopez/Dani Rovira.jpg",
+        "image_actor2": "/SuperLopez/Alexandra Jimenez.jpg",
+        "image_actor3": "/SuperLopez/Julin Lopez.jpg"
     },
     {
         "title": "Only the Brave",
@@ -407,6 +430,10 @@
                 "type": "cover"
             },
             {
+                "name": "/OnlytheBrave/Joseph Kosinski-Director.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/OnlytheBrave/Josh Brolin.jpg",
                 "type": "scene"
             },
@@ -419,10 +446,6 @@
                 "type": "scene"
             },
             {
-                "name": "/OnlytheBrave/Joseph Kosinski-Director.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/OnlytheBrave/Only the Brave.jpeg",
                 "type": "scene"
             },
@@ -431,7 +454,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/OnlytheBrave/Josh Brolin.jpg",
+        "image_actor2": "/OnlytheBrave/Miles Teller.jpg",
+        "image_actor3": "/OnlytheBrave/Jeff Bridges.jpg"
     },
     {
         "title": "The secret soldiers of benghazi",
@@ -450,6 +476,10 @@
                 "type": "cover"
             },
             {
+                "name": "/13 horas/Michael Bay.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/13 horas/John Krasinski.jpg",
                 "type": "scene"
             },
@@ -462,10 +492,6 @@
                 "type": "scene"
             },
             {
-                "name": "/13 horas/Michael Bay.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/13 horas/13 Horas.jpeg",
                 "type": "scene"
             },
@@ -474,8 +500,10 @@
                 "type": "scene"
             }
         ],
-        "comments": []
-
+        "comments": [],
+        "image_actor1": "/13 horas/John Krasinski.jpg",
+        "image_actor2": "/13 horas/James Badge Dale.jpg",
+        "image_actor3": "/13 horas/Pablo Schreiber.jpg"
     },
     {
         "title": "1917",
@@ -494,6 +522,10 @@
                 "type": "cover"
             },
             {
+                "name": "/1917/Sam Mendes- Director.jpg",
+                "type": "director" 
+            },
+            {
                 "name": "/1917/George MacKay.jpg",
                 "type": "scene"
             },
@@ -506,10 +538,6 @@
                 "type": "scene"
             },
             {
-                "name": "/1917/Sam Mendes- Director.jpg",
-                "type": "scene"
-            },
-            {
                 "name": "/1917/1917.jpeg",
                 "type": "scene"
             },
@@ -518,6 +546,9 @@
                 "type": "scene"
             }
         ],
-        "comments": []
+        "comments": [],
+        "image_actor1": "/1917/George MacKay.jpg",
+        "image_actor2": "/1917/Daniel Mays.jpg",
+        "image_actor3": "/1917/Colin Firth.jpg"
     }
 ]
