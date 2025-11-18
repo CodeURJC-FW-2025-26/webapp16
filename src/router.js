@@ -125,11 +125,13 @@ router.post("/addFilm", (req, res) => {
 
             // 1.2 TITTLE OR NAME DUPLICATED
             const existingMovie = await req.app.locals.db.collection('Softflix').findOne({ title: title });
+            if (existingMovie){
             return res.render('error', {
                 mensaje: `There is already a movie with that title "${title}". Please, choose antoher tittle for the movie.`,
                 rutaBoton: '/add',
                 textoBoton: ' Return to the form'
             });
+            }
 
             // 2. Función auxiliar para obtener la ruta de un archivo específico
             const getFilePath = (fieldName) => {
