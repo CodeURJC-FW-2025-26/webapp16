@@ -183,7 +183,13 @@ router.post("/addFilm", (req, res) => {
             const result = await collection.insertOne(movie);
 
             // 5. Redirigir si todo va bien
-            res.redirect('/indice');
+            // 5. Mostrar página de confirmación
+            return res.render("confirm", {
+               movieTitle: movie.title,
+               movieId: result.insertedId,
+               rutaDetalle: `/Ej/${result.insertedId}`
+            });
+
 
         } catch (err) {
             // 6. Borrar archivos si falla (Rollback)

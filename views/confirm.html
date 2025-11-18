@@ -11,11 +11,16 @@
 <body>
     {{> header }}
 
-    <div class="container my-5 text-center">
-        <h1 class="text-success">✅ Operation completed successfully</h1>
-        <p class="lead">{{message}}</p>
-        <a href="{{redirect}}" class="btn btn-outline-dark mt-3">Volver</a>
-    </div>
+    <div class="container text-center mt-5">
+    <h2>Confirm Movie</h2>
+
+    <p>Movie: <strong>{{movieTitle}}</strong></p>
+
+    <a href="{{rutaDetalle}}" class="btn btn-success mt-3">
+        Confirm
+    </a>
+</div>
+
 
     {{> footer }}
 </body>
