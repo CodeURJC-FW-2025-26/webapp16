@@ -653,6 +653,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
 
         // 2. Delete the comment document (in 'comentaries' collection)
         const comentaryCollection = db.collection('comentaries');
+        const commentData = await comentaryCollection.findOne({_id: oidComment});
         const deleteResult = await comentaryCollection.deleteOne({ _id: oidComment });
 
         // 3. Remove the comment reference (ObjectId) from the movie's 'comments' array ($pull)
@@ -669,7 +670,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
             type: 'Delete review',
             action: 'delete',
             actiontype: 'review',
-            title: '',
+            title: commentData.User_name,
             routeDetalle: `/Ej/${movieId}`
         })
 
@@ -691,9 +692,9 @@ router.post('/Ej/:id/addReview', async (req, res) => {
         const { userName, rating, reviewText } = req.body;
         if (!userName || !rating || !reviewText || !movieId) {
             return res.render('error', {
-                message: 'All required fields must be completed for the review.',
-                redirect: `/Ej/${movieId}`,
-                buttonText: 'Return to the form'
+                mensaje: 'All required fields must be completed for the review.',
+                rutaBoton: `/Ej/${movieId}`,
+                textoBoton: 'Return to the form'
             });
         }
 
@@ -720,9 +721,9 @@ router.post('/Ej/:id/addReview', async (req, res) => {
         const movie = await moviesCollection.findOne({ _id: new ObjectId(movieId) });
         if (!movie) {
             return res.render('error', {
-                message: 'Movie not found for confirmation.',
-                redirect: '/indice',
-                buttonText: 'Return to Index'
+                mensaje: 'Movie not found for confirmation.',
+                rutaBoton: '/indice',
+                textoBoton: 'Return to Index'
             });
         }
 
@@ -737,9 +738,9 @@ router.post('/Ej/:id/addReview', async (req, res) => {
     } catch (err) {
         console.error('❌ ERROR adding review (Unified Model):', err);
         return res.render('error', {
-            message: `Error adding the review: ${err.message}`,
-            redirect: `/Ej/${req.params.id}`,
-            buttonText: 'Return to the form'
+            mensaje: `Error adding the review: ${err.message}`,
+            rutaBoton: `/Ej/${req.params.id}`,
+            textoBoton: 'Return to the form'
         });
     }
 });
