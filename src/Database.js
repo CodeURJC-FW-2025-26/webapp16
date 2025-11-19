@@ -33,8 +33,6 @@ const generateImagePaths = (movie) => {
     const duration = movie.Duration || movie.duration;
     const description = movie.description;
     const comments = movie.Comentary || movie.comments;
-
-    // 🔑 CORRECCIÓN 1: Extraer el campo 'language' manejando Language/language
     const language = movie.Language || movie.language;
 
     const castString = movie.Casting || movie.cast;
@@ -97,8 +95,6 @@ const generateImagePaths = (movie) => {
 
         cast: castArray,
         duration: duration,
-        // 🔑 CORRECCIÓN 2: Usar la variable 'language' extraída.
-        // Se asegura de que sea un array o un array vacío si no hay valor.
         language: Array.isArray(language) ? language : (language ? [language] : []),
         comments: comments || []
     };
@@ -128,7 +124,6 @@ async function cleanupDB() {
     try {
         await client.connect();
         const db = client.db('Softflix');
-        // 🔑 CORRECCIÓN: Limpiar AMBAS colecciones
         await db.collection('Softflix').deleteMany({});
         await db.collection('comentaries').deleteMany({});
         console.log(`\n🧹 DB CLEANUP: Collections 'Softflix' and 'comentaries' cleaned.`);
@@ -156,16 +151,17 @@ async function initDB(app) {
             const moviesToInsert = [];
 
             for (const movie of initialMovies) {
-                // Sacamos los comentarios embebidos para insertarlos por separado
+                // We extracted the embedded comments to insert them separately
                 const initialComments = movie.comments || [];
                 const commentIds = [];
 
-                // 2. Insertar comentarios y obtener IDs
+
+                // 2. Insert comments and obtain IDs
                 if (initialComments.length > 0) {
-                    // Asegurar que los ratings sean números antes de insertarlos
+                    // Ensure that the ratings are numbers before inserting them
                     const commentsWithNumbers = initialComments.map(c => ({
                         ...c,
-                        // Asignamos un nuevo ObjectId si no existe (aunque MongoDB lo hace)
+                        // We assign a new ObjectId if it doesn't exist (although MongoDB does it)
                         _id: new ObjectId(),
                         Rating: parseInt(c.Rating) || 0, 
                         createdAt: new Date()
@@ -176,10 +172,11 @@ async function initDB(app) {
                     commentIds.push(...Object.values(result.insertedIds)); 
                 }
 
-                // 3. Preparar la película para la inserción, reemplazando los comentarios con referencias
+
+                // 3. Prepare the film for insertion, replacing the comments with references
                 const movieData = { 
                     ...movie, 
-                    // 🔑 CRÍTICO: Reemplazar el array de objetos con el array de ObjectIds
+                    // Replace the array of objects with the array of ObjectIds
                     comments: commentIds 
                 };
                 
@@ -187,7 +184,8 @@ async function initDB(app) {
                 moviesToInsert.push(movieData);
             }
             
-            // 4. Insertar las películas con las referencias de comentarios
+
+            // 4. Insert the films with the commentary references
             await SoftflixColl.insertMany(moviesToInsert);
             console.log("✅ Initial insertion completed successfully with comment references.");
         } else {
