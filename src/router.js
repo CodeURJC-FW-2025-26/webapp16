@@ -665,7 +665,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
             routeDetalle: `/Ej/${movieId}`
         })
 
-        res.render('edit-comment', { // ⬅️ Aquí está la llamada a res.render
+        res.render('edit-comment', { // Here is the call res.render
             pageTitle: `Editing Comment for: ${comment.User_name}`,
             filmSlug: movieId,
             commentId: commentId,
