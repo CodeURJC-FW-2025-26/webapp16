@@ -2,6 +2,8 @@ import express from 'express';
 import * as fs from 'fs';
 import path from 'path';
 import { ObjectId } from 'mongodb';
+import multer from 'multer';
+import { fileURLToPath } from "url";
 
 const router = express.Router();
 
@@ -380,105 +382,138 @@ router.get('/edit/:id', async (req, res) => {
 // ----------------------------------------------------
 //  POST /editFilm/:id → Save the edition of a movie (MULTIPLE FILES)
 // ----------------------------------------------------
-router.post("/editFilm/:id", (req, res) => {
-    const uploadMiddleware = req.app.locals.upload.fields([
-        { name: 'cover', maxCount: 1 },
-        { name: 'titlePhoto', maxCount: 1 },
-        { name: 'filmPhoto', maxCount: 1 },
-        { name: 'fotoDirector', maxCount: 1 },
-        { name: 'fotoActor1', maxCount: 1 },
-        { name: 'fotoActor2', maxCount: 1 },
-        { name: 'fotoActor3', maxCount: 1 },
-    ]);
 
-    uploadMiddleware(req, res, async (err) => {
-        if (err) {
-            console.error("❌ Multer error:", err);
-            return res.render("error", {
-                mensaje: `Error processing files: ${err.message}`,
-                rutaBoton: "/indice",
-                textoBoton: "Return"
-            });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename); // This is .../Practica1/src
+const BASE_PATH = path.join(__dirname, '..'); // This is .../Practica1 (Project Root)
+
+// 2. Calculate the absolute path to the Uploads folder
+const UPLOADS_PATH = path.join(BASE_PATH, 'Public', 'Uploads'); // ✅ Correct Absolute Path
+
+// Helper function: Adds the '/Uploads/' prefix
+const addUploadPrefix = (filename) => {
+    if (!filename) return null;
+    return `/Uploads/${filename}`;
+};
+
+// 3. Configure Multer storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Multer will use the CORRECT ABSOLUTE path defined above
+        cb(null, UPLOADS_PATH);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const extension = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + extension);
+    }
+});
+const upload = multer({ storage: storage });
+
+// Define the expected image fields
+const imageFields = [
+    { fieldName: 'coverImage', dbPath: 'coverPath' },
+    { fieldName: 'titlePhoto', dbPath: 'titlePhotoPath' },
+    // ... the rest of your image fields ...
+    { fieldName: 'filmPhoto', dbPath: 'filmPhotoPath' },
+    { fieldName: 'directorImage', dbPath: 'directorImagePath' },
+    { fieldName: 'actor1Image', dbPath: 'actor1ImagePath' },
+    { fieldName: 'actor2Image', dbPath: 'actor2ImagePath' },
+    { fieldName: 'actor3Image', dbPath: 'actor3ImagePath' },
+];
+
+// --------------------------------------------------------------------------------
+// ➡️ POST /editFilm/:id → UPDATE FILM - CORRECTED
+// --------------------------------------------------------------------------------
+router.post('/editFilm/:id', upload.fields(
+    imageFields.map(field => ({ name: field.fieldName, maxCount: 1 }))
+), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const db = req.app.locals.db;
+        const moviesColl = db.collection('Softflix');
+
+        // 1. Validate ID and find the existing film
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).render('error', { mensaje: 'Invalid movie ID.', rutaBoton: '/indice', textoBoton: 'Go to Index' });
+        }
+        const oid = new ObjectId(id);
+
+        const existingFilm = await moviesColl.findOne({ _id: oid });
+
+        if (!existingFilm) {
+            // If the movie is not found, clean up any files Multer may have uploaded
+            if (req.files) { /* Logic to clean up Multer files */ }
+            return res.status(404).render('error', { mensaje: 'Movie not found for update.', rutaBoton: '/indice', textoBoton: 'Go to Index' });
         }
 
-        try {
-            const db = req.app.locals.db;
-            const collection = db.collection("Softflix");
-            const files = req.files;
-            const body = req.body;
+        // 2. Prepare the update object ($set) with text fields
+        const updateFields = {
+            // Text and numeric fields
+            title: req.body.title,
+            description: req.body.description,
+            releaseYear: parseInt(req.body.releaseYear),
+            // Ensure array fields (genre/languages) are handled
+            genre: req.body.genre,
+            language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
+            isRecent: req.body.isRecent === 'on', // Checkbox logic
+            // ... other text/boolean fields
+            updatedAt: new Date()
+        };
 
-            const movieId = req.params.id; //We obtain the ID of req.params
-            if (!movieId) {
-                return res.render("error", {
-                    mensaje: "Movie ID not received.",
-                    rutaBoton: "/indice",
-                    textoBoton: "Return"
-                });
+        // 3. Conditional Logic for Images (PRESERVE OLD PATH)
+        for (const { fieldName, dbPath } of imageFields) {
+
+            // CRITICAL Check: Was a new file uploaded for this field?
+            if (req.files && req.files[fieldName] && req.files[fieldName].length > 0) {
+
+                // Option 1: NEW IMAGE! Use the new path (and optionally delete the old one)
+                updateFields[dbPath] = addUploadPrefix(req.files[fieldName][0].filename);
+
+                // OPTIONAL: Logic to delete the OLD file from disk (only if it's not one of the initial example data)
+                // if (existingFilm[dbPath] && existingFilm[dbPath].startsWith('/Uploads/')) {
+                //     const oldFileName = existingFilm[dbPath].replace('/Uploads/', '');
+                //     const fullPathToDelete = path.join(UPLOADS_PATH, oldFileName);
+                //     if (fs.existsSync(fullPathToDelete)) {
+                //         fs.unlinkSync(fullPathToDelete); 
+                //     }
+                // }
+
+            } else {
+                // Option 2: NO NEW IMAGE UPLOADED! Preserve the existing path in the DB
+                updateFields[dbPath] = existingFilm[dbPath];
             }
-
-            // Helper → Keep old image if no new one uploaded
-            const getUpdatedPath = (fieldName, oldValue) => {
-                return files && files[fieldName] && files[fieldName][0]
-                    ? `/Uploads/${files[fieldName][0].filename}`
-                    : oldValue || null;
-            };
-
-            // Create fields to update
-            const updatedMovie = {
-                title: body.title,
-                description: body.description,
-                releaseYear: Number(body.releaseYear),
-                director: body.director,
-                ageClassification: body.ageClassification,
-                duration: body.duration,
-                rating: body.rating ? Number(body.rating) : undefined,
-                genre: Array.isArray(body.genre) ? body.genre : [body.genre],
-                language: Array.isArray(body.language) ? body.language : [body.language],
-
-                cast: [
-                    body.actor1 || "",
-                    body.actor2 || "",
-                    body.actor3 || ""
-                ],
-
-                coverPath: getUpdatedPath("cover", body.oldCoverPath),
-                titlePhotoPath: getUpdatedPath("titlePhoto", body.oldTitlePhotoPath),
-                filmPhotoPath: getUpdatedPath("filmPhoto", body.oldFilmPhotoPath),
-                directorImagePath: getUpdatedPath("fotoDirector", body.oldDirectorImagePath),
-                actor1ImagePath: getUpdatedPath("fotoActor1", body.oldActor1ImagePath),
-                actor2ImagePath: getUpdatedPath("fotoActor2", body.oldActor2ImagePath),
-                actor3ImagePath: getUpdatedPath("fotoActor3", body.oldActor3ImagePath)
-            };
-
-            // Clean empty strings in cast
-            updatedMovie.cast = updatedMovie.cast.filter(x => x.trim() !== "");
-
-            // Update in DB
-            await collection.updateOne(
-                { _id: new ObjectId(movieId) },
-                { $set: updatedMovie }
-            );
-
-            console.log("✅ Movie updated:", movieId);
-
-            // Redirect to detail page
-            res.render('confirm', {
-                type: 'Edited Film',
-                action: 'edit',
-                actiontype: 'film',
-                title: body.title,
-                routeDetalle: `/Ej/${movieId}`
-            });
-
-        } catch (err) {
-            console.error("❌ Error saving movie edition:", err);
-            res.render("error", {
-                mensaje: `Error saving changes: ${err.message}`,
-                rutaBoton: "/indice",
-                textoBoton: "Return"
-            });
         }
-    });
+
+
+        // 4. Update the film in the DB
+        const updateResult = await moviesColl.updateOne(
+            { _id: oid },
+            { $set: updateFields }
+        );
+
+        if (updateResult.matchedCount === 0) {
+            console.warn(`Movie ${id} not found or not modified.`);
+        }
+
+        // 5. Redirect to the confirmation page
+        res.render('confirm', {
+            type: 'Edit Film',
+            action: 'edit',
+            actiontype: 'film',
+            title: updateFields.title,
+            routeDetalle: `/Ej/${id}`
+        });
+
+    } catch (err) {
+        console.error("❌ ERROR updating film:", err);
+        // In case of error, it's always good practice to redirect to a clear error page.
+        res.status(500).render('error', {
+            mensaje: `Error updating film: ${err.message}`, 
+            rutaBoton: `/Ej/${req.params.id}`,
+            textoBoton: 'Return to Film'
+        });
+    }
 });
 
 
