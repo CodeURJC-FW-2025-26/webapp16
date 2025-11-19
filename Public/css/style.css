@@ -177,7 +177,6 @@
     border-radius: 50%;
 }
 
-
 .site-footer {
     background: #263b43;
     color: #dfeef1;
@@ -199,7 +198,7 @@ footer .footer-inner .footer-right a {
     justify-content: end;
 }
 
-<<<<<<< HEAD
+
 html,
 body {
     height: 100%;
@@ -214,7 +213,6 @@ body>.maincontainer {
     flex: 1 0 auto;
 }
 
-*/
 .principal {
     flex-shrink: 0;
     position: relative;
@@ -222,6 +220,3 @@ body>.maincontainer {
     overflow: hidden;
     height: 70vh;
 }
-=======
-
->>>>>>> db2d18b79710fdba9a730dbc9a43b0fd5cebbee8

@@ -273,7 +273,7 @@ router.get('/Ej/:id', async (req, res) => {
 
         const filmNormalized = {
             ...film,
-            
+
             // 🔑 CRÍTICO: PASAR EL ID DE LA PELÍCULA CON UN NOMBRE DE VARIABLE CLARO.
             movieId: film._id.toString(), // <-- Usado en ej.html como {{movieId}}
 
@@ -553,8 +553,8 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
         // La URL de detalle de la película es /Ej/:id
         res.render('confirm', {
             type: 'Edit review',
-            action:'edit',
-            actiontype:'review',
+            action: 'edit',
+            actiontype: 'review',
             title: '',
             routeDetalle: `/Ej/${movieId}`
         })
@@ -569,8 +569,8 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 // ➡️ POST /deleteComment/:movieId/:commentId → Eliminar un comentario específico - EXISTENTE
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
-        const { movieId, commentId} = req.params;
-    
+        const { movieId, commentId } = req.params;
+
         const db = req.app.locals.db;
 
         // 1. Validar IDs
@@ -597,8 +597,8 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
         // 4.Confirm page 
         res.render('confirm', {
             type: 'Delete review',
-            action:'delete',
-            actiontype:'review',
+            action: 'delete',
+            actiontype: 'review',
             title: '',
             routeDetalle: `/Ej/${movieId}`
         })
