@@ -626,57 +626,60 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 
 
 //  POST /deleteComment/:movieId/:commentId → Delete a specific comment
+// POST request to delete a review (comment)
+// POST request to delete a review (comment)
+// Route: /deleteComment/:movieId/:commentId
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
+    // Destructure parameters from the URL
+    const { movieId, commentId } = req.params;
+    const db = req.app.locals.db;
+
     try {
-        const { movieId, commentId } = req.params;
-
-        const db = req.app.locals.db;
-
-        // 1. Validate IDs
-        if (!ObjectId.isValid(movieId) || !ObjectId.isValid(commentId)) {
-            // 🚨 Console log for invalid IDs
-            console.error(`❌ VALIDATION ERROR (DELETE COMMENT): Invalid Movie ID: ${movieId} or Comment ID: ${commentId}`);
-            return res.status(400).send('Invalid movie or comment ID.'); 
+        // 1. Validate that the IDs are valid ObjectIds
+        if (!ObjectId.isValid(commentId) || !ObjectId.isValid(movieId)) {
+            console.error(`❌ VALIDATION ERROR (DELETE COMMENT): Invalid Movie ID or Comment ID: ${movieId}, ${commentId}`);
+            return res.render('error', {
+                mensaje: 'The comment or movie ID provided is invalid.',
+                rutaBoton: `/Ej/${movieId}`,
+                textoBoton: 'Return to film details'
+            });
         }
 
-        const oidComment = new ObjectId(commentId);
-        const oidMovie = new ObjectId(movieId);
+        const commentObjectId = new ObjectId(commentId);
+        const movieObjectId = new ObjectId(movieId);
 
-        // 2. Delete the comment document (in 'comentaries' collection)
+        // --- Database Deletion Operations ---
+
+        // 2. Delete the comment from the 'comentaries' collection
         const comentaryCollection = db.collection('comentaries');
-        const commentData = await comentaryCollection.findOne({_id: oidComment});
-        await comentaryCollection.deleteOne({ _id: oidComment });
+        const deleteResult = await comentaryCollection.deleteOne({ _id: commentObjectId });
 
-        // 3. Remove the comment reference (ObjectId) from the movie's 'comments' array ($pull)
-        const moviesCollection = db.collection('Softflix');
-        await moviesCollection.updateOne(
-            { _id: oidMovie },
-            { $pull: { comments: oidComment } }
+        // Optional: Log a warning if the comment wasn't found (might happen if already deleted)
+        if (deleteResult.deletedCount === 0) {
+            console.warn(`⚠️ WARNING (DELETE COMMENT): Comment ID ${commentId} not found to delete.`);
+        }
+
+        // 3. Remove the comment reference from the 'comments' array in the 'Softflix' movie document
+        const moviesColl = db.collection('Softflix');
+        await moviesColl.updateOne(
+            { _id: movieObjectId },
+            // $pull removes the specified ObjectId reference from the 'comments' array
+            { $pull: { comments: commentObjectId } }
         );
 
-        console.log(`✅ Commentary ${commentId} deleted and reference removed from film ${movieId}.`); 
+        console.log(`✅ Comment ${commentId} successfully deleted for movie ${movieId}.`);
 
-        // 4.Confirm page 
-        res.render('confirm', {
-            type: 'Delete review',
-            action: 'delete',
-            actiontype: 'review',
-            title: commentData.User_name,
-            routeDetalle: `/Ej/${movieId}`
-        })
-
-        res.render('edit-comment', { // Here is the call res.render
-            pageTitle: `Editing Comment for: ${comment.User_name}`,
-            filmSlug: movieId,
-            commentId: commentId,
-            commentText: comment.description,
-            commentRating: comment.Rating
-        });
+        // 4. Redirect back to the movie detail page
+        return res.redirect(`/Ej/${movieId}`);
 
     } catch (err) {
-        // 🚨 Console log for generic delete error
-        console.error("❌ ERROR deleting commentary:", err); 
-        res.status(500).send(`Error deleting the commentary ${err.message}`); 
+        // 🚨 Log the error to the console and render the error page for DB/server failure
+        console.error('❌ ERROR deleting comment:', err);
+        return res.render('error', {
+            mensaje: 'An unexpected error occurred while deleting the comment.',
+            rutaBoton: `/Ej/${movieId}`,
+            textoBoton: 'Return to film details'
+        });
     }
 });
 
