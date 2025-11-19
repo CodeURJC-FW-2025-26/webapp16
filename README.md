@@ -214,6 +214,7 @@ This section details the function of each key file in the website's implementati
            ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
 
 - Samuel: I have mainly participated in the `Ej.html`, ensuring that the elements of the main and secondary entity appear. I have also been in charge of the error and confirmation pages and their entire implementation on the server. And also with the editing and deletion of elements.
+  
  -Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/c3f411ff83be8d6dd5c2bc3b97e30d4ab3d099e2 )
            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/7526c8048d45bba671b424b770a844c5f2184924 )
            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/ac1b87277cb6435cd10f29936bd426041fde56cd )
