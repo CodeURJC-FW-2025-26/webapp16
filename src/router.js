@@ -216,7 +216,7 @@ router.post("/addFilm", (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ Movie Detail Route (/Ej/:id) - CORREGIDA
+// ➡️ Movie Detail Route (/Ej/:id) 
 // ----------------------------------------------------
 router.get('/Ej/:id', async (req, res) => {
     try {
@@ -267,17 +267,17 @@ router.get('/Ej/:id', async (req, res) => {
 
         // 2. Data normalization for the template
 
-        // 🔑 CORRECCIÓN: SOLO USAMOS EL RESULTADO DEL LOOKUP (newComments / reviewsData). 
-        // El código de oldComments no es necesario si la base de datos se inicializa correctamente.
+        // WE ONLY USE THE RESULT OF THE LOOKUP (newComments / reviewsData).
+        // The code in oldComments is not necessary if the database is initialized successfully.
         const validReviews = Array.isArray(film.reviewsData) ? film.reviewsData : [];
 
         const filmNormalized = {
             ...film,
 
-            // 🔑 CRÍTICO: PASAR EL ID DE LA PELÍCULA CON UN NOMBRE DE VARIABLE CLARO.
-            movieId: film._id.toString(), // <-- Usado en ej.html como {{movieId}}
+            // CRITIC: PASS THE MOVIE ID WITH A CLEAR VARIABLE NAME.
+            movieId: film._id.toString(), // <-- Used in ej.html as {{movieId}}
 
-            // 🔑 USAR SOLO LA LISTA LIMPIA DE COMENTARIOS CON ID VÁLIDO.
+            // USE ONLY THE CLEAN LIST OF COMMENTS WITH VALID ID.
             reviews: validReviews,
 
             // Main poster
@@ -297,7 +297,7 @@ router.get('/Ej/:id', async (req, res) => {
 
 
 // ----------------------------------------------------
-// ➡️ Movie Edit (GET /edit/:id) - EXISTENTE
+//  Movie Edit (GET /edit/:id) 
 // ----------------------------------------------------
 router.get('/edit/:id', async (req, res) => {
     try {
@@ -378,7 +378,7 @@ router.get('/edit/:id', async (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ POST /editFilm/:id → Save the edition of a movie (MULTIPLE FILES) - CORREGIDA
+//  POST /editFilm/:id → Save the edition of a movie (MULTIPLE FILES)
 // ----------------------------------------------------
 router.post("/editFilm/:id", (req, res) => {
     const uploadMiddleware = req.app.locals.upload.fields([
@@ -407,7 +407,7 @@ router.post("/editFilm/:id", (req, res) => {
             const files = req.files;
             const body = req.body;
 
-            const movieId = req.params.id; // 🔑 CORRECCIÓN: Obtenemos el ID de req.params
+            const movieId = req.params.id; //We obtain the ID of req.params
             if (!movieId) {
                 return res.render("error", {
                     mensaje: "Movie ID not received.",
@@ -483,7 +483,7 @@ router.post("/editFilm/:id", (req, res) => {
 
 
 // ----------------------------------------------------
-// ➡️ GET /editComment/:movieId/:commentId → Load the comment editing form - EXISTING
+//  GET /editComment/:movieId/:commentId → Load the comment editing form - EXISTING
 // ----------------------------------------------------
 router.get('/editComment/:movieId/:commentId', async (req, res) => {
     try {
@@ -520,7 +520,7 @@ router.get('/editComment/:movieId/:commentId', async (req, res) => {
 
 // ---
 
-// ➡️ POST /updateComment/:movieId/:commentId → Update the comment in the DB - EXISTING
+//  POST /updateComment/:movieId/:commentId → Update the comment in the DB - EXISTING
 router.post('/updateComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -566,7 +566,7 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 });
 
 
-// ➡️ POST /deleteComment/:movieId/:commentId → Delete a specific comment - EXISTING
+//  POST /deleteComment/:movieId/:commentId → Delete a specific comment - EXISTING
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -614,7 +614,7 @@ router.get('/add', (req, res) => {
     res.render('add');
 });
 // =======================================================
-// // ➡️ POST /Ej/:id/addReview → Add a review (UNIFIED MODEL) with confirmation
+//  POST /Ej/:id/addReview → Add a review (UNIFIED MODEL) with confirmation
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
         const movieId = req.params.id;
@@ -679,7 +679,7 @@ router.post('/Ej/:id/addReview', async (req, res) => {
 
 
 // ----------------------------------------------------
-// ➖ Route to render delete confirmation page
+//  Route to render delete confirmation page
 router.post('/deleteFilm', async (req, res) => {
     try {
         const { movieId } = req.body;

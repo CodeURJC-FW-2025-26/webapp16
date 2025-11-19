@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const JSON_PATH = path.join(BASE_PATH, 'data', 'data.json');
 
-// 🔑 HELPER FUNCTION: Adds the '/Uploads' prefix to the path.
+//  HELPER FUNCTION: Adds the '/Uploads' prefix to the path.
 const addUploadPrefix = (p) => {
     if (!p) return null;
     // Prevents duplicating the prefix if it already exists
@@ -20,7 +20,7 @@ const addUploadPrefix = (p) => {
     return `/Uploads${p}`;
 };
 
-// 💡 CRITICAL: Transformation function that assigns images by explicit type
+//  CRITICAL: Transformation function that assigns images by explicit type
 const generateImagePaths = (movie) => {
 
     // --- 1. Data Extraction and Normalization ---
@@ -101,7 +101,7 @@ const generateImagePaths = (movie) => {
 };
 
 // -------------------------------------------------------------------------
-// 🛠️ Initial Movie Load
+//  Initial Movie Load
 // -------------------------------------------------------------------------
 
 // Load initial movies synchronously
@@ -117,7 +117,7 @@ try {
 
 
 // -------------------------------------------------------------------------
-// 💾 DB Connection and Cleanup Functions (CORREGIDAS)
+//  DB Connection and Cleanup Functions (CORREGIDAS)
 // -------------------------------------------------------------------------
 
 async function cleanupDB() {

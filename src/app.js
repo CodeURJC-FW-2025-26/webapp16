@@ -55,14 +55,14 @@ app.use(express.json());
 
 
 // ----------------------------------------------------
-// 📁 STATIC FILE SERVICE AND INITIAL COPY
+//  STATIC FILE SERVICE AND INITIAL COPY
 // ----------------------------------------------------
 // Serve files from the Public folder (includes Public/Uploads)
 app.use(express.static(path.join(BASE_PATH, 'Public')));
 
 
 // ----------------------------------------------------
-// 🛠️ COPY AND CLEANUP FUNCTIONS
+//  COPY AND CLEANUP FUNCTIONS
 // ----------------------------------------------------
 const sourceDir = path.join(BASE_PATH, 'data', 'Images');
 const destDir = UPLOADS_PATH; // Public/Uploads
@@ -123,11 +123,10 @@ function copyImagesToUploads() {
 // ----------------------------------------------------
 
 // ----------------------------------------------------
-// 🗺️ ROUTING AND DATABASE
+//  ROUTING AND DATABASE
 // ----------------------------------------------------
 app.use('/', router);
 
-// 🚨 CRITICAL: Database initialization and connection.
 // Must be wrapped in a try/catch to handle MongoDB connection failures.
 copyImagesToUploads(); // Copy images before filling the DB
 try {
@@ -141,7 +140,7 @@ try {
 
 
 // ----------------------------------------------------
-// 🚀 SERVER START
+//  SERVER START
 // ----------------------------------------------------
 const PORT = 3000;
 const server = app.listen(PORT, () =>
@@ -149,7 +148,7 @@ const server = app.listen(PORT, () =>
 );
 
 // ----------------------------------------------------
-// 🗑️ CLEANUP HOOKS WHEN CLOSING THE SERVER
+//  CLEANUP HOOKS WHEN CLOSING THE SERVER
 // ----------------------------------------------------
 
 // Handles manual stopping (Ctrl+C)
