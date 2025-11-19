@@ -202,6 +202,16 @@ This section details the function of each key file in the website's implementati
 ---
 
 - Ignacio: I have mainly participated in the `indice.html` where Ishow de cover of the fils and de navegation var, where we can search a film by it's title and the genres. I have also helped my other teammates, mant in de JS part and `data.json`, where we have all the functions for making the website works
+  - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/6ceddda698aff75fa884af9d669700a656c0ddb8)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/fa1a89e272744c96355bdc4608e4e681bb4ed9b0)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/b64ab1dcdc8d5a5393d40e22ce07ab4f35b2b68b)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/33b82765107aa62b145f19eb1df4d99b82f335c4)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/7494d8204bb8bcb8ee1cdf600b1264063cad9eb6)
+  - Pages: ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
+           ([router.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/router.js))
+           ([database.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/Database.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
+           ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
 
 - Samuel: I have mainly participated in the `Ej.html`, ensuring that the elements of the main and secondary entity appear. I have also been in charge of the error and confirmation pages and their entire implementation on the server. And also with the editing and deletion of elements.
 
