@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 
 const router = express.Router();
 
-// --- Configuración de Multer (Mantenida) ---
+// --- Multer Configuration (Maintained) ---
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); 
@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Define the expected image fields (Asegúrate que estos nombres coincidan con tu form)
+// Define the expected image fields 
 const imageFields = [
     { fieldName: 'cover', dbPath: 'coverPath' },
     { fieldName: 'titlePhoto', dbPath: 'titlePhotoPath' },
@@ -64,7 +64,7 @@ router.get('/', (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ Main Movies Route (Index) - (Mantenida)
+// ➡️ Main Movies Route (Index)
 // ----------------------------------------------------
 
 const ITEMS_PER_PAGE = 6;
@@ -93,7 +93,7 @@ router.get('/indice', async (req, res) => {
             .limit(ITEMS_PER_PAGE)
             .toArray();
 
-        // 🔑 INDEX CORRECTION: Use ONLY coverPath for the listing poster.
+        // Use ONLY coverPath for the listing poster.
         const normalizedFilms = films.map(f => ({
             ...f,
             posterUrl: f.coverPath,
@@ -140,10 +140,10 @@ router.get('/indice', async (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ POST Route for Adding a Movie (with Multer) - MODIFICADA
+// ➡️ POST Route for Adding a Movie (with Multer)
 // ----------------------------------------------------
 router.post("/addFilm", (req, res) => {
-    // El objeto Multer ya está en app.locals.upload
+    // The Multer object is already in app.locals.upload
     const uploadMiddleware = req.app.locals.upload.fields([
         { name: 'cover', maxCount: 1 },
         { name: 'titlePhoto', maxCount: 1 },
@@ -158,7 +158,7 @@ router.post("/addFilm", (req, res) => {
         if (err) {
             console.error('❌ File Upload ERROR (Multer):', err);
             return res.render('error', {
-                mensaje: `Error procesing files: ${err.message}`,
+                mensaje: `Error processing files: ${err.message}`,
                 rutaBoton: '/add',
                 textoBoton: 'Return to the form'
             });
@@ -185,7 +185,7 @@ router.post("/addFilm", (req, res) => {
 
             if (startsWithLowercase) {
                 cleanupFiles(files); // Clean files before rendering error
-                // 🚨 Mensaje de consola si falla la validación del título
+                // 🚨 Console message for validation failure
                 console.error(`❌ VALIDATION ERROR (ADD FILM): The title "${title}" must start with an uppercase letter.`);
                 
                 return res.render('error', {
@@ -196,7 +196,7 @@ router.post("/addFilm", (req, res) => {
             }
 
 
-            // 🔑 DUPLICATE VALIDATION CORRECTION: If the movie exists, render error.
+            // 🔑 DUPLICATE VALIDATION: If the movie exists, render error.
             const existingMovie = await req.app.locals.db.collection('Softflix').findOne({ title: title });
 
             if (existingMovie) {
@@ -272,7 +272,7 @@ router.post("/addFilm", (req, res) => {
 });
 
 // ----------------------------------------------------
-// ➡️ Movie Detail Route (/Ej/:id) - (Mantenida)
+// ➡️ Movie Detail Route (/Ej/:id)
 // ----------------------------------------------------
 router.get('/Ej/:id', async (req, res) => {
     try {
@@ -328,10 +328,10 @@ router.get('/Ej/:id', async (req, res) => {
         const filmNormalized = {
             ...film,
 
-            // CRITIC: PASS THE MOVIE ID WITH A CLEAR VARIABLE NAME.
-            movieId: film._id.toString(), // <-- Used in ej.html as {{movieId}}
+            // Pass the movie ID with a clear variable name.
+            movieId: film._id.toString(), 
 
-            // USE ONLY THE CLEAN LIST OF COMMENTS WITH VALID ID.
+            // Use only the clean list of comments with valid ID.
             reviews: validReviews,
 
             // Main poster
@@ -345,13 +345,13 @@ router.get('/Ej/:id', async (req, res) => {
 
     } catch (err) {
         console.error('❌ ERROR loading movie detail:', err);
-        res.status(500).send(`Error al cargar la página de detalle: ${err.message}`);
+        res.status(500).send(`Error loading the detail page: ${err.message}`);
     }
 });
 
 
 // ----------------------------------------------------
-//  Movie Edit (GET /edit/:id) - (Mantenida)
+//  Movie Edit (GET /edit/:id)
 // ----------------------------------------------------
 router.get('/edit/:id', async (req, res) => {
     try {
@@ -380,7 +380,7 @@ router.get('/edit/:id', async (req, res) => {
             // The ID is critical for the POST edit form. Convert to string.
             _id: film._id.toString(),
 
-            // Main fields (use the normalized fields that should already exist)
+            // Main fields
             title: film.title,
             description: film.description,
             releaseYear: film.releaseYear,
@@ -390,7 +390,7 @@ router.get('/edit/:id', async (req, res) => {
             duration: film.duration,
 
             // Casting: Pass the fields separately to pre-fill the 3 form inputs
-            cast: film.cast, // Pasamos el array completo para que Handlebars lo use
+            cast: film.cast, 
             actor1: castArray[0] || '',
             actor2: castArray[1] || '',
             actor3: castArray[2] || '',
@@ -402,7 +402,7 @@ router.get('/edit/:id', async (req, res) => {
             coverPath: film.coverPath || film.cover || film.mainImagePath || '',
             titlePhotoPath: film.titlePhotoPath || '',
 
-            // Flags for Checkboxes (Genre) - Crucial for pre-selection
+            // Flags for Checkboxes (Genre)
             isAction: genreArray.includes('Action'),
             isComedy: genreArray.includes('Comedy'),
             isHorror: genreArray.includes('Horror'),
@@ -411,7 +411,7 @@ router.get('/edit/:id', async (req, res) => {
             isAdventure: genreArray.includes('Adventure'),
             isOtherGenre: genreArray.includes('Other'),
 
-            // Flags for Checkboxes (Language) - Crucial for pre-selection
+            // Flags for Checkboxes (Language)
             isEnglish: languageArray.includes('English'),
             isSpanish: languageArray.includes('Spanish'),
             isFrench: languageArray.includes('French'),
@@ -433,7 +433,7 @@ router.get('/edit/:id', async (req, res) => {
 });
 
 // --------------------------------------------------------------------------------
-// ➡️ POST /editFilm/:id → UPDATE FILM - MODIFICADA
+// ➡️ POST /editFilm/:id → UPDATE FILM 
 // --------------------------------------------------------------------------------
 router.post('/editFilm/:id', upload.fields(
     imageFields.map(field => ({ name: field.fieldName.replace(/Image$/, ''), maxCount: 1 }))
@@ -443,9 +443,9 @@ router.post('/editFilm/:id', upload.fields(
         const db = req.app.locals.db;
         const moviesColl = db.collection('Softflix');
         const title = req.body.title ? req.body.title.trim() : '';
-        const files = req.files; // Referencia a los archivos subidos por Multer
+        const files = req.files; // Reference to files uploaded by Multer
         
-        // 1. Validar ID y buscar la película existente
+        // 1. Validate ID and find the existing movie
         if (!ObjectId.isValid(id)) {
             console.error('❌ VALIDATION ERROR (EDIT FILM): Invalid movie ID provided for edition.');
             cleanupFiles(files);
@@ -453,18 +453,18 @@ router.post('/editFilm/:id', upload.fields(
         }
         const oid = new ObjectId(id);
 
-        // 🔑 2. VALIDACIÓN DE FORMATO DEL TÍTULO (MAYÚSCULA INICIAL)
+        // 🔑 2. SERVER-SIDE VALIDATION: Title must start with an uppercase letter
         const startsWithLowercase = /^[a-z]/.test(title);
 
         if (startsWithLowercase) {
-            cleanupFiles(files); // Limpiar archivos si falla la validación del título
-            // 🚨 Mensaje de consola si falla la validación del título
+            cleanupFiles(files); // Clean files if title validation fails
+            // 🚨 Console message for validation failure
             console.error(`❌ VALIDATION ERROR (EDIT FILM): The title "${title}" must start with an uppercase letter.`);
             
-            // Renderizar página de error (similar a /addFilm)
+            // Render error page 
             return res.render('error', {
                 mensaje: `The film title "${title}" must start with an uppercase letter.`,
-                rutaBoton: `/edit/${id}`, // Botón de regreso al formulario de edición
+                rutaBoton: `/edit/${id}`, // Back button to the edit form
                 textoBoton: 'Return to the form'
             });
         }
@@ -476,25 +476,25 @@ router.post('/editFilm/:id', upload.fields(
             return res.status(404).render('error', { mensaje: 'Movie not found for update.', rutaBoton: '/indice', textoBoton: 'Go to Index' });
         }
 
-        // 3. Preparar el objeto de actualización ($set) con campos de texto
+        // 3. Prepare the update object ($set) with text fields
         const updateFields = {
-            title: title, // Usamos el title ya limpiado (.trim())
+            title: title, // Use the cleaned title (.trim())
             description: req.body.description,
             releaseYear: parseInt(req.body.releaseYear),
             rating: req.body.rating ? Number(req.body.rating) : existingFilm.rating,
             ageClassification: req.body.ageClassification,
             director: req.body.director,
             duration: req.body.duration,
-            // Asegurar que los campos array (género/idiomas) sean tratados
+            // Ensure array fields (genre/languages) are handled
             genre: Array.isArray(req.body.genre) ? req.body.genre : (req.body.genre ? [req.body.genre] : []),
             language: Array.isArray(req.body.language) ? req.body.language : (req.body.language ? [req.body.language] : []),
-            // Casting (nota: los nombres de los campos en el form son 'cast' repetido, que Express convierte en array)
+            // Casting (Note: form fields are repeated 'cast', converted to an array by Express)
             cast: Array.isArray(req.body.cast) ? req.body.cast.filter(c => c && c.trim() !== '') : [], 
             updatedAt: new Date()
         };
 
-        // 4. Lógica Condicional para Imágenes (PRESERVAR RUTA ANTIGUA)
-        // Nota: Los nombres de campo de Multer en el formulario son 'cover', 'titlePhoto', etc.
+        // 4. Conditional Logic for Images (PRESERVE OLD PATH)
+        // Note: Multer field names in the form are 'cover', 'titlePhoto', etc.
         const formImageFields = [
             { fieldName: 'cover', dbPath: 'coverPath' },
             { fieldName: 'titlePhoto', dbPath: 'titlePhotoPath' },
@@ -508,17 +508,17 @@ router.post('/editFilm/:id', upload.fields(
         for (const { fieldName, dbPath } of formImageFields) {
             // CRITICAL Check: Was a new file uploaded for this field?
             if (files && files[fieldName] && files[fieldName].length > 0) {
-                // Opción 1: NUEVA IMAGEN! Usar la nueva ruta 
+                // Option 1: NEW IMAGE! Use the new path 
                 updateFields[dbPath] = addUploadPrefix(files[fieldName][0].filename);
 
             } else {
-                // Opción 2: NO HAY IMAGEN NUEVA SUBIDA! Preservar la ruta existente en la DB
+                // Option 2: NO NEW IMAGE UPLOADED! Preserve the existing path in the DB
                 updateFields[dbPath] = existingFilm[dbPath];
             }
         }
 
 
-        // 5. Actualizar la película en la DB
+        // 5. Update the film in the DB
         const updateResult = await moviesColl.updateOne(
             { _id: oid },
             { $set: updateFields }
@@ -528,7 +528,7 @@ router.post('/editFilm/:id', upload.fields(
             console.warn(`Movie ${id} not found or not modified.`);
         }
 
-        // 6. Redirigir a la página de confirmación
+        // 6. Redirect to the confirmation page
         res.render('confirm', {
             type: 'Edit Film',
             action: 'edit',
@@ -539,7 +539,7 @@ router.post('/editFilm/:id', upload.fields(
 
     } catch (err) {
         console.error("❌ ERROR updating film:", err);
-        // En caso de error, es siempre buena práctica redirigir a una página de error clara.
+        // In case of error, redirect to a clear error page.
         res.status(500).render('error', {
             mensaje: `Error updating film: ${err.message}`, 
             rutaBoton: `/Ej/${req.params.id}`,
@@ -550,13 +550,14 @@ router.post('/editFilm/:id', upload.fields(
 
 
 // ----------------------------------------------------
-//  Movie Detail, Comment and Delete routes (Mantenidas)
+//  Movie Detail, Comment and Delete routes
 // ----------------------------------------------------
 
 router.get('/add', (req, res) => {
     res.render('add');
 });
 
+// GET /editComment/:movieId/:commentId → Load the comment editing form
 router.get('/editComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -578,7 +579,7 @@ router.get('/editComment/:movieId/:commentId', async (req, res) => {
         res.render('edit-comment', {
             pageTitle: `Editing Comment for: ${comment.User_name}`,
             // Variables required by the editComment.html template
-            filmSlug: movieId, // We use movieId to redirect/cancel
+            filmSlug: movieId, 
             commentId: commentId,
             commentText: comment.description,
             commentRating: comment.Rating
@@ -590,7 +591,7 @@ router.get('/editComment/:movieId/:commentId', async (req, res) => {
     }
 });
 
-//  POST /updateComment/:movieId/:commentId → Update the comment in the DB - EXISTING
+//  POST /updateComment/:movieId/:commentId → Update the comment in the DB
 router.post('/updateComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -620,7 +621,6 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
         }
 
         // 3. Redirect back to the detail page
-        // The movie detail URL is /Ej/:id
         res.render('confirm', {
             type: 'Edit review',
             action: 'edit',
@@ -636,7 +636,7 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 });
 
 
-//  POST /deleteComment/:movieId/:commentId → Delete a specific comment - EXISTING
+//  POST /deleteComment/:movieId/:commentId → Delete a specific comment
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
         const { movieId, commentId } = req.params;
@@ -645,7 +645,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
 
         // 1. Validate IDs
         if (!ObjectId.isValid(movieId) || !ObjectId.isValid(commentId)) {
-            return res.status(400).send('Invalid movie or comment ID.'); // ID de película o comentario no válido.
+            return res.status(400).send('Invalid movie or comment ID.'); 
         }
 
         const oidComment = new ObjectId(commentId);
@@ -654,7 +654,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
         // 2. Delete the comment document (in 'comentaries' collection)
         const comentaryCollection = db.collection('comentaries');
         const commentData = await comentaryCollection.findOne({_id: oidComment});
-        const deleteResult = await comentaryCollection.deleteOne({ _id: oidComment });
+        await comentaryCollection.deleteOne({ _id: oidComment });
 
         // 3. Remove the comment reference (ObjectId) from the movie's 'comments' array ($pull)
         const moviesCollection = db.collection('Softflix');
@@ -663,7 +663,7 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
             { $pull: { comments: oidComment } }
         );
 
-        console.log(`✅ Commentary ${commentId} deleted and reference removed form the film ${movieId}.`); // Commentary ... deleted and reference removed form the film ...
+        console.log(`✅ Commentary ${commentId} deleted and reference removed from film ${movieId}.`); 
 
         // 4.Confirm page 
         res.render('confirm', {
@@ -675,8 +675,8 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
         })
 
     } catch (err) {
-        console.error("❌ ERROR deleting commentary:", err); // ERROR deleting commentary
-        res.status(500).send(`Error deleting the commentary ${err.message}`); // Error deleting the commentary
+        console.error("❌ ERROR deleting commentary:", err); 
+        res.status(500).send(`Error deleting the commentary ${err.message}`); 
     }
 });
 
@@ -762,9 +762,9 @@ router.post('/deleteFilm', async (req, res) => {
 
         // Render the confirmation page
         return res.render('confirm', {
-            type: 'delete movie',       // Used in the view to display the message
-            title: movie.title,         // Title to display on the page
-            routeDetalle: `/deleteFilm/${movieId}/confirmed`, // Route that performs the actual deletion
+            type: 'delete movie',       
+            title: movie.title,         
+            routeDetalle: `/deleteFilm/${movieId}/confirmed`, 
             action: 'delete',
             actiontype: 'movie'
 
