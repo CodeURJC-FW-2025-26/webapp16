@@ -197,7 +197,7 @@ This section details the function of each key file in the website's implementati
 
 ---
 
-**Video showing the functionality of the web ([Video](https://youtu.be/3rUptAuACZU))
+**Video showing the functionality of the web ([Video](https://youtu.be/yR3QC4O2hro))
 
 ---
 
