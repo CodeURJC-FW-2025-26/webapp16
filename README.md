@@ -203,4 +203,6 @@ This section details the function of each key file in the website's implementati
 
 - Ignacio: I have mainly participated in the `indice.html` where Ishow de cover of the fils and de navegation var, where we can search a film by it's title and the genres. I have also helped my other teammates, mant in de JS part and `data.json`, where we have all the functions for making the website works
 
-- Samuel: I have mainly participated in the `Ej.html`, ensuring that the elements of the main and secondary entity appear. I have also been in charge of the error and confirmation pages and their entire implementation on the server. And also with the editing and deletion of elements. 
+- Samuel: I have mainly participated in the `Ej.html`, ensuring that the elements of the main and secondary entity appear. I have also been in charge of the error and confirmation pages and their entire implementation on the server. And also with the editing and deletion of elements.
+
+- Raul: I have mainly participated in the `add.html`, working on the validation of all the data and that all the information is saved mainly using the `router.js` in the process, i also have been working on the functionality of the secondary entities on the `ej.html` and implemented a few more error messages.
