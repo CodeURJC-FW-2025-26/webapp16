@@ -669,10 +669,17 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
 
         console.log(`✅ Comment ${commentId} successfully deleted for movie ${movieId}.`);
 
-        // 4. Redirect back to the movie detail page
-        return res.redirect(`/Ej/${movieId}`);
+        // 4. Redirect back to the confirm page and then to the movie detail page
+        return res.render('confirm', {
+            type: 'Successful Deletion',
+            action: 'delete',
+            actiontype: 'Comment',
+            title: '',
+            routeDetalle: `/Ej/${movieId}`, 
+            textoBoton: 'Return to film details'
+        });
 
-    } catch (err) {
+} catch (err) {
         // 🚨 Log the error to the console and render the error page for DB/server failure
         console.error('❌ ERROR deleting comment:', err);
         return res.render('error', {
