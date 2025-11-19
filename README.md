@@ -229,3 +229,13 @@ This section details the function of each key file in the website's implementati
             
 
 - Raul: I have mainly participated in the `add.html`, working on the validation of all the data and that all the information is saved mainly using the `router.js` in the process, i also have been working on the functionality of the secondary entities on the `ej.html` and implemented a few more error messages.
+  - Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/93baf224833d8688b729bc376feb5ee8339271e4)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/23a431c612534605cda137d17e4274bb40a3d00a)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/8d948ae6c98095f4ded5f8b0fd114a71262aefd1)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/960429f323186ba8d73f8a86e2992195ee05b1be)
+             (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/124acefe310dc5a47bcaa06533bcbeb5147b34a8)
+  - Pages: ([indice.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/indice.html))
+           ([router.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/router.js))
+           ([database.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/Database.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
+           ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
