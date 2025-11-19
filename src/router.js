@@ -665,6 +665,14 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
             routeDetalle: `/Ej/${movieId}`
         })
 
+        res.render('edit-comment', { // ⬅️ Aquí está la llamada a res.render
+            pageTitle: `Editing Comment for: ${comment.User_name}`,
+            filmSlug: movieId,
+            commentId: commentId,
+            commentText: comment.description,
+            commentRating: comment.Rating
+        });
+
     } catch (err) {
         // 🚨 Console log for generic delete error
         console.error("❌ ERROR deleting commentary:", err); 
