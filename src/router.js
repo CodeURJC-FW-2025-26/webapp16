@@ -551,7 +551,13 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 
         // 3. Redirigir de vuelta a la página de detalle
         // La URL de detalle de la película es /Ej/:id
-        res.redirect(`/Ej/${movieId}`);
+        res.render('confirm', {
+            type: 'Edit review',
+            action:'edit',
+            actiontype:'review',
+            title: '',
+            routeDetalle: `/Ej/${movieId}`
+        })
 
     } catch (err) {
         console.error("❌ ERROR actualizando comentario:", err);
@@ -563,7 +569,8 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 // ➡️ POST /deleteComment/:movieId/:commentId → Eliminar un comentario específico - EXISTENTE
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
-        const { movieId, commentId } = req.params;
+        const { movieId, commentId} = req.params;
+    
         const db = req.app.locals.db;
 
         // 1. Validar IDs
@@ -587,8 +594,14 @@ router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
 
         console.log(`✅ Comentario ${commentId} eliminado y referencia removida de la Película ${movieId}.`);
 
-        // 4. Redirigir de vuelta a la página de detalle
-        res.redirect(`/Ej/${movieId}`);
+        // 4.Confirm page 
+        res.render('confirm', {
+            type: 'Delete review',
+            action:'delete',
+            actiontype:'review',
+            title: '',
+            routeDetalle: `/Ej/${movieId}`
+        })
 
     } catch (err) {
         console.error("❌ ERROR eliminando comentario:", err);
