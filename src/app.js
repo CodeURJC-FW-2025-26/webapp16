@@ -19,7 +19,7 @@ const BASE_PATH = path.join(__dirname, '..');
 // ----------------------------------------------------
 // 🛠️ MULTER CONFIGURATION (File Upload)
 // ----------------------------------------------------
-const UPLOADS_PATH = path.join(BASE_PATH, 'Public', 'Uploads');
+const UPLOADS_PATH = path.join(BASE_PATH, 'Uploads');
 
 // 1. Make sure the uploads folder exists
 if (!fs.existsSync(UPLOADS_PATH)) {
@@ -68,15 +68,16 @@ const sourceDir = path.join(BASE_PATH, 'data', 'Images');
 const destDir = UPLOADS_PATH; // Public/Uploads
 
 function cleanupUploads() {
-    console.log('🧹 Cleaning up uploads folder...');
+    console.log('Deleting uploads folder on server exit...');
     try {
         if (fs.existsSync(UPLOADS_PATH)) {
-            // Delete and recreate the folder to ensure total cleanup
             fs.rmSync(UPLOADS_PATH, { recursive: true, force: true });
-            fs.mkdirSync(UPLOADS_PATH, { recursive: true });
+            console.log(' Uploads folder deleted successfully.');
+        } else {
+            console.log('Uploads folder not found, no deletion necessary.');
         }
     } catch (err) {
-        console.error('❌ ERROR cleaning up uploads folder:', err.message);
+        console.error('ERROR deleting uploads folder:', err.message);
     }
 }
 
@@ -126,7 +127,7 @@ function copyImagesToUploads() {
 //  ROUTING AND DATABASE
 // ----------------------------------------------------
 app.use('/', router);
-
+app.use('/Uploads', express.static(UPLOADS_PATH));
 // Must be wrapped in a try/catch to handle MongoDB connection failures.
 copyImagesToUploads(); // Copy images before filling the DB
 try {
