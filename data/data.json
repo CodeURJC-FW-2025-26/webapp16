@@ -972,5 +972,140 @@
                 "Rating": "1"
             }
         ]
+    },
+    {
+        "title": "The Hobbit: An Unexpected Journey",
+        "description": " The film follows Bilbo Baggins, a home-loving Hobbit from the Shire, who is unexpectedly swept into an epic quest. He is recruited by the wizard Gandalf the Grey and a company of thirteen Dwarves, led by the legendary warrior Thorin Oakenshield. Their goal is to reclaim the lost Dwarf Kingdom of Erebor from the fearsome dragon Smaug.",
+        "releaseYear": "2012",
+        "genre": ["Adventure", "Fantasy"],
+        "rating": "5",
+        "ageClassification": "+3",
+        "language": [
+            "English",
+            "Spanish"
+            
+        ],
+        "director": "Peter Jackson",
+        "cast": [
+            "Martin Freeman",
+            "Richard Armitage",
+            "Ian Mackellen"
+        ],
+        "duration": "2h 49min",
+        "images": [
+            {
+                "name": "/The Hobbit/ItPortada.jpg",
+                "type": "cover"
+            },
+            {
+                "name": "/The Hobbit/Andy Muschietti.jpg",
+                "type": "director"
+            },
+            {
+                "name": "/The Hobbit/Jaeden Martell.jpg",
+                "type": "actor1ImagePath"
+            },
+            {
+                "name": "/The Hobbit/SophiaLillis.jpg",
+                "type": "actor2ImagePath"
+            },
+            {
+                "name": "/The Hobbit/Finn Wolfhard.jpg",
+                "type": "actor3ImagePath"
+            },
+            {
+                "name": "/The Hobbit/ITMain.jpg",
+                "type": "filmPhotoPath"
+            },
+            {
+                "name": "/The Hobbit/itTitulo.jpg",
+                "type": "titlePhotoPath"
+            }
+        ],
+        "comments": [
+            {
+                "User_name": "POPOP_u7",
+                "description": "One of the best war films I’ve seen. The continuous shot technique is amazing and adds so much tension to the story. The performances are outstanding, and the film perfectly captures the chaos and desperation of war. Truly unforgettable.",
+                "Rating": "4"
+            },
+            {
+                "User_name": "gitano98",
+                "description": "1917 is an impressive technical achievement, but the story itself felt a bit thin. The action and cinematography are breathtaking, but I was expecting more emotional depth. It’s a visually stunning film, though, and worth watching for the experience.",
+                "Rating": "5"
+            },
+            {
+                "User_name": "netflix_and_more",
+                "description": "A visually stunning film with great action sequences, but I didn’t feel as connected to the characters as I’d hoped. The one-shot technique is impressive, but I found the film to be a bit repetitive in places. Still, it’s worth a watch.",
+                "Rating": "1"
+            }
+        ]
+    },
+    {
+        "title": "The Nun",
+        "description": " The film follows Bilbo Baggins, a home-loving Hobbit from the Shire, who is unexpectedly swept into an epic quest. He is recruited by the wizard Gandalf the Grey and a company of thirteen Dwarves, led by the legendary warrior Thorin Oakenshield. Their goal is to reclaim the lost Dwarf Kingdom of Erebor from the fearsome dragon Smaug.",
+        "releaseYear": "2018",
+        "genre": "Horror",
+        "rating": "3",
+        "ageClassification": "+16",
+        "language": [
+            "English",
+            "Spanish",
+            "French"
+            
+        ],
+        "director": "Corin hardy",
+        "cast": [
+            "Demian Bichir",
+            "Jonas Bloquet",
+            "Taissa Farmiga"
+        ],
+        "duration": "1h 36min",
+        "images": [
+            {
+                "name": "/The Nun/ItPortada.jpg",
+                "type": "cover"
+            },
+            {
+                "name": "/The Nun/Andy Muschietti.jpg",
+                "type": "director"
+            },
+            {
+                "name": "/The Nun/Jaeden Martell.jpg",
+                "type": "actor1ImagePath"
+            },
+            {
+                "name": "/The Nun/SophiaLillis.jpg",
+                "type": "actor2ImagePath"
+            },
+            {
+                "name": "/The Nun/Finn Wolfhard.jpg",
+                "type": "actor3ImagePath"
+            },
+            {
+                "name": "/The Nun/ITMain.jpg",
+                "type": "filmPhotoPath"
+            },
+            {
+                "name": "/The Nun/itTitulo.jpg",
+                "type": "titlePhotoPath"
+            }
+        ],
+        "comments": [
+            {
+                "User_name": "POPOP_u7",
+                "description": "One of the best war films I’ve seen. The continuous shot technique is amazing and adds so much tension to the story. The performances are outstanding, and the film perfectly captures the chaos and desperation of war. Truly unforgettable.",
+                "Rating": "4"
+            },
+            {
+                "User_name": "gitano98",
+                "description": "1917 is an impressive technical achievement, but the story itself felt a bit thin. The action and cinematography are breathtaking, but I was expecting more emotional depth. It’s a visually stunning film, though, and worth watching for the experience.",
+                "Rating": "5"
+            },
+            {
+                "User_name": "netflix_and_more",
+                "description": "A visually stunning film with great action sequences, but I didn’t feel as connected to the characters as I’d hoped. The one-shot technique is impressive, but I found the film to be a bit repetitive in places. Still, it’s worth a watch.",
+                "Rating": "1"
+            }
+        ]
     }
 ]
