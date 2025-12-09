@@ -706,5 +706,71 @@
                 "Rating": "1"
             }
         ]
+    },
+    {
+        "title": "Napoleon",
+        "description": " The military and political career of Napoleon Bonaparte, from his beginnings in the revolutionary era to the defeat of the empire with which he conquered Europe. The figure of the Corsican strategist is portrayed through his relationship with Josephine.",
+        "releaseYear": "2023",
+        "genre": "Action",
+        "rating": "3",
+        "ageClassification": "+12",
+        "language": [
+            "English",
+            "Spanish"
+        ],
+        "director": "Ridley Scott",
+        "cast": [
+            "Anna Mawn",
+            "Joaquin Phoenix",
+            "Vanessa Kirby"
+        ],
+        "duration": "2h 38min",
+        "images": [
+            {
+                "name": "/Napoleon/Napoleon.png",
+                "type": "cover"
+            },
+            {
+                "name": "/Napoleon/RidleyScott.png",
+                "type": "director"
+            },
+            {
+                "name": "/Napoleon/AnaMawn.png",
+                "type": "actor1ImagePath"
+            },
+            {
+                "name": "/Napoleon/joaquinPhoenix.png",
+                "type": "actor2ImagePath"
+            },
+            {
+                "name": "/Napoleon/VanessaKirby.png",
+                "type": "actor3ImagePath"
+            },
+            {
+                "name": "/Napoleon/NapoleonPortada.png",
+                "type": "filmPhotoPath"
+            },
+            {
+                "name": "/Napoleon/NapoleonTitulo.png",
+                "type": "titlePhotoPath"
+            }
+        ],
+        "comments": [
+            {
+                "User_name": "POPOP_u7",
+                "description": "One of the best war films I’ve seen. The continuous shot technique is amazing and adds so much tension to the story. The performances are outstanding, and the film perfectly captures the chaos and desperation of war. Truly unforgettable.",
+                "Rating": "4"
+            },
+            {
+                "User_name": "gitano98",
+                "description": "1917 is an impressive technical achievement, but the story itself felt a bit thin. The action and cinematography are breathtaking, but I was expecting more emotional depth. It’s a visually stunning film, though, and worth watching for the experience.",
+                "Rating": "5"
+            },
+            {
+                "User_name": "netflix_and_more",
+                "description": "A visually stunning film with great action sequences, but I didn’t feel as connected to the characters as I’d hoped. The one-shot technique is impressive, but I found the film to be a bit repetitive in places. Still, it’s worth a watch.",
+                "Rating": "1"
+            }
+        ]
     }
 ]
