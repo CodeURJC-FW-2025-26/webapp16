@@ -772,5 +772,205 @@
                 "Rating": "1"
             }
         ]
+    },
+    {
+        "title": "Pirates of the Caribbean: The Curse of the Black Pearl",
+        "description": " Pirates of the Caribbean: The Curse of the Black Pearl (2003) follows Captain Jack Sparrow, a charismatic and cunning pirate, as he seeks to recover his stolen ship, the Black Pearl. Along the way, he teams up with Will Turner, a skilled blacksmith, and Elizabeth Swann, a noblewoman with a mysterious connection to the ship. The trio must stop the cursed crew of the Black Pearl, led by Captain Hector Barbossa, who are doomed to live as undead pirates until they retrieve a stolen cursed treasure. The film blends adventure, action, and supernatural elements in a quest for treasure, redemption, and freedom.",
+        "releaseYear": "2003",
+        "genre": "Adventure",
+        "rating": "5",
+        "ageClassification": "+3",
+        "language": [
+            "English",
+            "Spanish"
+        ],
+        "director": "Gore Verbinski",
+        "cast": [
+            "Johnny Deep",
+            "Orlando Bloom",
+            "Keira Knightley"
+        ],
+        "duration": "2h 16min",
+        "images": [
+            {
+                "name": "/PiratesOfTheCaribbean/PiratesOfTheCaribbeanPortada.jpg",
+                "type": "cover"
+            },
+            {
+                "name": "/PiratesOfTheCaribbean/Gore Verbinski.jpg",
+                "type": "director"
+            },
+            {
+                "name": "/PiratesOfTheCaribbean/Johnny Deep.jpg",
+                "type": "actor1ImagePath"
+            },
+            {
+                "name": "/PiratesOfTheCaribbean/Orlando Bloom.jpg",
+                "type": "actor2ImagePath"
+            },
+            {
+                "name": "/PiratesOfTheCaribbean/Keira Knightley.jpg",
+                "type": "actor3ImagePath"
+            },
+            {
+                "name": "/PiratesOfTheCaribbean/PirattesOfTheCaribbeanMain.jpg",
+                "type": "filmPhotoPath"
+            },
+            {
+                "name": "/PiratesOfTheCaribbean/PiratesOfTheCaribbeanTitulo.jpg",
+                "type": "titlePhotoPath"
+            }
+        ],
+        "comments": [
+            {
+                "User_name": "POPOP_u7",
+                "description": "One of the best war films I’ve seen. The continuous shot technique is amazing and adds so much tension to the story. The performances are outstanding, and the film perfectly captures the chaos and desperation of war. Truly unforgettable.",
+                "Rating": "4"
+            },
+            {
+                "User_name": "gitano98",
+                "description": "1917 is an impressive technical achievement, but the story itself felt a bit thin. The action and cinematography are breathtaking, but I was expecting more emotional depth. It’s a visually stunning film, though, and worth watching for the experience.",
+                "Rating": "5"
+            },
+            {
+                "User_name": "netflix_and_more",
+                "description": "A visually stunning film with great action sequences, but I didn’t feel as connected to the characters as I’d hoped. The one-shot technique is impressive, but I found the film to be a bit repetitive in places. Still, it’s worth a watch.",
+                "Rating": "1"
+            }
+        ]
+    },
+    {
+        "title": "The Batman",
+        "description": " The Batman (2022) is a dark and gritty reimagining of the iconic superhero. Set in his second year of fighting crime, Batman (Robert Pattinson) uncovers a web of corruption and crime in Gotham City as he faces off against the mysterious serial killer known as The Riddler (Paul Dano). Along the way, Batman forms uneasy alliances with Selina Kyle (Zoe Kravitz), aka Catwoman, and detective James Gordon, while grappling with his own troubled past. The film dives into themes of justice, vengeance, and the blurry line between them.",
+        "releaseYear": "2022",
+        "genre": ["Action","Science-Fiction"],
+        "rating": "4",
+        "ageClassification": "+12",
+        "language": [
+            "English",
+            "Spanish",
+            "French"
+        ],
+        "director": "Matt Reves",
+        "cast": [
+            "Robert Patinson",
+            "Zoe Kravitz",
+            "Collin Farrell"
+        ],
+        "duration": "2h 56min",
+        "images": [
+            {
+                "name": "/The Batman/TheBatmanPortada.jpg",
+                "type": "cover"
+            },
+            {
+                "name": "/The Batman/Matt Reves.jpg",
+                "type": "director"
+            },
+            {
+                "name": "/The Batman/Robert Pattison.jpg",
+                "type": "actor1ImagePath"
+            },
+            {
+                "name": "/The Batman/Zoe Kravitz.jpg",
+                "type": "actor2ImagePath"
+            },
+            {
+                "name": "/The Batman/Collin Farrell.jpg",
+                "type": "actor3ImagePath"
+            },
+            {
+                "name": "/The Batman/TheBatmanMain.jpg",
+                "type": "filmPhotoPath"
+            },
+            {
+                "name": "/The Batman/TheBatmanTitulo.jpg",
+                "type": "titlePhotoPath"
+            }
+        ],
+        "comments": [
+            {
+                "User_name": "POPOP_u7",
+                "description": "One of the best war films I’ve seen. The continuous shot technique is amazing and adds so much tension to the story. The performances are outstanding, and the film perfectly captures the chaos and desperation of war. Truly unforgettable.",
+                "Rating": "4"
+            },
+            {
+                "User_name": "gitano98",
+                "description": "1917 is an impressive technical achievement, but the story itself felt a bit thin. The action and cinematography are breathtaking, but I was expecting more emotional depth. It’s a visually stunning film, though, and worth watching for the experience.",
+                "Rating": "5"
+            },
+            {
+                "User_name": "netflix_and_more",
+                "description": "A visually stunning film with great action sequences, but I didn’t feel as connected to the characters as I’d hoped. The one-shot technique is impressive, but I found the film to be a bit repetitive in places. Still, it’s worth a watch.",
+                "Rating": "1"
+            }
+        ]
+    },
+    {
+        "title": "It",
+        "description": " It (2017) is a horror film based on Stephen King's novel. Set in the 1980s, a group of outcast kids in the town of Derry, Maine, are terrorized by a shape-shifting entity that often takes the form of a creepy clown named Pennywise. As they uncover the entity's dark history, the group must face their deepest fears to stop it from claiming more victims. The film explores themes of friendship, courage, and the power of overcoming fear.",
+        "releaseYear": "2017",
+        "genre": "Horror",
+        "rating": "4",
+        "ageClassification": "+16",
+        "language": [
+            "English",
+            "Spanish",
+            "French"
+        ],
+        "director": "Andy Muschietti",
+        "cast": [
+            "Jaeden Martell",
+            "Sophia Lillis",
+            "Finn Wolfhard"
+        ],
+        "duration": "2h 15min",
+        "images": [
+            {
+                "name": "/it/ItPortada.jpg",
+                "type": "cover"
+            },
+            {
+                "name": "/It/Andy Muschietti.jpg",
+                "type": "director"
+            },
+            {
+                "name": "/It/Jaeden Martell.jpg",
+                "type": "actor1ImagePath"
+            },
+            {
+                "name": "/It/SophiaLillis.jpg",
+                "type": "actor2ImagePath"
+            },
+            {
+                "name": "/It/Finn Wolfhard.jpg",
+                "type": "actor3ImagePath"
+            },
+            {
+                "name": "/It/ITMain.jpg",
+                "type": "filmPhotoPath"
+            },
+            {
+                "name": "/It/itTitulo.jpg",
+                "type": "titlePhotoPath"
+            }
+        ],
+        "comments": [
+            {
+                "User_name": "POPOP_u7",
+                "description": "One of the best war films I’ve seen. The continuous shot technique is amazing and adds so much tension to the story. The performances are outstanding, and the film perfectly captures the chaos and desperation of war. Truly unforgettable.",
+                "Rating": "4"
+            },
+            {
+                "User_name": "gitano98",
+                "description": "1917 is an impressive technical achievement, but the story itself felt a bit thin. The action and cinematography are breathtaking, but I was expecting more emotional depth. It’s a visually stunning film, though, and worth watching for the experience.",
+                "Rating": "5"
+            },
+            {
+                "User_name": "netflix_and_more",
+                "description": "A visually stunning film with great action sequences, but I didn’t feel as connected to the characters as I’d hoped. The one-shot technique is impressive, but I found the film to be a bit repetitive in places. Still, it’s worth a watch.",
+                "Rating": "1"
+            }
+        ]
     }
 ]
