@@ -1,44 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('filmForm');
     
-    // Elementos del Modal
-    const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+    // --- ELEMENTOS DEL MODAL ---
+    const resultModalElement = document.getElementById('resultModal');
+    let resultModal;
+    if (resultModalElement) {
+        resultModal = new bootstrap.Modal(resultModalElement);
+    }
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
-    const btnRedirect = document.getElementById('btnRedirect');
+    const btnRedirect = document.getElementById('btnRedirect'); // El botón del modal
 
-    // Elementos del Botón y Spinner
+    // --- ELEMENTOS DEL BOTÓN DE ENVÍO Y SPINNER ---
     const submitBtn = document.getElementById('submitBtn');
     const btnText = document.getElementById('btnText');
     const btnSpinner = document.getElementById('btnSpinner');
     const btnLoadingText = document.getElementById('btnLoadingText');
 
-    // Elementos para validación de Título
+    // --- VALIDACIÓN TÍTULO AJAX ---
     const titleInput = document.getElementById('title');
     const titleErrorServer = document.getElementById('title-error-server');
     let titleTimeout;
 
-    // --- 1. VALIDACIÓN AJAX: TÍTULO DUPLICADO ---
     if(titleInput) {
         titleInput.addEventListener('input', () => {
             clearTimeout(titleTimeout);
             titleInput.classList.remove('is-invalid', 'is-valid');
-            titleErrorServer.style.display = 'none';
-            titleInput.setCustomValidity(""); // Resetear validez
+            if(titleErrorServer) titleErrorServer.style.display = 'none';
+            titleInput.setCustomValidity(""); 
 
             titleTimeout = setTimeout(async () => {
                 const title = titleInput.value.trim();
-                // Solo validar si hay texto y NO estamos editando el mismo título (lógica simplificada)
-                // Para ser precisos en edición, el backend debería recibir el ID actual para ignorarlo.
                 if (title.length > 0) {
                     try {
                         const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
                         const data = await response.json();
                         
                         if (!data.available) {
+                            // Nota: Aquí podrías añadir lógica para ignorar si es el mismo título al editar
                             titleInput.classList.add('is-invalid');
-                            titleErrorServer.style.display = 'block';
-                            titleInput.setCustomValidity("Title exists"); // Invalida el form HTML5
+                            if(titleErrorServer) titleErrorServer.style.display = 'block';
+                            titleInput.setCustomValidity("Title exists"); 
                         } else {
                             titleInput.classList.add('is-valid');
                             titleInput.setCustomValidity("");
@@ -51,108 +53,130 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. VALIDACIÓN JS CLIENTE: GÉNEROS (Checkboxes) ---
-    // HTML5 no valida bien "al menos uno de un grupo", así que lo hacemos con JS.
+    // --- VALIDACIÓN GÉNEROS ---
     function validateGenres() {
         const checkboxes = document.querySelectorAll('input[name="genre"]:checked');
         const errorDiv = document.getElementById('genre-error');
-        const genreGroup = document.getElementById('genreGroup');
+        if (document.querySelectorAll('input[name="genre"]').length === 0) return true;
 
         if (checkboxes.length === 0) {
-            errorDiv.style.display = 'block';
-            // Opcional: poner borde rojo al grupo
-            // genreGroup.style.border = "1px solid #dc3545"; 
+            if(errorDiv) errorDiv.style.display = 'block';
             return false;
         } else {
-            errorDiv.style.display = 'none';
-            // genreGroup.style.border = "none";
+            if(errorDiv) errorDiv.style.display = 'none';
             return true;
         }
     }
     
-    // Escuchar cambios en los checkbox para quitar el error en tiempo real
     const allGenres = document.querySelectorAll('input[name="genre"]');
     allGenres.forEach(cb => {
         cb.addEventListener('change', validateGenres);
     });
 
+    // --- ENVÍO DEL FORMULARIO (MODIFICADO PARA TU PETICIÓN) ---
+    if(form) {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+            event.stopPropagation();
 
-    // --- 3. ENVÍO DEL FORMULARIO ---
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+            const isHtmlValid = form.checkValidity();
+            const isGenreValid = validateGenres(); 
 
-        // A) Validaciones Sincrónicas (HTML5 + Custom JS)
-        const isHtmlValid = form.checkValidity();
-        const isGenreValid = validateGenres(); // Nuestra validación JS personalizada
-
-        if (!isHtmlValid || !isGenreValid) {
-            form.classList.add('was-validated'); // Bootstrap muestra los errores rojos
-            return; // Detenemos si hay errores visuales
-        }
-
-        // B) Preparar UI para Carga (Spinner)
-        toggleLoadingState(true);
-
-        const formData = new FormData(form);
-        const actionUrl = form.getAttribute('action'); // Leemos la URL del action del HTML
-
-        try {
-            // C) Petición AJAX
-            const response = await fetch(actionUrl, {
-                method: 'POST',
-                body: formData
-            });
-            
-            // Si el servidor devuelve error HTTP (ej: 500 o 400), lanzamos error
-            if (!response.ok) {
-                 // Intentamos leer el mensaje JSON si existe
-                 const errorData = await response.json().catch(() => ({}));
-                 throw new Error(errorData.message || 'Error processing the request');
+            if (!isHtmlValid || !isGenreValid) {
+                form.classList.add('was-validated'); 
+                return; 
             }
 
-            const result = await response.json();
+            toggleLoadingState(true);
 
-            // D) Manejo de Respuesta Exitosa
-            if (result.success) {
-                // Redirigir a la página de detalle (Requisito cumplido)
-                window.location.href = result.redirectUrl; 
-            } else {
-                // Si el JSON dice success: false (ej: validación lógica backend falló)
-                showModal('Error', result.message, 'text-danger');
+            const formData = new FormData(form);
+            const actionUrl = form.getAttribute('action'); 
+
+            try {
+                const response = await fetch(actionUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                let result;
+                try {
+                     result = await response.json();
+                } catch (e) {
+                     throw new Error("Server response was not JSON.");
+                }
+
+                if (!response.ok) {
+                     throw new Error(result.message || 'Error processing the request');
+                }
+
+                // ============================================================
+                // AQUÍ ESTÁ EL CAMBIO QUE PEDISTE
+                // ============================================================
+                if (result.success) {
+                    // 1. Configuramos el Modal para ÉXITO
+                    modalTitle.textContent = "Success!";
+                    modalTitle.className = "modal-title text-success";
+                    modalBody.textContent = result.message || "Film saved successfully.";
+                    
+                    // 2. Configuramos el botón para ir al DETALLE
+                    if (btnRedirect) {
+                        btnRedirect.style.display = 'inline-block'; // Mostrar botón
+                        btnRedirect.textContent = "Go to Movie Details"; // Cambiar texto
+                        btnRedirect.href = result.redirectUrl; // Poner el enlace (ej: /Ej/12345)
+                        
+                        // Opcional: Cambiar clase para que se vea verde/azul
+                        btnRedirect.className = "btn btn-success"; 
+                    }
+                    
+                    // 3. Mostramos el modal (SIN REDIRIGIR AUTOMÁTICAMENTE)
+                    resultModal.show();
+                    
+                    // Opcional: Limpiar el formulario si es 'Añadir' para que no dupliquen
+                    // if (!actionUrl.includes('editFilm')) { form.reset(); form.classList.remove('was-validated'); }
+
+                } else {
+                    // Caso lógico de error (ej: validación backend falló)
+                    showModalError('Error', result.message);
+                }
+                // ============================================================
+
+            } catch (error) {
+                console.error(error);
+                showModalError('Submission Error', error.message || "An unexpected error occurred.");
+            } finally {
+                toggleLoadingState(false);
             }
+        });
+    }
 
-        } catch (error) {
-            // E) Manejo de Errores de Servidor / Red
-            console.error(error);
-            showModal('Submission Error', error.message || "An unexpected error occurred.", 'text-danger');
-        } finally {
-            // F) Quitar Spinner independientemente del resultado (si no hubo redirección)
-            toggleLoadingState(false);
-        }
-    });
+    // --- FUNCIONES AUXILIARES ---
 
-    // Helper: Mostrar/Ocultar Spinner
     function toggleLoadingState(isLoading) {
+        if(!submitBtn) return;
         if (isLoading) {
             submitBtn.disabled = true;
-            btnText.style.display = 'none';
-            btnSpinner.style.display = 'inline-block';
-            btnLoadingText.style.display = 'inline-block';
+            if(btnText) btnText.style.display = 'none';
+            if(btnSpinner) btnSpinner.style.display = 'inline-block';
+            if(btnLoadingText) btnLoadingText.style.display = 'inline-block';
         } else {
             submitBtn.disabled = false;
-            btnText.style.display = 'inline-block';
-            btnSpinner.style.display = 'none';
-            btnLoadingText.style.display = 'none';
+            if(btnText) btnText.style.display = 'inline-block';
+            if(btnSpinner) btnSpinner.style.display = 'none';
+            if(btnLoadingText) btnLoadingText.style.display = 'none';
         }
     }
 
-    // Helper: Mostrar Modal
-    function showModal(title, message, titleClass) {
+    // Función específica para mostrar errores (Botón redirect oculto)
+    function showModalError(title, message) {
+        if(!resultModal) { alert(title + ": " + message); return; }
+        
         modalTitle.textContent = title;
-        modalTitle.className = "modal-title " + titleClass;
+        modalTitle.className = "modal-title text-danger";
         modalBody.textContent = message;
-        btnRedirect.style.display = 'none'; // En error, ocultamos el botón de ir al índice
+        
+        // En caso de error, ocultamos el botón de ir al detalle
+        if(btnRedirect) btnRedirect.style.display = 'none'; 
+        
         resultModal.show();
     }
 });
