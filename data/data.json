@@ -994,31 +994,31 @@
         "duration": "2h 49min",
         "images": [
             {
-                "name": "/The Hobbit/ItPortada.jpg",
+                "name": "/TheHobbit/TheHobbitPortada.jpg",
                 "type": "cover"
             },
             {
-                "name": "/The Hobbit/Andy Muschietti.jpg",
+                "name": "/TheHobbit/PeterJackson.jpg",
                 "type": "director"
             },
             {
-                "name": "/The Hobbit/Jaeden Martell.jpg",
+                "name": "/TheHobbit/MartinFreeman.jpg",
                 "type": "actor1ImagePath"
             },
             {
-                "name": "/The Hobbit/SophiaLillis.jpg",
+                "name": "/TheHobbit/RichardArmitage.jpg",
                 "type": "actor2ImagePath"
             },
             {
-                "name": "/The Hobbit/Finn Wolfhard.jpg",
+                "name": "/TheHobbit/IanMckellen.jpg",
                 "type": "actor3ImagePath"
             },
             {
-                "name": "/The Hobbit/ITMain.jpg",
+                "name": "/TheHobbit/TheHobbitMAin.jpg",
                 "type": "filmPhotoPath"
             },
             {
-                "name": "/The Hobbit/itTitulo.jpg",
+                "name": "/TheHobbit/TheHobbitTitle.jpg",
                 "type": "titlePhotoPath"
             }
         ],
@@ -1062,31 +1062,31 @@
         "duration": "1h 36min",
         "images": [
             {
-                "name": "/The Nun/ItPortada.jpg",
+                "name": "/TheNun/TheNunPortada.jpg",
                 "type": "cover"
             },
             {
-                "name": "/The Nun/Andy Muschietti.jpg",
+                "name": "/TheNun/Corin_Hardy.jpg",
                 "type": "director"
             },
             {
-                "name": "/The Nun/Jaeden Martell.jpg",
+                "name": "/TheNun/Demian_Bichir.jpg",
                 "type": "actor1ImagePath"
             },
             {
-                "name": "/The Nun/SophiaLillis.jpg",
+                "name": "/TheNun/Jonas_Bloquet.jpg",
                 "type": "actor2ImagePath"
             },
             {
-                "name": "/The Nun/Finn Wolfhard.jpg",
+                "name": "/TheNun/Taissa_Farmiga.jpg",
                 "type": "actor3ImagePath"
             },
             {
-                "name": "/The Nun/ITMain.jpg",
+                "name": "/TheNun/TheNunMain.jpg",
                 "type": "filmPhotoPath"
             },
             {
-                "name": "/The Nun/itTitulo.jpg",
+                "name": "/TheNun/TheNunTitle.jpg",
                 "type": "titlePhotoPath"
             }
         ],
