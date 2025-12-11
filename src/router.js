@@ -547,4 +547,23 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
     }
 });
 
+router.get("/api/films", async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 6; 
+        const skip = (page - 1) * limit;
+
+        const films = await moviesColl.find({})
+            .sort({ releaseYear: -1 })
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+
+        res.json({ films });
+    } catch (err) {
+        console.error("Error loading films for infinite scroll:", err);
+        res.status(500).json({ films: [] });
+    }
+});
+
 export default router;
