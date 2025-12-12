@@ -1,181 +1,275 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('filmForm');
-
-    // --- ELEMENTOS DEL MODAL (Para errores) ---
-    const resultModalElement = document.getElementById('resultModal');
-    let resultModal;
-    if (resultModalElement) {
-        resultModal = new bootstrap.Modal(resultModalElement);
-    }
+    // --- MODALES ---
+    const resultModalEl = document.getElementById('resultModal');
+    const resultModal = resultModalEl ? new bootstrap.Modal(resultModalEl) : null;
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
-    // El botón del modal solo lo usaremos para cerrar en caso de error
-    const btnRedirect = document.getElementById('btnRedirect'); 
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const editModalEl = document.getElementById('editCommentModal');
+    const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
 
-    // --- ELEMENTOS DEL BOTÓN DE ENVÍO Y SPINNER ---
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const btnSpinner = document.getElementById('btnSpinner');
-    const btnLoadingText = document.getElementById('btnLoadingText');
+    // =========================================================
+    // 1. VALIDACIONES ESPECÍFICAS "RECUPERADAS"
+    // =========================================================
 
-    // --- VALIDACIÓN TÍTULO (MAYÚSCULA Y DISPONIBILIDAD) ---
-    const titleInput = document.getElementById('title');
-    const titleErrorServer = document.getElementById('title-error-server'); // Div para errores ajax
-    // Necesitas un div para el error de mayúscula, o el navegador usará el genérico
-    let titleTimeout;
+    // A) VALIDAR USUARIO DISPONIBLE (Formulario Comentarios)
+    const userNameInput = document.getElementById('userName');
+    const userErrorDiv = document.getElementById('user-error');
+    if (userNameInput) {
+        let userTimeout;
+        userNameInput.addEventListener('input', () => {
+            clearTimeout(userTimeout);
+            userNameInput.classList.remove('is-invalid', 'is-valid');
+            userNameInput.setCustomValidity("");
 
-    if (titleInput) {
-        titleInput.addEventListener('input', () => {
-            const title = titleInput.value.trim();
-            
-            // Limpiamos estados previos
-            clearTimeout(titleTimeout);
-            titleInput.classList.remove('is-invalid', 'is-valid');
-            titleInput.setCustomValidity(""); 
-
-            // 1. VALIDACIÓN VISUAL INMEDIATA: MAYÚSCULA
-            if (title.length > 0 && title[0] !== title[0].toUpperCase()) {
-                titleInput.classList.add('is-invalid');
-                // Esto fuerza a que salga el tooltip de error del navegador si intentas enviar
-                titleInput.setCustomValidity("The title must start with an uppercase letter.");
-                return; // No seguimos comprobando AJAX si esto ya está mal
-            }
-
-            // 2. VALIDACIÓN AJAX (Si pasa la mayúscula)
-            titleTimeout = setTimeout(async () => {
-                if (title.length > 0) {
+            userTimeout = setTimeout(async () => {
+                const val = userNameInput.value.trim();
+                if(val.length > 0) {
                     try {
-                        const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
-                        const data = await response.json();
-
-                        if (!data.available) {
-                            titleInput.classList.add('is-invalid');
-                            if (titleErrorServer) titleErrorServer.style.display = 'block';
-                            titleInput.setCustomValidity("Title exists");
+                        const res = await fetch(`/availableUsername?username=${encodeURIComponent(val)}`);
+                        const data = await res.json();
+                        if(!data.available) {
+                            userNameInput.classList.add('is-invalid'); // Esto activa el mensaje rojo de Bootstrap
+                            userNameInput.setCustomValidity("Taken");
+                            if(userErrorDiv) userErrorDiv.textContent = data.message;
                         } else {
-                            titleInput.classList.add('is-valid');
-                            if (titleErrorServer) titleErrorServer.style.display = 'none';
-                            titleInput.setCustomValidity("");
+                            userNameInput.classList.add('is-valid');
                         }
-                    } catch (error) {
-                        console.error("Error validando título", error);
-                    }
+                    } catch(e) { console.error(e); }
                 }
             }, 500);
         });
     }
 
-    // --- VALIDACIÓN GÉNEROS ---
-    function validateGenres() {
-        const checkboxes = document.querySelectorAll('input[name="genre"]:checked');
-        const errorDiv = document.getElementById('genre-error');
-        // Si no hay checkboxes de género en el form, saltamos validación
-        if (document.querySelectorAll('input[name="genre"]').length === 0) return true;
+    // B) VALIDAR TÍTULO (Formulario Película)
+    const titleInput = document.getElementById('title');
+    const titleErrorServer = document.getElementById('title-error-server');
+    if (titleInput) {
+        let titleTimeout;
+        titleInput.addEventListener('input', () => {
+            clearTimeout(titleTimeout);
+            titleInput.classList.remove('is-invalid', 'is-valid');
+            if(titleErrorServer) titleErrorServer.style.display = 'none';
+            titleInput.setCustomValidity("");
 
-        if (checkboxes.length === 0) {
-            if (errorDiv) errorDiv.style.display = 'block';
-            return false;
-        } else {
-            if (errorDiv) errorDiv.style.display = 'none';
-            return true;
-        }
+            titleTimeout = setTimeout(async () => {
+                const title = titleInput.value.trim();
+                // Check Mayúscula
+                if (title.length > 0 && title[0] !== title[0].toUpperCase()) {
+                    titleInput.classList.add('is-invalid');
+                    titleInput.setCustomValidity("Uppercase required");
+                    return;
+                }
+                // Check Server Ajax
+                if (title.length > 0) {
+                    try {
+                        const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
+                        if(response.ok) {
+                            const data = await response.json();
+                            if (!data.available) {
+                                titleInput.classList.add('is-invalid');
+                                if(titleErrorServer) titleErrorServer.style.display = 'block';
+                                titleInput.setCustomValidity("Exists");
+                            } else {
+                                titleInput.classList.add('is-valid');
+                            }
+                        }
+                    } catch (e) { console.error(e); }
+                }
+            }, 500);
+        });
     }
 
-    const allGenres = document.querySelectorAll('input[name="genre"]');
-    allGenres.forEach(cb => {
-        cb.addEventListener('change', validateGenres);
-    });
+    // C) VALIDAR GÉNEROS (Formulario Película)
+    function validateGenres() {
+        if (document.querySelectorAll('input[name="genre"]').length === 0) return true;
+        const checked = document.querySelectorAll('input[name="genre"]:checked');
+        const errDiv = document.getElementById('genre-error');
+        if (checked.length === 0) {
+            if(errDiv) errDiv.style.display = 'block';
+            return false;
+        }
+        if(errDiv) errDiv.style.display = 'none';
+        return true;
+    }
+    document.querySelectorAll('input[name="genre"]').forEach(cb => cb.addEventListener('change', validateGenres));
 
-    // --- ENVÍO DEL FORMULARIO ---
-    if (form) {
+
+    // =========================================================
+    // 2. LOGICA FORMULARIO PELÍCULA (Temporizador + Redirect)
+    // =========================================================
+    const filmForm = document.getElementById('filmForm');
+    if (filmForm) {
+        // Opcional: Usar textToUppercase para el director al salir del campo
+        const directorInput = filmForm.querySelector('input[name="director"]');
+        if(directorInput) {
+            directorInput.addEventListener('blur', async () => {
+                if(directorInput.value) {
+                    try {
+                        const res = await fetch('/textToUppercase', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({text: directorInput.value})
+                        });
+                        const data = await res.json();
+                        directorInput.value = data.textUppercase; // Autocorrección a mayúsculas
+                    } catch(e) {}
+                }
+            });
+        }
+
+        filmForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isHtmlValid = filmForm.checkValidity();
+            const isGenreValid = validateGenres();
+            if (!isHtmlValid || !isGenreValid) {
+                filmForm.classList.add('was-validated');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            toggleLoading(submitBtn, true);
+
+            setTimeout(async () => {
+                try {
+                    const formData = new FormData(filmForm);
+                    const response = await fetch(filmForm.getAttribute('action'), { method: 'POST', body: formData });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        window.location.href = result.redirectUrl;
+                    } else {
+                        showModal('Error', result.message, 'danger');
+                        toggleLoading(submitBtn, false);
+                    }
+                } catch (error) {
+                    showModal('Error', "Server Error", 'danger');
+                    toggleLoading(submitBtn, false);
+                }
+            }, 1500); 
+        });
+    }
+
+
+    // =========================================================
+    // 3. LOGICA FORMULARIOS COMENTARIOS (AJAX + MODAL)
+    // =========================================================
+    const commentForms = [document.getElementById('addCommentForm'), document.getElementById('editCommentForm')];
+    
+    commentForms.forEach(form => {
+        if(!form) return;
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             event.stopPropagation();
 
-            // Validaciones cliente antes de enviar
-            const isHtmlValid = form.checkValidity(); // Chequea 'required' y setCustomValidity
-            const isGenreValid = validateGenres();
-
-            if (!isHtmlValid || !isGenreValid) {
-                form.classList.add('was-validated'); // Bootstrap muestra los estilos de error
-                return; // Paramos aquí si hay errores visuales
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
             }
 
-            // Activamos Spinner
-            toggleLoadingState(true);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            toggleLoading(submitBtn, true);
 
-            // --- AQUÍ ESTÁ EL RETRASO QUE PEDISTE (1.5 segundos) ---
-            setTimeout(async () => {
+            try {
                 const formData = new FormData(form);
-                const actionUrl = form.getAttribute('action');
+                const data = Object.fromEntries(formData.entries());
+                let url = form.getAttribute('action');
 
-                try {
-                    const response = await fetch(actionUrl, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    let result;
-                    try {
-                        result = await response.json();
-                    } catch (e) {
-                        throw new Error("Server response was not JSON.");
-                    }
-
-                    if (!response.ok) {
-                        // Si el servidor devuelve 400/500, lanzamos error para que caiga en el catch
-                        throw new Error(result.message || 'Error processing the request');
-                    }
-
-                    // === CASO ÉXITO ===
-                    if (result.success) {
-                        // REDIRECCIÓN AUTOMÁTICA (Lo que pediste ahora)
-                        window.location.href = result.redirectUrl; 
-                    } else {
-                        // Fallo lógico del servidor
-                        showModalError('Error', result.message);
-                    }
-
-                } catch (error) {
-                    console.error(error);
-                    // === CASO ERROR ===
-                    // Mostramos el mensaje en la misma pantalla (Modal)
-                    showModalError('Submission Error', error.message || "An unexpected error occurred.");
-                } finally {
-                    // Quitamos Spinner (solo visible si hubo error, si hubo éxito ya se habrá redirigido)
-                    toggleLoadingState(false);
+                if (form.id === 'editCommentForm') {
+                    const cId = document.getElementById('editCommentId').value;
+                    const mId = document.getElementById('editMovieId').value;
+                    url = `/updateComment/${mId}/${cId}`;
                 }
-            }, 1500); // <-- Fin del setTimeout
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    if (editModal) editModal.hide();
+                    showModal('Success!', result.message, 'success');
+                    if(btnCloseModal) btnCloseModal.onclick = () => window.location.reload();
+                } else {
+                    showModal('Error', result.message, 'danger');
+                }
+            } catch (error) {
+                showModal('Error', error.message, 'danger');
+            } finally {
+                toggleLoading(submitBtn, false);
+            }
         });
+    });
+
+
+    // =========================================================
+    // 4. BORRAR Y EDITAR COMENTARIOS
+    // =========================================================
+    document.querySelectorAll('.btn-delete-comment').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            if(!confirm("Delete comment?")) return;
+            const cId = this.dataset.commentId;
+            const mId = this.dataset.movieId;
+            
+            const originalHtml = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            this.disabled = true;
+
+            try {
+                const res = await fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' });
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById(`review-${cId}`).remove();
+                } else {
+                    alert(data.message);
+                    this.innerHTML = originalHtml;
+                    this.disabled = false;
+                }
+            } catch(e) {
+                alert("Error deleting");
+                this.innerHTML = originalHtml;
+                this.disabled = false;
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-edit-comment').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if(!editModal) return;
+            document.getElementById('editCommentId').value = this.dataset.commentId;
+            document.getElementById('editMovieId').value = this.dataset.movieId;
+            document.getElementById('editReviewText').value = this.dataset.text;
+            document.getElementById('editReviewRating').value = this.dataset.rating;
+            editModal.show();
+        });
+    });
+
+    // =========================================================
+    // HELPERS
+    // =========================================================
+    function toggleLoading(btn, isLoading) {
+        if (!btn) return;
+        btn.disabled = isLoading;
+        const spinner = document.getElementById('btnSpinner') || btn.querySelector('.spinner-border');
+        const text = document.getElementById('btnText') || btn.querySelector('.btn-text');
+        const loadText = document.getElementById('btnLoadingText');
+
+        if(spinner) spinner.style.display = isLoading ? 'inline-block' : 'none';
+        if(spinner && spinner.classList.contains('d-none')) spinner.classList.toggle('d-none', !isLoading);
+        
+        if(text) text.style.display = isLoading ? 'none' : 'inline-block';
+        if(loadText) loadText.style.display = isLoading ? 'inline-block' : 'none';
     }
 
-    // --- FUNCIONES AUXILIARES ---
-
-    function toggleLoadingState(isLoading) {
-        if (!submitBtn) return;
-        if (isLoading) {
-            submitBtn.disabled = true;
-            if (btnText) btnText.style.display = 'none';
-            if (btnSpinner) btnSpinner.style.display = 'inline-block';
-            if (btnLoadingText) btnLoadingText.style.display = 'inline-block';
-        } else {
-            submitBtn.disabled = false;
-            if (btnText) btnText.style.display = 'inline-block';
-            if (btnSpinner) btnSpinner.style.display = 'none';
-            if (btnLoadingText) btnLoadingText.style.display = 'none';
-        }
-    }
-
-    function showModalError(title, message) {
-        if (!resultModal) { alert(title + ": " + message); return; }
-
+    function showModal(title, msg, type) {
+        if(!resultModal) return alert(msg);
         modalTitle.textContent = title;
-        modalTitle.className = "modal-title text-danger"; // Rojo para errores
-        modalBody.textContent = message;
-
-        // Ocultamos el botón de redirección porque es un error
-        if (btnRedirect) btnRedirect.style.display = 'none';
-
+        modalTitle.className = `modal-title text-${type}`;
+        modalBody.textContent = msg;
         resultModal.show();
     }
 });
