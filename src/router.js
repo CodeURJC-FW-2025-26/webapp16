@@ -22,7 +22,7 @@ const UPLOADS_PATH = path.join(BASE_PATH, 'Uploads');
 
 // --- VARIABLES GLOBALES PARA VALIDACIONES (RECUPERADO) ---
 // Lista simulada de usuarios "cogidos" para la validación availableUsername
-const existingUsernames = ['admin', 'root', 'moderator', 'test']; 
+const existingUsernames = ['admin', 'root', 'moderator', 'test'];
 
 // --- RUTAS DE VALIDACIÓN EXTRA (RECUPERADAS) ---
 
@@ -41,8 +41,8 @@ router.post("/textToUppercase", (req, res) => {
     let textData = req.body;
     let text = textData.text || "";
     let response = {
-       text: text,
-       textUppercase: text.toUpperCase(),
+        text: text,
+        textUppercase: text.toUpperCase(),
     };
     res.json(response);
 });
@@ -188,7 +188,7 @@ router.post("/addFilm", (req, res) => {
             }
 
             const getFilePath = (fieldName) => files && files[fieldName] && files[fieldName][0] ? addUploadPrefix(files[fieldName][0].filename) : null;
-            
+
             const movie = {
                 title, description: body.description,
                 releaseYear: Number(body.releaseYear),
@@ -216,7 +216,7 @@ router.post("/addFilm", (req, res) => {
     });
 });
 
-// --- EDIT FILM ---
+// --- EDIT FILM (GET) ---
 router.get('/edit/:id', async (req, res) => {
     try {
         if (!ObjectId.isValid(req.params.id)) return res.redirect('/indice');
@@ -229,6 +229,15 @@ router.get('/edit/:id', async (req, res) => {
 
         const filmNormalized = {
             ...film, _id: film._id.toString(),
+            // 💡 AÑADIDO: Rutas de imagen existentes para previsualización en add.html
+            currentCoverPath: film.coverPath || null,
+            currentTitlePhotoPath: film.titlePhotoPath || null,
+            currentFilmPhotoPath: film.filmPhotoPath || null,
+            currentDirectorImagePath: film.directorImagePath || null,
+            currentActor1ImagePath: film.actor1ImagePath || null,
+            currentActor2ImagePath: film.actor2ImagePath || null,
+            currentActor3ImagePath: film.actor3ImagePath || null,
+
             actor1: castArray[0] || '', actor2: castArray[1] || '', actor3: castArray[2] || '',
             isAction: genreArray.includes('Action'), isComedy: genreArray.includes('Comedy'),
             isHorror: genreArray.includes('Horror'), isScifi: genreArray.includes('Science-Fiction'),
@@ -242,6 +251,7 @@ router.get('/edit/:id', async (req, res) => {
     }
 });
 
+// --- EDIT FILM (POST) ---
 router.post('/editFilm/:id', (req, res) => {
     const editUploadMiddleware = upload.fields(uploadFields);
     editUploadMiddleware(req, res, async (err) => {
@@ -250,7 +260,7 @@ router.post('/editFilm/:id', (req, res) => {
             const { id } = req.params;
             const title = req.body.title ? req.body.title.trim() : '';
             if (!ObjectId.isValid(id) || /^[a-z]/.test(title)) return res.status(400).json({ success: false, message: 'Invalid ID or Title format.' });
-            
+
             const oid = new ObjectId(id);
             const existingFilm = await moviesColl.findOne({ _id: oid });
             if (!existingFilm) return res.status(404).json({ success: false, message: 'Movie not found.' });
@@ -272,12 +282,46 @@ router.post('/editFilm/:id', (req, res) => {
             };
 
             for (const { fieldName, dbPath } of imageFields) {
-                if (req.files && req.files[fieldName] && req.files[fieldName].length > 0) {
+                // 🛑 LÓGICA DE PREVISUALIZACIÓN Y ELIMINACIÓN
+                const deleteField = req.body[`delete_${fieldName}`];
+                const fileUploaded = req.files && req.files[fieldName] && req.files[fieldName].length > 0;
+
+                if (deleteField === 'true') {
+                    // 1. Se pidió eliminar la imagen existente
+
+                    // Borrar el archivo físico si existe
+                    if (existingFilm[dbPath] && existingFilm[dbPath].startsWith('/Uploads/')) {
+                        const relPath = existingFilm[dbPath].replace(/^\/Uploads\//, '');
+                        const fullPath = path.join(UPLOADS_PATH, relPath);
+                        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+                    }
+
+                    if (fileUploaded) {
+                        // 2. Si hay un archivo nuevo, guardar la nueva ruta
+                        updateFields[dbPath] = addUploadPrefix(req.files[fieldName][0].filename);
+                    } else {
+                        // 3. Si no hay archivo nuevo, establecer la ruta en null en la DB
+                        updateFields[dbPath] = null;
+                    }
+                } else if (fileUploaded) {
+                    // 4. Se subió un archivo nuevo (y no se marcó para eliminar)
+
+                    // (Opcional pero recomendable): Eliminar el archivo antiguo antes de guardar el nuevo
+                    if (existingFilm[dbPath] && existingFilm[dbPath].startsWith('/Uploads/')) {
+                        const relPath = existingFilm[dbPath].replace(/^\/Uploads\//, '');
+                        const fullPath = path.join(UPLOADS_PATH, relPath);
+                        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+                    }
+
                     updateFields[dbPath] = addUploadPrefix(req.files[fieldName][0].filename);
+
                 } else {
+                    // 5. No se pidió eliminar y no se subió un archivo nuevo (mantener el existente)
                     updateFields[dbPath] = existingFilm[dbPath];
                 }
             }
+            // FIN DE LA LÓGICA DE PREVISUALIZACIÓN Y ELIMINACIÓN
+
             await moviesColl.updateOne({ _id: oid }, { $set: updateFields });
             return res.json({ success: true, message: "Film updated successfully", redirectUrl: `/Ej/${id}` });
 
@@ -287,17 +331,22 @@ router.post('/editFilm/:id', (req, res) => {
     });
 });
 
-// --- DETALLE ---
+// --- DETALLE (CORREGIDO PARA EVITAR CUEGUES DE AGGREGATE) ---
 router.get('/Ej/:id', async (req, res) => {
     try {
         if (!ObjectId.isValid(req.params.id)) return res.status(400).send("Invalid ID");
         const movieObjectId = new ObjectId(req.params.id);
-        const filmPipeline = await moviesColl.aggregate([
-            { $match: { _id: movieObjectId } },
-            { $lookup: { from: "comentaries", localField: "comments", foreignField: "_id", as: "reviewsData" } }
-        ]).toArray();
-        const film = filmPipeline[0];
+
+        // 1. Obtener la película (findOne es más simple y confiable)
+        const film = await moviesColl.findOne({ _id: movieObjectId });
         if (!film) return res.status(404).send("Film not found");
+
+        let reviews = [];
+        // 2. Obtener los comentarios asociados si existen (reemplazando $lookup)
+        if (film.comments && film.comments.length > 0) {
+            // Se utiliza $in para buscar todos los IDs de comentarios en una sola consulta
+            reviews = await commentsColl.find({ _id: { $in: film.comments } }).toArray();
+        }
 
         const castArray = (Array.isArray(film.cast) ? film.cast : []).map((name, i) => ({
             name: name, imagePath: film[`actor${i + 1}ImagePath`]
@@ -305,10 +354,11 @@ router.get('/Ej/:id', async (req, res) => {
 
         res.render('Ej', {
             ...film, movieId: film._id.toString(),
-            reviews: Array.isArray(film.reviewsData) ? film.reviewsData : [],
+            reviews: reviews, // Ahora usamos 'reviews' en lugar de 'film.reviewsData'
             cast: castArray,
         });
     } catch (err) {
+        console.error("Error in /Ej/:id route:", err);
         res.status(500).send(err.message);
     }
 });
@@ -376,14 +426,14 @@ router.post('/deleteFilm', async (req, res) => {
             await moviesColl.deleteOne({ _id: oid });
         }
         res.redirect('/indice');
-    } catch(err) { res.redirect('/indice'); }
+    } catch (err) { res.redirect('/indice'); }
 });
 
 // --- SCROLL INFINITO ---
 router.get("/api/films", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 6; 
+        const limit = 6;
         const skip = (page - 1) * limit;
         const films = await moviesColl.find({}).sort({ releaseYear: -1 }).skip(skip).limit(limit).toArray();
         res.json({ films });

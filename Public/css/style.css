@@ -220,3 +220,46 @@ body>.maincontainer {
     overflow: hidden;
     height: 70vh;
 }
+
+.image-preview-container {
+    position: relative;
+    display: flex;
+    /* Para alinear la imagen y el botón */
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.image-preview-container img.img-thumbnail {
+    margin-right: 10px;
+    max-width: 150px;
+    /* Tamaño por defecto para poster/logo */
+    height: auto;
+}
+
+.image-preview-container .delete-btn {
+    /* Posiciona el botón de borrar sobre la esquina de la imagen */
+    position: absolute;
+    top: -10px;
+    right: 5px;
+    z-index: 10;
+    width: 25px;
+    height: 25px;
+    line-height: 1;
+    padding: 0;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+/* Estilo para imágenes de actor, más pequeñas */
+.mb-2 .image-preview-container img.img-thumbnail {
+    max-width: 100px;
+}
+
+/* Ajuste de posición para el botón de actor */
+.mb-2 .image-preview-container .delete-btn {
+    right: 35px;
+    /* Ajusta la posición si la imagen es más pequeña */
+}

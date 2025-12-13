@@ -344,3 +344,210 @@ document.addEventListener('DOMContentLoaded', () => {
         resultModal.show();
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const isEditingInput = document.getElementById('isEditing');
+    const isEditing = isEditingInput ? isEditingInput.value === 'true' : false;
+    const form = document.getElementById('filmForm');
+
+    // ----------------------------------------------------
+    // 1. LÓGICA DE PREVISUALIZACIÓN DE ARCHIVOS
+    // ----------------------------------------------------
+
+    // Función para configurar la previsualización y el botón de borrado
+    function setupFilePreview(fileInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        const newPreview = document.getElementById(fileInputId + 'NewPreview');
+        const existingPreview = document.getElementById(fileInputId + 'ExistingPreview');
+        const deleteBtn = document.getElementById('delete' + fileInputId.charAt(0).toUpperCase() + fileInputId.slice(1) + 'Btn');
+        const deleteInput = document.getElementById('delete_' + fileInputId + '_input'); // Solo existe en modo edición
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Oculta la imagen existente (si hay)
+                        if (existingPreview) existingPreview.style.display = 'none';
+
+                        // Muestra la nueva previsualización
+                        newPreview.src = e.target.result;
+                        newPreview.style.display = 'block';
+
+                        // Muestra el botón de eliminar
+                        if (deleteBtn) deleteBtn.style.display = 'flex';
+
+                        // Si se sube una nueva foto, reinicia el campo hidden de eliminación (solo en edición)
+                        if (isEditing && deleteInput) deleteInput.value = 'false';
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    // Si se cancela la selección (e.g., abre el diálogo y lo cierra sin seleccionar)
+                    newPreview.src = '#';
+                    newPreview.style.display = 'none';
+
+                    // Si estamos en modo edición y la imagen existente no está marcada para borrarse, la restauramos
+                    const shouldRestoreExisting = isEditing && existingPreview && (deleteInput.value !== 'true');
+
+                    if (shouldRestoreExisting) {
+                        existingPreview.style.display = 'block';
+                        if (deleteBtn) deleteBtn.style.display = 'flex';
+                    } else if (!existingPreview) {
+                        // En modo 'Agregar' o si la existente fue borrada, ocultamos el botón
+                        if (deleteBtn) deleteBtn.style.display = 'none';
+                    }
+                }
+            });
+        }
+    }
+
+    // Configura todos los campos de imagen
+    const imageFields = [
+        'cover', 'titlePhoto', 'filmPhoto', 'fotoDirector',
+        'fotoActor1', 'fotoActor2', 'fotoActor3'
+    ];
+    imageFields.forEach(field => {
+        setupFilePreview(field);
+    });
+
+    // ----------------------------------------------------
+    // 2. LÓGICA DEL BOTÓN DE ELIMINAR (ÚNICO PARA TODOS LOS MODOS)
+    // ----------------------------------------------------
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const fieldName = this.getAttribute('data-field');
+            const inputId = fieldName;
+
+            const existingPreview = document.getElementById(inputId + 'ExistingPreview');
+            const newPreview = document.getElementById(inputId + 'NewPreview');
+            const fileInput = document.getElementById(inputId);
+            const deleteInput = document.getElementById('delete_' + inputId + '_input'); // Solo existe en edición
+
+            // 1. Ocultar todas las previsualizaciones y el botón X
+            if (existingPreview) existingPreview.style.display = 'none';
+            if (newPreview) newPreview.style.display = 'none';
+            this.style.display = 'none';
+
+            // 2. Limpiar el input type=file
+            if (fileInput) fileInput.value = '';
+
+            // 3. Marcar el campo hidden (Solo si estamos en Edición y había una imagen existente)
+            // Esto le dice al servidor que debe borrar la ruta en la DB.
+            if (isEditing && existingPreview) {
+                if (deleteInput) deleteInput.value = 'true';
+            }
+
+            // 4. Asegurarse de que el campo 'required' se active si estamos en modo 'Agregar'
+            if (!isEditing && fileInput) {
+                fileInput.required = true;
+            }
+        });
+    });
+
+    // ... RESTO DE TU LÓGICA DE VALIDACIÓN (Debe ir aquí, la estoy omitiendo para brevedad) ...
+
+    // ----------------------------------------------------
+    // 3. VALIDACIÓN DE GÉNERO Y ENVÍO DE FORMULARIO
+    // ----------------------------------------------------
+    form.addEventListener('submit', function (event) {
+        // ... (El resto de tu código de validación de género y AJAX) ...
+        let genreChecked = false;
+        const genreCheckboxes = form.querySelectorAll('input[name="genre"]:checked');
+        if (genreCheckboxes.length > 0) {
+            genreChecked = true;
+        }
+
+        const genreError = document.getElementById('genre-error');
+        if (!genreChecked) {
+            genreError.style.display = 'block';
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            genreError.style.display = 'none';
+        }
+
+        // Validación de Bootstrap
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            if (!isEditing) {
+                event.preventDefault(); // Detenemos el envío hasta la validación AJAX
+                validateTitleAndSubmit();
+            }
+        }
+
+        // Agrega la clase 'was-validated' de Bootstrap para mostrar feedback
+        form.classList.add('was-validated');
+    }, false);
+
+
+    // ... Lógica para AJAX Validation (checkTitleExistence y validateTitleAndSubmit) ...
+
+    const titleInput = document.getElementById('title');
+    const titleErrorServer = document.getElementById('title-error-server');
+
+    titleInput.addEventListener('blur', function () {
+        if (!isEditing && titleInput.checkValidity()) {
+            checkTitleExistence(titleInput.value);
+        }
+    });
+
+    async function checkTitleExistence(title) {
+        try {
+            const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
+            const data = await response.json();
+
+            if (!data.available) {
+                titleInput.setCustomValidity("Title is already taken.");
+                titleErrorServer.style.display = 'block';
+            } else {
+                titleInput.setCustomValidity("");
+                titleErrorServer.style.display = 'none';
+            }
+            titleInput.reportValidity();
+        } catch (err) {
+            console.error('Error checking title:', err);
+        }
+    }
+
+    async function validateTitleAndSubmit() {
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const btnLoadingText = document.getElementById('btnLoadingText');
+
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'inline-block';
+        btnLoadingText.style.display = 'inline-block';
+
+        try {
+            const title = titleInput.value;
+            const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
+            const data = await response.json();
+
+            if (!data.available) {
+                titleInput.setCustomValidity("Title is already taken.");
+                titleErrorServer.style.display = 'block';
+                form.classList.add('was-validated');
+            } else {
+                titleInput.setCustomValidity("");
+                titleErrorServer.style.display = 'none';
+                form.submit();
+            }
+        } catch (err) {
+            console.error('Error validating title on submit:', err);
+        } finally {
+            if (titleInput.checkValidity() && titleErrorServer.style.display === 'none') {
+                // If submitted successfully, do nothing here
+            } else {
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline';
+                btnSpinner.style.display = 'none';
+                btnLoadingText.style.display = 'none';
+            }
+        }
+    }
+});

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,12 +16,13 @@
         <div class="row">
             <div class="col-12 col-md-8 offset-md-2">
                 <h2 class="mb-4">Add/Edit film</h2>
-                
+
                 <form id="filmForm" role="form" class="needs-validation" novalidate
                     action="{{#editing}}/editFilm/{{film._id}}{{/editing}}{{^editing}}/addFilm{{/editing}}"
                     enctype="multipart/form-data">
-                    
-                    <input type="hidden" id="isEditing" value="{{#editing}}true{{/editing}}{{^editing}}false{{/editing}}">
+
+                    <input type="hidden" id="isEditing"
+                        value="{{#editing}}true{{/editing}}{{^editing}}false{{/editing}}">
                     <input type="hidden" id="currentFilmId" value="{{film._id}}">
 
                     <div class="mb-3 form-group">
@@ -46,22 +48,55 @@
 
                     <div class="mb-3 form-group">
                         <label for="cover" class="form-label">Cover Image (Poster):</label>
-                        <input class="form-control" type="file" id="cover" name="cover" accept="image/*" {{^editing}}required{{/editing}}>
+                        <div id="coverPreviewContainer" class="image-preview-container mb-2">
+                            {{#film.currentCoverPath}}
+                            <img id="coverExistingPreview" src="{{film.currentCoverPath}}" class="img-thumbnail"
+                                style="max-height: 150px;">
+                            {{/film.currentCoverPath}}
+                            <img id="coverNewPreview" src="#" alt="New Cover Preview" class="img-thumbnail"
+                                style="display:none; max-height: 150px;">
+                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="cover"
+                                id="deleteCoverBtn">X</button>
+                            <input type="hidden" name="delete_cover" id="delete_cover_input" value="false">
+                        </div>
+                        <input class="form-control" type="file" id="cover" name="cover" accept="image/*"
+                            {{^editing}}required{{/editing}}>
                         <div class="invalid-feedback">Cover image is required.</div>
                     </div>
-
                     <div class="mb-3 form-group">
                         <label for="titlePhoto" class="form-label">Title Image (Logo):</label>
-                        <input class="form-control" type="file" id="titlePhoto" name="titlePhoto" accept="image/*" {{^editing}}required{{/editing}}>
+                        <div id="titlePhotoPreviewContainer" class="image-preview-container mb-2">
+                            {{#film.currentTitlePhotoPath}}
+                            <img id="titlePhotoExistingPreview" src="{{film.currentTitlePhotoPath}}"
+                                class="img-thumbnail" style="max-height: 150px;">
+                            {{/film.currentTitlePhotoPath}}
+                            <img id="titlePhotoNewPreview" src="#" alt="New Title Photo Preview" class="img-thumbnail"
+                                style="display:none; max-height: 150px;">
+                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="titlePhoto"
+                                id="deleteTitlePhotoBtn">X</button>
+                            <input type="hidden" name="delete_titlePhoto" id="delete_titlePhoto_input" value="false">
+                        </div>
+                        <input class="form-control" type="file" id="titlePhoto" name="titlePhoto" accept="image/*"
+                            {{^editing}}required{{/editing}}>
                         <div class="invalid-feedback">Logo image is required.</div>
                     </div>
-
                     <div class="mb-3 form-group">
                         <label for="filmPhoto" class="form-label">Film Image (General Still):</label>
-                        <input class="form-control" type="file" id="filmPhoto" name="filmPhoto" accept="image/*" {{^editing}}required{{/editing}}>
+                        <div id="filmPhotoPreviewContainer" class="image-preview-container mb-2">
+                            {{#film.currentFilmPhotoPath}}
+                            <img id="filmPhotoExistingPreview" src="{{film.currentFilmPhotoPath}}" class="img-thumbnail"
+                                style="max-height: 150px;">
+                            {{/film.currentFilmPhotoPath}}
+                            <img id="filmPhotoNewPreview" src="#" alt="New Film Photo Preview" class="img-thumbnail"
+                                style="display:none; max-height: 150px;">
+                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="filmPhoto"
+                                id="deleteFilmPhotoBtn">X</button>
+                            <input type="hidden" name="delete_filmPhoto" id="delete_filmPhoto_input" value="false">
+                        </div>
+                        <input class="form-control" type="file" id="filmPhoto" name="filmPhoto" accept="image/*"
+                            {{^editing}}required{{/editing}}>
                         <div class="invalid-feedback">Film image is required.</div>
                     </div>
-
                     <div class="mb-3 form-group">
                         <label for="releaseYear" class="form-label">Release year</label>
                         <input type="number" class="form-control" id="releaseYear" name="releaseYear"
@@ -74,25 +109,32 @@
                     <div class="mt-5 mb-5 checkbox">
                         <label class="form-label d-block">Gender (Select at least one):</label>
                         <div class="btn-group" role="group" aria-label="Gender toggle buttons" id="genreGroup">
-                            <input type="checkbox" class="btn-check" id="action" name="genre" value="Action" autocomplete="off" {{#film.isAction}}checked{{/film.isAction}}>
+                            <input type="checkbox" class="btn-check" id="action" name="genre" value="Action"
+                                autocomplete="off" {{#film.isAction}}checked{{/film.isAction}}>
                             <label class="btn btn-outline-primary" for="action">Action</label>
-                            
-                            <input type="checkbox" class="btn-check" id="comedy" name="genre" value="Comedy" autocomplete="off" {{#film.isComedy}}checked{{/film.isComedy}}>
+
+                            <input type="checkbox" class="btn-check" id="comedy" name="genre" value="Comedy"
+                                autocomplete="off" {{#film.isComedy}}checked{{/film.isComedy}}>
                             <label class="btn btn-outline-primary" for="comedy">Comedy</label>
-                            
-                            <input type="checkbox" class="btn-check" id="horror" name="genre" value="Horror" autocomplete="off" {{#film.isHorror}}checked{{/film.isHorror}}>
+
+                            <input type="checkbox" class="btn-check" id="horror" name="genre" value="Horror"
+                                autocomplete="off" {{#film.isHorror}}checked{{/film.isHorror}}>
                             <label class="btn btn-outline-primary" for="horror">Horror</label>
-                            
-                            <input type="checkbox" class="btn-check" id="scifi" name="genre" value="Science-Fiction" autocomplete="off" {{#film.isScifi}}checked{{/film.isScifi}}>
+
+                            <input type="checkbox" class="btn-check" id="scifi" name="genre" value="Science-Fiction"
+                                autocomplete="off" {{#film.isScifi}}checked{{/film.isScifi}}>
                             <label class="btn btn-outline-primary" for="scifi">Science-Fiction</label>
-                            
-                            <input type="checkbox" class="btn-check" id="fantasy" name="genre" value="Fantasy" autocomplete="off" {{#film.isFantasy}}checked{{/film.isFantasy}}>
+
+                            <input type="checkbox" class="btn-check" id="fantasy" name="genre" value="Fantasy"
+                                autocomplete="off" {{#film.isFantasy}}checked{{/film.isFantasy}}>
                             <label class="btn btn-outline-primary" for="fantasy">Fantasy</label>
-                            
-                            <input type="checkbox" class="btn-check" id="adventure" name="genre" value="Adventure" autocomplete="off" {{#film.isAdventure}}checked{{/film.isAdventure}}>
+
+                            <input type="checkbox" class="btn-check" id="adventure" name="genre" value="Adventure"
+                                autocomplete="off" {{#film.isAdventure}}checked{{/film.isAdventure}}>
                             <label class="btn btn-outline-primary" for="adventure">Adventure</label>
-                            
-                            <input type="checkbox" class="btn-check" id="adventure2" name="genre" value="Other" autocomplete="off" {{#film.isOtherGenre}}checked{{/film.isOtherGenre}}>
+
+                            <input type="checkbox" class="btn-check" id="adventure2" name="genre" value="Other"
+                                autocomplete="off" {{#film.isOtherGenre}}checked{{/film.isOtherGenre}}>
                             <label class="btn btn-outline-primary" for="adventure2">Other</label>
                         </div>
                         <div id="genre-error" class="text-danger mt-2" style="display:none; font-size: 0.875em;">
@@ -103,7 +145,8 @@
                     <div class="mb-3 form-group">
                         <label for="rating" class="form-label">Calification</label>
                         <input type="number" class="form-control" id="rating" name="rating"
-                            placeholder="Add the calification (0-5)" min="0" max="5" step="0.5" value="{{film.rating}}" required>
+                            placeholder="Add the calification (0-5)" min="0" max="5" step="0.5" value="{{film.rating}}"
+                            required>
                         <div class="invalid-feedback">Rating must be between 0 and 5.</div>
                     </div>
 
@@ -123,32 +166,85 @@
 
                     <div class="mb-3 form-group">
                         <label for="fotoDirector" class="form-label">Image of the director:</label>
-                        <input class="form-control" type="file" id="fotoDirector" name="fotoDirector" accept="image/*" {{^editing}}required{{/editing}}>
+                        <div id="fotoDirectorPreviewContainer" class="image-preview-container mb-2">
+                            {{#film.currentDirectorImagePath}}
+                            <img id="fotoDirectorExistingPreview" src="{{film.currentDirectorImagePath}}"
+                                class="img-thumbnail" style="max-height: 150px;">
+                            {{/film.currentDirectorImagePath}}
+                            <img id="fotoDirectorNewPreview" src="#" alt="New Director Photo Preview"
+                                class="img-thumbnail" style="display:none; max-height: 150px;">
+                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="fotoDirector"
+                                id="deleteFotoDirectorBtn">X</button>
+                            <input type="hidden" name="delete_fotoDirector" id="delete_fotoDirector_input"
+                                value="false">
+                        </div>
+                        <input class="form-control" type="file" id="fotoDirector" name="fotoDirector" accept="image/*"
+                            {{^editing}}required{{/editing}}>
                         <div class="invalid-feedback">Director photo is required.</div>
                     </div>
-
                     <div class="mb-3 form-group">
                         <label class="form-label">Cast (At least Actor 1 required)</label>
-                        
+
                         <div class="mb-2">
                             <label for="actor1" class="form-label text-muted small">First actor Name</label>
-                            <input type="text" class="form-control mb-1" id="actor1" name="cast"
-                                placeholder="Name" value="{{film.cast.0}}" required>
+                            <input type="text" class="form-control mb-1" id="actor1" name="cast" placeholder="Name"
+                                value="{{film.cast.0}}" required>
                             <div class="invalid-feedback">First actor name is required.</div>
-                            
-                            <input class="form-control" type="file" id="fotoActor1" name="fotoActor1" accept="image/*" {{^editing}}required{{/editing}}>
+
+                            <div id="fotoActor1PreviewContainer" class="image-preview-container mb-2">
+                                {{#film.currentActor1ImagePath}}
+                                <img id="fotoActor1ExistingPreview" src="{{film.currentActor1ImagePath}}"
+                                    class="img-thumbnail" style="max-height: 100px;">
+                                {{/film.currentActor1ImagePath}}
+                                <img id="fotoActor1NewPreview" src="#" alt="New Actor 1 Photo Preview"
+                                    class="img-thumbnail" style="display:none; max-height: 100px;">
+                                <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="fotoActor1"
+                                    id="deleteFotoActor1Btn">X</button>
+                                <input type="hidden" name="delete_fotoActor1" id="delete_fotoActor1_input"
+                                    value="false">
+                            </div>
+                            <input class="form-control" type="file" id="fotoActor1" name="fotoActor1" accept="image/*"
+                                {{^editing}}required{{/editing}}>
                             <div class="invalid-feedback">First actor photo is required.</div>
                         </div>
 
                         <div class="mb-2 mt-3">
                             <label for="actor2" class="form-label text-muted small">Second actor Name (Optional)</label>
-                            <input type="text" class="form-control mb-1" id="actor2" name="cast" placeholder="Name" value="{{film.cast.1}}">
+                            <input type="text" class="form-control mb-1" id="actor2" name="cast" placeholder="Name"
+                                value="{{film.cast.1}}">
+
+                            <div id="fotoActor2PreviewContainer" class="image-preview-container mb-2">
+                                {{#film.currentActor2ImagePath}}
+                                <img id="fotoActor2ExistingPreview" src="{{film.currentActor2ImagePath}}"
+                                    class="img-thumbnail" style="max-height: 100px;">
+                                {{/film.currentActor2ImagePath}}
+                                <img id="fotoActor2NewPreview" src="#" alt="New Actor 2 Photo Preview"
+                                    class="img-thumbnail" style="display:none; max-height: 100px;">
+                                <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="fotoActor2"
+                                    id="deleteFotoActor2Btn">X</button>
+                                <input type="hidden" name="delete_fotoActor2" id="delete_fotoActor2_input"
+                                    value="false">
+                            </div>
                             <input class="form-control" type="file" id="fotoActor2" name="fotoActor2" accept="image/*">
                         </div>
 
                         <div class="mb-2 mt-3">
                             <label for="actor3" class="form-label text-muted small">Third actor Name (Optional)</label>
-                            <input type="text" class="form-control mb-1" id="actor3" name="cast" placeholder="Name" value="{{film.cast.2}}">
+                            <input type="text" class="form-control mb-1" id="actor3" name="cast" placeholder="Name"
+                                value="{{film.cast.2}}">
+
+                            <div id="fotoActor3PreviewContainer" class="image-preview-container mb-2">
+                                {{#film.currentActor3ImagePath}}
+                                <img id="fotoActor3ExistingPreview" src="{{film.currentActor3ImagePath}}"
+                                    class="img-thumbnail" style="max-height: 100px;">
+                                {{/film.currentActor3ImagePath}}
+                                <img id="fotoActor3NewPreview" src="#" alt="New Actor 3 Photo Preview"
+                                    class="img-thumbnail" style="display:none; max-height: 100px;">
+                                <button type="button" class="btn btn-danger btn-sm delete-btn" data-field="fotoActor3"
+                                    id="deleteFotoActor3Btn">X</button>
+                                <input type="hidden" name="delete_fotoActor3" id="delete_fotoActor3_input"
+                                    value="false">
+                            </div>
                             <input class="form-control" type="file" id="fotoActor3" name="fotoActor3" accept="image/*">
                         </div>
                     </div>
@@ -163,27 +259,34 @@
                     <div class="mt-5 checkbox">
                         <label class="form-label">Language:</label>
                         <div class="btn-group" role="group" aria-label="Language toggle buttons">
-                            <input type="checkbox" class="btn-check" id="english" name="language" value="English" autocomplete="off" {{#film.isEnglish}}checked{{/film.isEnglish}}>
+                            <input type="checkbox" class="btn-check" id="english" name="language" value="English"
+                                autocomplete="off" {{#film.isEnglish}}checked{{/film.isEnglish}}>
                             <label class="btn btn-outline-success" for="english">English</label>
-                            
-                            <input type="checkbox" class="btn-check" id="spanish" name="language" value="Spanish" autocomplete="off" {{#film.isSpanish}}checked{{/film.isSpanish}}>
+
+                            <input type="checkbox" class="btn-check" id="spanish" name="language" value="Spanish"
+                                autocomplete="off" {{#film.isSpanish}}checked{{/film.isSpanish}}>
                             <label class="btn btn-outline-success" for="spanish">Spanish</label>
-                            
-                            <input type="checkbox" class="btn-check" id="french" name="language" value="French" autocomplete="off" {{#film.isFrench}}checked{{/film.isFrench}}>
+
+                            <input type="checkbox" class="btn-check" id="french" name="language" value="French"
+                                autocomplete="off" {{#film.isFrench}}checked{{/film.isFrench}}>
                             <label class="btn btn-outline-success" for="french">French</label>
-                            
-                            <input type="checkbox" class="btn-check" id="german" name="language" value="German" autocomplete="off" {{#film.isGerman}}checked{{/film.isGerman}}>
+
+                            <input type="checkbox" class="btn-check" id="german" name="language" value="German"
+                                autocomplete="off" {{#film.isGerman}}checked{{/film.isGerman}}>
                             <label class="btn btn-outline-success" for="german">German</label>
-                            
-                            <input type="checkbox" class="btn-check" id="german2" name="language" value="Other" autocomplete="off" {{#film.isOtherLanguage}}checked{{/film.isOtherLanguage}}>
+
+                            <input type="checkbox" class="btn-check" id="german2" name="language" value="Other"
+                                autocomplete="off" {{#film.isOtherLanguage}}checked{{/film.isOtherLanguage}}>
                             <label class="btn btn-outline-success" for="german2">Other</label>
                         </div>
                     </div>
 
                     <div class="mb-5 mt-5">
                         <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <span id="btnText">{{#editing}}Update Film{{/editing}}{{^editing}}Add Film{{/editing}}</span>
-                            <span id="btnSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+                            <span id="btnText">{{#editing}}Update Film{{/editing}}{{^editing}}Add
+                                Film{{/editing}}</span>
+                            <span id="btnSpinner" class="spinner-border spinner-border-sm" role="status"
+                                aria-hidden="true" style="display:none;"></span>
                             <span id="btnLoadingText" style="display:none;">Processing...</span>
                         </button>
                         <a href="/indice" class="btn btn-secondary" role="button">Cancel</a>
@@ -202,7 +305,8 @@
                 </div>
                 <div class="modal-body text-center" id="modalBody"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCloseModal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        id="btnCloseModal">Close</button>
                     <a href="/indice" id="btnRedirect" class="btn btn-primary" style="display:none;">Go to Index</a>
                 </div>
             </div>
@@ -213,4 +317,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/app.js"></script>
 </body>
+
 </html>
