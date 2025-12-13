@@ -76,25 +76,27 @@
         <h4>USER REVIEWS</h4>
         <div id="reviewsContainer">
             {{#reviews}}
-            <div id="review-{{_id}}" class="review p-3 mb-3 border rounded shadow-sm d-flex justify-content-between align-items-start bg-light">
-                <div class="review-content">
-                    <div class="user-info d-flex align-items-center mb-1">
-                        <img src="/User/User.png" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                        <strong>{{User_name}}</strong>
-                        <span class="badge bg-warning text-dark ms-3">⭐ {{Rating}}/5</span>
+            <div id="review-{{_id}}" class="review p-3 mb-3 border rounded shadow-sm bg-light"
+                 data-user-name="{{User_name}}" 
+                 data-rating="{{Rating}}" 
+                 data-description="{{description}}"
+                 data-comment-id="{{_id}}"
+                 data-movie-id="{{movieId}}">
+                
+                <div class="view-mode d-flex justify-content-between align-items-start">
+                    <div class="review-content">
+                        <div class="user-info d-flex align-items-center mb-1">
+                            <img src="/User/User.png" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                            <strong>{{User_name}}</strong>
+                            <span class="badge bg-warning text-dark ms-3">⭐ {{Rating}}/5</span>
+                        </div>
+                        <p class="mb-1 text-content">{{description}}</p>
                     </div>
-                    <p class="mb-1">{{description}}</p>
-                </div>
-                <div class="review-actions d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary btn-edit-comment" 
-                            data-comment-id="{{_id}}" data-movie-id="{{movieId}}"
-                            data-text="{{description}}" data-rating="{{Rating}}">
-                        <i class="bi bi-pencil-fill"></i> Edit
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger btn-delete-comment" 
-                            data-comment-id="{{_id}}" data-movie-id="{{movieId}}">
-                        <i class="bi bi-trash-fill"></i> Delete
-                    </button>
+                    <div class="review-actions d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary btn-edit-inline"><i class="bi bi-pencil-fill"></i> Edit</button>
+                        <button class="btn btn-sm btn-outline-danger btn-delete-comment" 
+                                data-comment-id="{{_id}}" data-movie-id="{{movieId}}"><i class="bi bi-trash-fill"></i> Delete</button>
+                    </div>
                 </div>
             </div>
             {{/reviews}}
@@ -139,36 +141,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCloseModal">Close</button>
                     <a href="" id="btnRedirect" class="btn btn-primary" style="display:none;">Go</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editCommentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">Edit Comment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <form id="editCommentForm" class="needs-validation" novalidate>
-                        <input type="hidden" id="editCommentId" name="commentId">
-                        <input type="hidden" id="editMovieId" name="movieId">
-                        <div class="mb-3">
-                            <label class="form-label">Comment</label>
-                            <textarea class="form-control" id="editReviewText" name="reviewText" rows="4" required></textarea>
-                            <div class="invalid-feedback">Comment text is required.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Rating</label>
-                            <input type="number" class="form-control" id="editReviewRating" name="reviewRating" min="1" max="5" required>
-                            <div class="invalid-feedback">Rating 1-5 required.</div>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">
-                                <span class="btn-text">Update</span>
-                                <span class="spinner-border spinner-border-sm d-none"></span>
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
