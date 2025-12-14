@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- MODALES GLOBALES ---
+    
+    // =========================================================
+    // 1. CONFIGURACIÓN MODALES Y ELEMENTOS GLOBALES
+    // =========================================================
     const resultModalEl = document.getElementById('resultModal');
     const resultModal = resultModalEl ? new bootstrap.Modal(resultModalEl) : null;
     const modalTitle = document.getElementById('modalTitle');
@@ -7,11 +10,85 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCloseModal = document.getElementById('btnCloseModal');
     const btnRedirect = document.getElementById('btnRedirect');
 
+    // Helper para mostrar modal
+    function showModal(title, msg, type) {
+        if(!resultModal) return alert(msg);
+        modalTitle.textContent = title;
+        modalTitle.className = `modal-title text-${type}`;
+        modalBody.textContent = msg;
+        resultModal.show();
+    }
+
     // =========================================================
-    // 1. VALIDACIONES ESPECÍFICAS
+    // 2. LÓGICA DE PREVISUALIZACIÓN DE IMÁGENES (CÓDIGO DE TU COMPAÑERO)
+    // =========================================================
+    const isEditingInput = document.getElementById('isEditing');
+    const isEditing = isEditingInput ? isEditingInput.value === 'true' : false;
+
+    function setupFilePreview(fileInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        const newPreview = document.getElementById(fileInputId + 'NewPreview');
+        const existingPreview = document.getElementById(fileInputId + 'ExistingPreview');
+        const deleteBtn = document.getElementById('delete' + fileInputId.charAt(0).toUpperCase() + fileInputId.slice(1) + 'Btn');
+        const deleteInput = document.getElementById('delete_' + fileInputId + '_input');
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        if (existingPreview) existingPreview.style.display = 'none';
+                        if (newPreview) {
+                            newPreview.src = e.target.result;
+                            newPreview.style.display = 'block';
+                        }
+                        if (deleteBtn) deleteBtn.style.display = 'flex';
+                        if (isEditing && deleteInput) deleteInput.value = 'false';
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    if(newPreview) {
+                        newPreview.src = '#';
+                        newPreview.style.display = 'none';
+                    }
+                    const shouldRestoreExisting = isEditing && existingPreview && (deleteInput.value !== 'true');
+                    if (shouldRestoreExisting) {
+                        existingPreview.style.display = 'block';
+                        if (deleteBtn) deleteBtn.style.display = 'flex';
+                    } else if (!existingPreview && deleteBtn) {
+                        deleteBtn.style.display = 'none';
+                    }
+                }
+            });
+        }
+    }
+
+    const imageFields = ['cover', 'titlePhoto', 'filmPhoto', 'fotoDirector', 'fotoActor1', 'fotoActor2', 'fotoActor3'];
+    imageFields.forEach(field => setupFilePreview(field));
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const fieldName = this.getAttribute('data-field');
+            const existingPreview = document.getElementById(fieldName + 'ExistingPreview');
+            const newPreview = document.getElementById(fieldName + 'NewPreview');
+            const fileInput = document.getElementById(fieldName);
+            const deleteInput = document.getElementById('delete_' + fieldName + '_input');
+
+            if (existingPreview) existingPreview.style.display = 'none';
+            if (newPreview) newPreview.style.display = 'none';
+            this.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+            if (isEditing && existingPreview && deleteInput) deleteInput.value = 'true';
+            if (!isEditing && fileInput) fileInput.required = true;
+        });
+    });
+
+
+    // =========================================================
+    // 3. VALIDACIONES ESPECÍFICAS (Recuperadas)
     // =========================================================
 
-    // A) USUARIO DISPONIBLE
+    // A) USUARIO DISPONIBLE (Comentarios)
     const userNameInput = document.getElementById('userName');
     const userErrorDiv = document.getElementById('user-error');
     if (userNameInput) {
@@ -57,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // C) TÍTULO DUPLICADO
+    // C) TÍTULO PELÍCULA (Validación)
     const titleInput = document.getElementById('title');
     const titleErrorServer = document.getElementById('title-error-server');
     if (titleInput) {
@@ -93,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // D) GÉNEROS
     function validateGenres() {
         if (document.querySelectorAll('input[name="genre"]').length === 0) return true;
         const checked = document.querySelectorAll('input[name="genre"]:checked');
@@ -108,446 +186,166 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // =========================================================
-    // 2. GESTIÓN FORMULARIOS PRINCIPALES (ADD FILM / ADD COMMENT)
+    // 4. ENVÍO DEL FORMULARIO PRINCIPAL (ARREGLADO PARA AJAX)
     // =========================================================
-    const mainForms = [document.getElementById('filmForm'), document.getElementById('addCommentForm')];
+    const filmForm = document.getElementById('filmForm');
     
-    mainForms.forEach(form => {
-        if(!form) return;
-        form.addEventListener('submit', async (event) => {
+    if (filmForm) {
+        filmForm.addEventListener('submit', async (event) => {
+            // DETENER ENVÍO NATIVO
             event.preventDefault();
             event.stopPropagation();
 
-            const isHtmlValid = form.checkValidity();
-            const isGenreValid = validateGenres(); // Solo afecta si hay géneros
+            const isHtmlValid = filmForm.checkValidity();
+            const isGenreValid = validateGenres();
+
             if (!isHtmlValid || !isGenreValid) {
-                form.classList.add('was-validated');
+                filmForm.classList.add('was-validated');
                 return;
             }
 
-            const submitBtn = form.querySelector('button[type="submit"]');
+            // Validar Título por AJAX una última vez antes de enviar
+            if (titleInput && !isEditing) {
+                const titleVal = titleInput.value;
+                try {
+                    const resCheck = await fetch(`/checkTitle?title=${encodeURIComponent(titleVal)}`);
+                    const dataCheck = await resCheck.json();
+                    if (!dataCheck.available) {
+                        titleInput.classList.add('is-invalid');
+                        if(titleErrorServer) titleErrorServer.style.display = 'block';
+                        return; // Detenemos si está duplicado
+                    }
+                } catch(e) { return; }
+            }
+
+            // --- INICIO PROCESO ENVÍO ---
+            const submitBtn = document.getElementById('submitBtn');
             toggleLoading(submitBtn, true);
 
-            // Si es film form, usamos delay de 1.5s
-            const delay = (form.id === 'filmForm') ? 1500 : 0;
-
+            // TEMPORIZADOR 1.5s
             setTimeout(async () => {
                 try {
-                    const formData = new FormData(form);
-                    let fetchOptions = { method: 'POST' };
+                    const formData = new FormData(filmForm);
+                    const response = await fetch(filmForm.getAttribute('action'), {
+                        method: 'POST',
+                        body: formData
+                    });
                     
-                    // Add Comment usa JSON
-                    if (form.id === 'addCommentForm') {
-                        const data = Object.fromEntries(formData.entries());
-                        fetchOptions.headers = { 'Content-Type': 'application/json' };
-                        fetchOptions.body = JSON.stringify(data);
-                    } else {
-                        // Film form usa Multipart
-                        fetchOptions.body = formData;
-                    }
-
-                    const response = await fetch(form.getAttribute('action'), fetchOptions);
                     const result = await response.json();
 
                     if (result.success) {
-                        if(form.id === 'filmForm') {
-                            window.location.href = result.redirectUrl;
-                        } else {
-                            showModal('Added!', 'Review added successfully.', 'success');
-                            form.reset(); 
-                            form.classList.remove('was-validated');
-                            if(btnCloseModal) btnCloseModal.onclick = () => window.location.reload();
-                        }
+                        // REDIRECCIÓN MANUAL (Soluciona el Cannot GET)
+                        window.location.href = result.redirectUrl;
                     } else {
                         showModal('Error', result.message, 'danger');
+                        toggleLoading(submitBtn, false);
                     }
                 } catch (error) {
-                    showModal('Error', "Server Error", 'danger');
-                } finally {
+                    showModal('Error', "Server connection failed", 'danger');
                     toggleLoading(submitBtn, false);
                 }
-            }, delay);
+            }, 1500);
         });
-    });
-
+    }
 
     // =========================================================
-    // 3. EDICIÓN EN LÍNEA DE COMENTARIOS (¡LO NUEVO!)
+    // 5. RESTAURACIÓN DEL FILTRADO (INDICE)
     // =========================================================
     
-    // Delegación de eventos (usamos el container padre)
-    const reviewsContainer = document.getElementById('reviewsContainer');
-    if (reviewsContainer) {
-        reviewsContainer.addEventListener('click', function(e) {
-            
-            // --- CLICK EN BOTÓN EDITAR ---
-            if (e.target.closest('.btn-edit-inline')) {
-                const container = e.target.closest('.review');
-                if (container.classList.contains('editing-mode')) return; // Ya se está editando
-
-                // Leer datos actuales
-                const currentText = container.dataset.description;
-                const currentRating = container.dataset.rating;
-                
-                // Generar HTML del formulario
-                const formHtml = `
-                    <form class="inline-edit-form needs-validation p-2 border rounded bg-white" novalidate>
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">Update your review:</label>
-                            <textarea class="form-control" name="reviewText" rows="3" required>${currentText}</textarea>
-                            <div class="invalid-feedback">Text is required.</div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">Rating:</label>
-                            <input type="number" class="form-control form-control-sm" name="reviewRating" value="${currentRating}" min="1" max="5" required>
-                            <div class="invalid-feedback">1-5</div>
-                        </div>
-                        <div class="d-flex gap-2 justify-content-end">
-                            <button type="button" class="btn btn-sm btn-secondary btn-cancel-edit">Cancel</button>
-                            <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
-                        </div>
-                    </form>
-                `;
-
-                // Guardar HTML original para poder cancelar
-                container.dataset.originalHtml = container.innerHTML;
-                
-                // Inyectar formulario
-                container.innerHTML = formHtml;
-                container.classList.add('editing-mode');
-            }
-
-            // --- CLICK EN BOTÓN CANCELAR ---
-            if (e.target.closest('.btn-cancel-edit')) {
-                const container = e.target.closest('.review');
-                // Restaurar HTML original
-                container.innerHTML = container.dataset.originalHtml;
-                container.classList.remove('editing-mode');
-            }
-
-            // --- CLICK EN BORRAR (Reutilizamos lógica) ---
-            if (e.target.closest('.btn-delete-comment')) {
-                const btn = e.target.closest('.btn-delete-comment');
-                if(!confirm("Delete comment?")) return;
-                
-                const cId = btn.dataset.commentId;
-                const mId = btn.dataset.movieId;
-                
-                // Spinner pequeño en el botón
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-                btn.disabled = true;
-
-                fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' })
-                    .then(r => r.json())
-                    .then(data => {
-                        if(data.success) document.getElementById(`review-${cId}`).remove();
-                        else { alert(data.message); btn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete'; btn.disabled=false; }
-                    })
-                    .catch(() => alert("Error deleting"));
+    // Búsqueda por texto (Al pulsar Enter)
+    const searchInput = document.querySelector('input[name="search"]'); // Asegúrate que tu input en indice.html tenga name="search"
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Evitar submit standard si está en un form
+                performSearch();
             }
         });
+    }
 
-        // --- SUBMIT DEL FORMULARIO EN LÍNEA (Delegación con 'capture' o check directo) ---
-        // Como el form se crea dinámicamente, escuchamos el evento 'submit' en el contenedor
-        reviewsContainer.addEventListener('submit', async function(e) {
-            if (e.target.classList.contains('inline-edit-form')) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const form = e.target;
-                const container = form.closest('.review');
-                
-                if (!form.checkValidity()) {
-                    form.classList.add('was-validated');
-                    return;
-                }
+    // Búsqueda al hacer clic en un botón de búsqueda (si existe)
+    const searchBtn = document.querySelector('.btn-search'); // Ponle esta clase a tu botón de la lupa
+    if(searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
+    }
 
-                // Datos
-                const formData = new FormData(form);
-                const newText = formData.get('reviewText');
-                const newRating = formData.get('reviewRating');
-                const cId = container.dataset.commentId;
-                const mId = container.dataset.movieId;
-                const userName = container.dataset.userName; // Recuperamos nombre para repintar
+    function performSearch() {
+        const query = searchInput ? searchInput.value.trim() : '';
+        // Obtenemos el género actual de la URL si existe para no perderlo
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentGenre = urlParams.get('genre') || '';
+        
+        let targetUrl = `/indice?search=${encodeURIComponent(query)}`;
+        if(currentGenre && currentGenre !== 'All') {
+            targetUrl += `&genre=${encodeURIComponent(currentGenre)}`;
+        }
+        window.location.href = targetUrl;
+    }
 
-                // Bloquear inputs
-                const inputs = form.querySelectorAll('input, textarea, button');
-                inputs.forEach(el => el.disabled = true);
-
-                try {
-                    const res = await fetch(`/updateComment/${mId}/${cId}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reviewText: newText, reviewRating: newRating })
-                    });
-                    const result = await res.json();
-
-                    if (result.success) {
-                        // ÉXITO: RECONSTRUIMOS EL HTML DE VISUALIZACIÓN CON DATOS NUEVOS
-                        // Actualizamos dataset
-                        container.dataset.description = newText;
-                        container.dataset.rating = newRating;
-                        
-                        const newHtml = `
-                            <div class="view-mode d-flex justify-content-between align-items-start">
-                                <div class="review-content">
-                                    <div class="user-info d-flex align-items-center mb-1">
-                                        <img src="/User/User.png" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                                        <strong>${userName}</strong>
-                                        <span class="badge bg-warning text-dark ms-3">⭐ ${newRating}/5</span>
-                                    </div>
-                                    <p class="mb-1 text-content">${newText}</p>
-                                </div>
-                                <div class="review-actions d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary btn-edit-inline"><i class="bi bi-pencil-fill"></i> Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger btn-delete-comment" 
-                                            data-comment-id="${cId}" data-movie-id="${mId}"><i class="bi bi-trash-fill"></i> Delete</button>
-                                </div>
-                            </div>
-                        `;
-                        
-                        container.innerHTML = newHtml;
-                        container.classList.remove('editing-mode');
-                        
-                    } else {
-                        showModal('Error', result.message, 'danger');
-                        inputs.forEach(el => el.disabled = false);
-                    }
-                } catch(err) {
-                    showModal('Error', "Server Error", 'danger');
-                    inputs.forEach(el => el.disabled = false);
-                }
+    // Filtrado por género (si usas un <select> o botones que no son <a>)
+    // Si tus géneros son enlaces <a href="...">, funcionarán solos. 
+    // Si son un <select id="genreFilter">, usa esto:
+    const genreFilter = document.getElementById('genreFilter');
+    if(genreFilter) {
+        genreFilter.addEventListener('change', function() {
+            const genre = this.value;
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentSearch = urlParams.get('search') || '';
+            
+            let targetUrl = `/indice?genre=${encodeURIComponent(genre)}`;
+            if(currentSearch) {
+                targetUrl += `&search=${encodeURIComponent(currentSearch)}`;
             }
+            window.location.href = targetUrl;
         });
     }
 
 
     // =========================================================
-    // HELPERS
+    // 6. HELPERS VISUALES
     // =========================================================
     function toggleLoading(btn, isLoading) {
         if (!btn) return;
         btn.disabled = isLoading;
-        const spinner = document.getElementById('btnSpinner') || btn.querySelector('.spinner-border');
-        const text = document.getElementById('btnText') || btn.querySelector('.btn-text');
+        const spinner = document.getElementById('btnSpinner');
+        const text = document.getElementById('btnText');
+        const loadingText = document.getElementById('btnLoadingText');
         
         if(spinner) spinner.style.display = isLoading ? 'inline-block' : 'none';
-        if(spinner && spinner.classList.contains('d-none')) spinner.classList.toggle('d-none', !isLoading);
         if(text) text.style.display = isLoading ? 'none' : 'inline-block';
+        if(loadingText) loadingText.style.display = isLoading ? 'inline-block' : 'none';
     }
 
-    function showModal(title, msg, type) {
-        if(!resultModal) return alert(msg);
-        modalTitle.textContent = title;
-        modalTitle.className = `modal-title text-${type}`;
-        modalBody.textContent = msg;
-        resultModal.show();
-    }
 });
-
-document.addEventListener('DOMContentLoaded', function () {
-    const isEditingInput = document.getElementById('isEditing');
-    const isEditing = isEditingInput ? isEditingInput.value === 'true' : false;
-    const form = document.getElementById('filmForm');
-
-    // ----------------------------------------------------
-    // 1. LÓGICA DE PREVISUALIZACIÓN DE ARCHIVOS
-    // ----------------------------------------------------
-
-    // Función para configurar la previsualización y el botón de borrado
-    function setupFilePreview(fileInputId) {
-        const fileInput = document.getElementById(fileInputId);
-        const newPreview = document.getElementById(fileInputId + 'NewPreview');
-        const existingPreview = document.getElementById(fileInputId + 'ExistingPreview');
-        const deleteBtn = document.getElementById('delete' + fileInputId.charAt(0).toUpperCase() + fileInputId.slice(1) + 'Btn');
-        const deleteInput = document.getElementById('delete_' + fileInputId + '_input'); // Solo existe en modo edición
-
-        if (fileInput) {
-            fileInput.addEventListener('change', function () {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        // Oculta la imagen existente (si hay)
-                        if (existingPreview) existingPreview.style.display = 'none';
-
-                        // Muestra la nueva previsualización
-                        newPreview.src = e.target.result;
-                        newPreview.style.display = 'block';
-
-                        // Muestra el botón de eliminar
-                        if (deleteBtn) deleteBtn.style.display = 'flex';
-
-                        // Si se sube una nueva foto, reinicia el campo hidden de eliminación (solo en edición)
-                        if (isEditing && deleteInput) deleteInput.value = 'false';
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                } else {
-                    // Si se cancela la selección (e.g., abre el diálogo y lo cierra sin seleccionar)
-                    newPreview.src = '#';
-                    newPreview.style.display = 'none';
-
-                    // Si estamos en modo edición y la imagen existente no está marcada para borrarse, la restauramos
-                    const shouldRestoreExisting = isEditing && existingPreview && (deleteInput.value !== 'true');
-
-                    if (shouldRestoreExisting) {
-                        existingPreview.style.display = 'block';
-                        if (deleteBtn) deleteBtn.style.display = 'flex';
-                    } else if (!existingPreview) {
-                        // En modo 'Agregar' o si la existente fue borrada, ocultamos el botón
-                        if (deleteBtn) deleteBtn.style.display = 'none';
-                    }
-                }
-            });
-        }
-    }
-
-    // Configura todos los campos de imagen
-    const imageFields = [
-        'cover', 'titlePhoto', 'filmPhoto', 'fotoDirector',
-        'fotoActor1', 'fotoActor2', 'fotoActor3'
-    ];
-    imageFields.forEach(field => {
-        setupFilePreview(field);
-    });
-
-    // ----------------------------------------------------
-    // 2. LÓGICA DEL BOTÓN DE ELIMINAR (ÚNICO PARA TODOS LOS MODOS)
-    // ----------------------------------------------------
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const fieldName = this.getAttribute('data-field');
-            const inputId = fieldName;
-
-            const existingPreview = document.getElementById(inputId + 'ExistingPreview');
-            const newPreview = document.getElementById(inputId + 'NewPreview');
-            const fileInput = document.getElementById(inputId);
-            const deleteInput = document.getElementById('delete_' + inputId + '_input'); // Solo existe en edición
-
-            // 1. Ocultar todas las previsualizaciones y el botón X
-            if (existingPreview) existingPreview.style.display = 'none';
-            if (newPreview) newPreview.style.display = 'none';
-            this.style.display = 'none';
-
-            // 2. Limpiar el input type=file
-            if (fileInput) fileInput.value = '';
-
-            // 3. Marcar el campo hidden (Solo si estamos en Edición y había una imagen existente)
-            // Esto le dice al servidor que debe borrar la ruta en la DB.
-            if (isEditing && existingPreview) {
-                if (deleteInput) deleteInput.value = 'true';
-            }
-
-            // 4. Asegurarse de que el campo 'required' se active si estamos en modo 'Agregar'
-            if (!isEditing && fileInput) {
-                fileInput.required = true;
+const searchInput = document.querySelector('input[name="search"]'); 
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                performSearch();
             }
         });
-    });
-
-    // ... RESTO DE TU LÓGICA DE VALIDACIÓN (Debe ir aquí, la estoy omitiendo para brevedad) ...
-
-    // ----------------------------------------------------
-    // 3. VALIDACIÓN DE GÉNERO Y ENVÍO DE FORMULARIO
-    // ----------------------------------------------------
-    form.addEventListener('submit', function (event) {
-        // ... (El resto de tu código de validación de género y AJAX) ...
-        let genreChecked = false;
-        const genreCheckboxes = form.querySelectorAll('input[name="genre"]:checked');
-        if (genreCheckboxes.length > 0) {
-            genreChecked = true;
-        }
-
-        const genreError = document.getElementById('genre-error');
-        if (!genreChecked) {
-            genreError.style.display = 'block';
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            genreError.style.display = 'none';
-        }
-
-        // Validación de Bootstrap
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            if (!isEditing) {
-                event.preventDefault(); // Detenemos el envío hasta la validación AJAX
-                validateTitleAndSubmit();
-            }
-        }
-
-        // Agrega la clase 'was-validated' de Bootstrap para mostrar feedback
-        form.classList.add('was-validated');
-    }, false);
-
-
-    // ... Lógica para AJAX Validation (checkTitleExistence y validateTitleAndSubmit) ...
-
-    const titleInput = document.getElementById('title');
-    const titleErrorServer = document.getElementById('title-error-server');
-
-    titleInput.addEventListener('blur', function () {
-        if (!isEditing && titleInput.checkValidity()) {
-            checkTitleExistence(titleInput.value);
-        }
-    });
-
-    async function checkTitleExistence(title) {
-        try {
-            const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
-            const data = await response.json();
-
-            if (!data.available) {
-                titleInput.setCustomValidity("Title is already taken.");
-                titleErrorServer.style.display = 'block';
-            } else {
-                titleInput.setCustomValidity("");
-                titleErrorServer.style.display = 'none';
-            }
-            titleInput.reportValidity();
-        } catch (err) {
-            console.error('Error checking title:', err);
-        }
     }
 
-    async function validateTitleAndSubmit() {
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
-        const btnLoadingText = document.getElementById('btnLoadingText');
-
-        submitBtn.disabled = true;
-        btnText.style.display = 'none';
-        btnSpinner.style.display = 'inline-block';
-        btnLoadingText.style.display = 'inline-block';
-
-        try {
-            const title = titleInput.value;
-            const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
-            const data = await response.json();
-
-            if (!data.available) {
-                titleInput.setCustomValidity("Title is already taken.");
-                titleErrorServer.style.display = 'block';
-                form.classList.add('was-validated');
-            } else {
-                titleInput.setCustomValidity("");
-                titleErrorServer.style.display = 'none';
-                form.submit();
-            }
-        } catch (err) {
-            console.error('Error validating title on submit:', err);
-        } finally {
-            if (titleInput.checkValidity() && titleErrorServer.style.display === 'none') {
-                // If submitted successfully, do nothing here
-            } else {
-                submitBtn.disabled = false;
-                btnText.style.display = 'inline';
-                btnSpinner.style.display = 'none';
-                btnLoadingText.style.display = 'none';
-            }
-        }
+    const searchBtn = document.querySelector('.btn-search'); 
+    if(searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
     }
-});
+
+    function performSearch() {
+        const query = searchInput ? searchInput.value.trim() : '';
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentGenre = urlParams.get('genre') || '';
+        
+        let targetUrl = `/indice?search=${encodeURIComponent(query)}`;
+        if(currentGenre && currentGenre !== 'All') {
+            targetUrl += `&genre=${encodeURIComponent(currentGenre)}`;
+        }
+        window.location.href = targetUrl;
+    }

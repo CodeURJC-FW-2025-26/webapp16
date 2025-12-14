@@ -1,4 +1,4 @@
-let page = 2; // We start in page 2, because first is loaded with mustache
+let page = 2; // Empieza en pagina 2
 let loading = false;
 
 const filmContainer = document.getElementById('film-container');
@@ -7,16 +7,26 @@ const loader = document.getElementById('loader');
 async function loadFilms() {
     if (loading) return;
     loading = true;
-    loader.style.display = 'block'; // Show loader
+    if(loader) loader.style.display = 'block';
 
     try {
-        const response = await fetch(`/api/films?page=${page}`);
+        // LEER FILTROS ACTUALES DE LA URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const search = urlParams.get('search') || '';
+        const genre = urlParams.get('genre') || '';
+
+        // Construir URL API con filtros
+        let apiUrl = `/api/films?page=${page}`;
+        if(search) apiUrl += `&search=${encodeURIComponent(search)}`;
+        if(genre) apiUrl += `&genre=${encodeURIComponent(genre)}`;
+
+        const response = await fetch(apiUrl);
         const data = await response.json();
         const films = data.films;
 
         if (films.length === 0) {
             window.removeEventListener('scroll', handleScroll);
-            loader.style.display = 'none';
+            if(loader) loader.style.display = 'none';
             return;
         }
 
@@ -32,23 +42,29 @@ async function loadFilms() {
         });
 
         page++;
+        
+        // Simular retardo de carga (opcional)
         setTimeout(() => {
-        loader.style.display = 'none'; // None loader after 1000 ms
-        loading = false;
-        }, 2000);   
+            if(loader) loader.style.display = 'none';
+            loading = false;
+        }, 500); 
     
     } catch (err) {
         console.error('Error loading films:', err);
         loading = false;
-        loader.style.display = 'none';
+        if(loader) loader.style.display = 'none';
     }
 }
 
 function handleScroll() {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
+    // Cargar cuando falten 50px para el final
+    if (scrollTop + clientHeight >= scrollHeight - 50) {
         loadFilms();
     }
 }
 
-window.addEventListener('scroll', handleScroll);
+// Verificar si estamos en la página indice antes de activar el scroll
+if(document.getElementById('film-container')) {
+    window.addEventListener('scroll', handleScroll);
+}
