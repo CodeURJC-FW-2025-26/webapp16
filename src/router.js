@@ -285,19 +285,58 @@ router.post('/Ej/:id/addReview', async (req, res) => {
 
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
-        await commentsColl.deleteOne({ _id: new ObjectId(req.params.commentId) });
-        await moviesColl.updateOne({ _id: new ObjectId(req.params.movieId) }, { $pull: { comments: new ObjectId(req.params.commentId) } });
+        const commentId = new ObjectId(req.params.commentId);
+        const movieId = new ObjectId(req.params.movieId);
+
+        // Try to delete comment
+        const result = await commentsColl.deleteOne({ _id: commentId });
+
+        // If deleteOne = 0 we throw an error
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'The current comment can not be deleted because does not exist'
+            });
+        }
+        await moviesColl.updateOne(
+            { _id: movieId },
+            { $pull: { comments: commentId } }
+        );
         res.json({ success: true, message: 'Deleted.' });
-    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
+
+
 
 router.post('/updateComment/:movieId/:commentId', async (req, res) => {
     try {
         const { reviewText, reviewRating } = req.body;
-        await commentsColl.updateOne({ _id: new ObjectId(req.params.commentId) }, { $set: { description: reviewText, Rating: parseInt(reviewRating) } });
+        const commentId = new ObjectId(req.params.commentId);
+
+        const result = await commentsColl.updateOne(
+            { _id: commentId },
+            {
+                $set: {
+                    description: reviewText,
+                    Rating: parseInt(reviewRating)
+                }
+            }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'The comment can not be edited because it does not exist'
+            });
+        }
         res.json({ success: true, message: 'Updated.' });
-    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
+
 
 // --- BORRAR PELÍCULA ---
 router.post('/deleteFilm', async (req, res) => {
