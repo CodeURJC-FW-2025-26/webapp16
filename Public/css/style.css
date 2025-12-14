@@ -263,3 +263,33 @@ body>.maincontainer {
     right: 35px;
     /* Ajusta la posición si la imagen es más pequeña */
 }
+
+/* Modificación sugerida para hacer la zona más amigable */
+.image-preview-container {
+    position: relative;
+    display: block;
+    /* Cambiado a block para tomar más espacio */
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding: 15px;
+    /* Añadir padding */
+    border: 2px dashed #ccc;
+    /* Borde punteado para indicar zona de arrastre */
+    text-align: center;
+    min-height: 100px;
+    /* Asegurar una altura mínima */
+    cursor: pointer;
+    /* Indicar que es interactivo */
+}
+
+/* El resto de estilos ya existentes para la clase se mantienen */
+.image-preview-container img.img-thumbnail {
+    /* ... estilos existentes ... */
+    display: inline-block;
+    /* Para que la imagen y el botón de borrado se muestren correctamente */
+    margin-right: 10px;
+    max-width: 150px;
+    height: auto;
+    border: none;
+    /* Eliminar borde para que solo se vea el borde dashed del contenedor */
+}
