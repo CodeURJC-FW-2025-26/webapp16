@@ -267,7 +267,7 @@ router.get('/Ej/:id', async (req, res) => {
     } catch (err) { res.status(500).send(err.message); }
 });
 
-// --- COMENTARIOS ---
+// --- REVIEWS ---
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
         const { userName, rating, reviewText } = req.body;

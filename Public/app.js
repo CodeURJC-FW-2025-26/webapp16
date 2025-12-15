@@ -319,8 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = form.querySelector('button[type="submit"]');
             toggleLoading(submitBtn, true);
 
-            // Delay 1.5s solo para Films
-            const delay = (form.id === 'filmForm') ? 1500 : 0;
+            //The spinner is running 1.5 seconds
+            
+            const delay = (form.id === 'filmForm' || form.id === 'addCommentForm') ? 1500 : 0;
 
             setTimeout(async () => {
                 try {
@@ -362,6 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    
+
 
     // =========================================================
     // 5. BOTONES COMENTARIOS (EDICIÓN EN LÍNEA Y BORRADO)
@@ -385,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const currentRating = container.dataset.rating || editBtn.dataset.rating; // Fallback
 
                 // HTML del formulario en línea
-                const formHtml = `
+                const formHtml = `  
                     <form class="inline-edit-form p-3 border rounded bg-white shadow-sm" novalidate>
                         <h6 class="mb-3">Editing Review</h6>
                         <div class="mb-3">
@@ -404,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 // Guardar estado original
+                
                 container.dataset.originalHtml = container.innerHTML;
                 container.innerHTML = formHtml;
                 container.classList.add('editing-mode');
@@ -430,16 +434,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' })
                     .then(r => r.json())
                     .then(data => {
-                        if (data.success) {
-                            // Borrar del DOM
-                            const row = document.getElementById(`review-${cId}`);
-                            if (row) row.remove();
-                        } else {
-                            alert(data.message);
-                            deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
-                            deleteBtn.disabled = false;
-                        }
-                    })
+                        setTimeout(() => {
+                          if (data.success) {
+                          // Borrar del DOM
+                          const row = document.getElementById(`review-${cId}`);
+                           if (row) row.remove();
+                           } else {
+                       alert(data.message);
+                     deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
+                     deleteBtn.disabled = false;
+                     }
+                   }, 700); 
+                  })
                     .catch(() => {
                         alert("Error deleting");
                         deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
