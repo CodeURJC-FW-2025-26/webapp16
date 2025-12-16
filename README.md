@@ -250,7 +250,19 @@ This section details the function of each key file in the website's implementati
 # Practica 3
 
 --
+- In this practice we have created the `app.js` and the `InfiniteScroll.js` files in Public. Mainly used for the verifications of the forms and for upgrade the experience of the user when using the website.
 
+- Ignacio: I was responsable of fixing the errors we had the previous realase, modifying the router which was a little too large and too difficult to understand. Also I have participated in the change of the page of adding a film where you now can use drag and drop.
+   -Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/9083ab49bec64308bfdbcdb4ef0b500611a2ad6b)
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/76d5c8b95e91ba60a438d8c493adf749f7a69f6c) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/6241577a7703aabbd56fbd77825574fab33579da) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/ef9eae6a3fa8ba11a735a4efda2c145b38979866) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/feed480f1833251833f192010cfdc6aae416d2bd)
+    -Pages:  ([Ej.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Ej.html))
+           ([router.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/router.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/app.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
+           ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
 
 - Samuel: I was mainly responsible for implementing the infinite scroll functionality by creating a dedicated JavaScript file in the public folder. I also added most of the loading spinners displayed during AJAX form submissions, implemented several dialog modals, contributed significantly to client-side form validations using Bootstrap and add the rest of the elements to the demo.
   
