@@ -251,6 +251,7 @@ This section details the function of each key file in the website's implementati
 
 --
 - In this practice we have created the `app.js` and the `InfiniteScroll.js` files in Public. Mainly used for the verifications of the forms and for upgrade the experience of the user when using the website.
+- Video showing the functionality of the web ([Video](https://youtu.be/hQUDb6WQp_A))
 
 - Ignacio: I was responsable of fixing the errors we had the previous realase, modifying the router which was a little too large and too difficult to understand. Also I have participated in the change of the page of adding a film where you now can use drag and drop.
    -Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/9083ab49bec64308bfdbcdb4ef0b500611a2ad6b)
