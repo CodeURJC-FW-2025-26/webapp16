@@ -298,8 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDragAndDrop('fotoActor3PreviewContainer', 'fotoActor3');
 
 
-    // =========================================================
-    // 4. ENVÍO DE FORMULARIOS (ADD FILM / ADD COMMENT)
+    
+    // ADD FILM / ADD COMMENT
     // =========================================================
     const mainForms = [document.getElementById('filmForm'), document.getElementById('addCommentForm')];
 
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const formData = new FormData(form);
                     let fetchOptions = { method: 'POST' };
 
-                    // Add Comment usa JSON, Film usa Multipart
+                    // Add Comment use JSON, Film use Multipart
                     if (form.id === 'addCommentForm') {
                         const data = Object.fromEntries(formData.entries());
                         fetchOptions.headers = { 'Content-Type': 'application/json' };
@@ -342,10 +342,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (result.success) {
                         if (form.id === 'filmForm') {
-                            // Éxito Película: Redirigir
+                            //Comment added correctly
                             window.location.href = result.redirectUrl;
                         } else {
-                            // Éxito Comentario: Modal y Recarga
+                            // 
                             
                             form.reset();
                             form.classList.remove('was-validated');

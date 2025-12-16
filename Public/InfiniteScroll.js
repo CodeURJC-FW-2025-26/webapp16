@@ -10,12 +10,12 @@ async function loadFilms() {
     if(loader) loader.style.display = 'block';
 
     try {
-        // LEER FILTROS ACTUALES DE LA URL
+        // Read filters of the URL
         const urlParams = new URLSearchParams(window.location.search);
         const search = urlParams.get('search') || '';
         const genre = urlParams.get('genre') || '';
 
-        // Construir URL API con filtros
+        // We do and create the appi
         let apiUrl = `/api/films?page=${page}`;
         if(search) apiUrl += `&search=${encodeURIComponent(search)}`;
         if(genre) apiUrl += `&genre=${encodeURIComponent(genre)}`;
@@ -43,7 +43,7 @@ async function loadFilms() {
 
         page++;
         
-        // Simular retardo de carga (opcional)
+        // Set time to the spinner, 500ms
         setTimeout(() => {
             if(loader) loader.style.display = 'none';
             loading = false;
@@ -58,13 +58,13 @@ async function loadFilms() {
 
 function handleScroll() {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    // Cargar cuando falten 50px para el final
+    // Load when scrollHeight is 50 
     if (scrollTop + clientHeight >= scrollHeight - 50) {
         loadFilms();
     }
 }
 
-// Verificar si estamos en la página indice antes de activar el scroll
+// Verify if we are in the index page
 if(document.getElementById('film-container')) {
     window.addEventListener('scroll', handleScroll);
 }
