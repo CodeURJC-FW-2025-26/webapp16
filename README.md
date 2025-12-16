@@ -265,3 +265,21 @@ This section details the function of each key file in the website's implementati
            ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/app.js))
            ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
            ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
+
+
+
+
+- Raúl: I mainly made all the validations of the formularies of creating or editing the principal and secondary entities. I also implemented lots of facilitations to the user with AJAX and seeing that most of things are made without recarging the page, and also implemented the spinner logic and solved some general problems.
+  
+ -Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/a18f106dabc24cac0d2cc4f33e275cfe1cccc7ba)
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/212d957fe82272980090719e7224925456d4cc73) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/b34a13b6a6c5031f7bc08aa79c74aee5da897499) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/54ad123cdfd59226762ef5e43d679fb5255ed669) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/22098b1ba460aad809c564c8d301c999e1d3e9ca) 
+  
+  -Pages:  ([Ej.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Ej.html))
+           ([InfiniteScroll.js]((https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/InfiniteScroll.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/app.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
+           ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
+
