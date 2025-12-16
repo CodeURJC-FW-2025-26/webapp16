@@ -239,3 +239,29 @@ This section details the function of each key file in the website's implementati
            ([database.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/Database.js))
            ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
            ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
+
+
+
+
+
+
+  ---
+
+# Practica 3
+
+--
+
+
+- Samuel: I was mainly responsible for implementing the infinite scroll functionality by creating a dedicated JavaScript file in the public folder. I also added most of the loading spinners displayed during AJAX form submissions, implemented several dialog modals, contributed significantly to client-side form validations using Bootstrap and add the rest of the elements to the demo.
+  
+ -Commits: (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/57b2e5f97737d684fa6c95aefb25379ed074a144)
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/d7cc812c477693191e58fd1fa944de354b359a57) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/2d031cb3f19afa98bfcacccb35d9de0de9f40e07) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/233bbc4c00600c90d407b98f6f9542fa18bcd4fa) 
+           (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/5f557bffce3d3e75dd27997755f7b852572c42f3) 
+  
+  -Pages:  ([Ej.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Ej.html))
+           ([InfiniteScroll.js]((https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/InfiniteScroll.js)))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/app.js))
+           ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
+           ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
