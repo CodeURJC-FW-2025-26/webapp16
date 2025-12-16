@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // =========================================================
-    // 1. CONFIGURACIÓN GLOBALES
-    // =========================================================
+    // 1. Global Configuration
     const resultModalEl = document.getElementById('resultModal');
     const resultModal = resultModalEl ? new bootstrap.Modal(resultModalEl) : null;
     const modalTitle = document.getElementById('modalTitle');
@@ -16,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTitle.className = `modal-title text-${type}`;
         modalBody.textContent = msg;
         if (btnRedirect) btnRedirect.style.display = 'none';
-        // Limpiar eventos anteriores del botón cerrar
+        // Clear previous events from the close button
         if (btnCloseModal) btnCloseModal.onclick = null;
         resultModal.show();
     }
@@ -24,29 +22,29 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleLoading(btn, isLoading) {
         if (!btn) return;
         btn.disabled = isLoading;
-        const spinner = btn.querySelector('.spinner-border'); // Busca por clase
-        const text = btn.querySelector('.btn-text'); // Busca por clase
-        // O busca por ID si usas los del add.html
+        const spinner = btn.querySelector('.spinner-border'); // Class search
+        const text = btn.querySelector('.btn-text'); // Class search
+        // Search for ID
         const spinnerId = document.getElementById('btnSpinner');
         const textId = document.getElementById('btnText');
         const loadTextId = document.getElementById('btnLoadingText');
 
         if (spinnerId) {
-            // Lógica para add.html
+            // Logic for add.html
             spinnerId.style.display = isLoading ? 'inline-block' : 'none';
             textId.style.display = isLoading ? 'none' : 'inline-block';
             loadTextId.style.display = isLoading ? 'inline-block' : 'none';
         } else {
-            // Lógica para Ej.html (botones pequeños)
+            // Logic for Ej.html
             if (spinner) spinner.classList.toggle('d-none', !isLoading);
         }
     }
 
-    // =========================================================
-    // 2. VALIDACIONES AJAX (Usuario, Título, Director, Géneros)
-    // =========================================================
+    
+    // 2. Ajax Validations (User, Title, Director, Genres)
+    
 
-    // A) USUARIO (Comentarios)
+    // User(Comments)
     const userNameInput = document.getElementById('userName');
     const userErrorDiv = document.getElementById('user-error');
     if (userNameInput) {
@@ -74,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // B) TÍTULO (Película)
+    // Title(Movie)
     const titleInput = document.getElementById('title');
     const titleErrorServer = document.getElementById('title-error-server');
     if (titleInput) {
@@ -86,13 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
             titleInput.setCustomValidity("");
             titleTimeout = setTimeout(async () => {
                 const title = titleInput.value.trim();
-                // Validar Mayúscula localmente
+                // Validate Uppercase
                 if (title.length > 0 && title[0] !== title[0].toUpperCase()) {
                     titleInput.classList.add('is-invalid');
                     titleInput.setCustomValidity("Uppercase required");
                     return;
                 }
-                // Validar AJAX
+                // Validate Ajax
                 if (title.length > 0) {
                     try {
                         const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
@@ -110,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // C) DIRECTOR (Autocorrección Mayúsculas)
+    // C) Director(Mayus auto-correct)
     const directorInput = document.querySelector('input[name="director"]');
     if (directorInput) {
         directorInput.addEventListener('blur', async () => {
@@ -128,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // D) GÉNEROS (Checkbox)
+    // D) Genres (Checkbox)
     function validateGenres() {
         if (document.querySelectorAll('input[name="genre"]').length === 0) return true;
         const checked = document.querySelectorAll('input[name="genre"]:checked');
@@ -143,9 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="genre"]').forEach(cb => cb.addEventListener('change', validateGenres));
 
 
-    // =========================================================
-    // 3. VISTA PREVIA, BORRADO Y DRAG AND DROP DE IMÁGENES
-    // =========================================================
+   
+    // 3. Preview, Delete, and drag and drop of images
+    
 
     function setupImageHandler(field, required) {
         const input = document.getElementById(field);
@@ -154,11 +152,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = document.getElementById(`delete${field.charAt(0).toUpperCase() + field.slice(1)}Btn`);
         const deleteInput = document.getElementById(`delete_${field}_input`);
 
-        // --- Lógica de Previsualización (Listener 'change' para input) ---
+        // Preview Logic (Listener change for input)
         if (input) {
             input.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
-                    // Hay un archivo nuevo
+                    // New file
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         if (newPreview) {
@@ -172,14 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             deleteBtn.style.display = 'block';
                         }
                         if (deleteInput) {
-                            deleteInput.value = 'false'; // Anular borrado
+                            deleteInput.value = 'false'; // cancel delete
                         }
                     };
                     reader.readAsDataURL(this.files[0]);
                     input.setCustomValidity("");
                 } else {
-                    // Input vacío (e.g., al cancelar selección después de Drag and Drop)
-                    // Si el input está vacío y no hay imagen existente, se aplica la validación
+                    // Empty input  
+                    // IF the input is empty and there is no existant image, apply the validation
                     if (required && (!existingPreview || existingPreview.style.display === 'none')) {
                         input.setCustomValidity("required");
                     }
@@ -187,35 +185,35 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // --- Lógica de Borrado (Listener 'click' para botón 'X') ---
+        // Delete logic (Listener 'click' for button 'X') 
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function () {
-                // 1. Limpiar el input file
+                // Clean the input file
                 if (input) {
-                    input.value = ''; // Limpia el archivo seleccionado
+                    input.value = ''; // Clean the selected archive
                 }
 
-                // 2. Ocultar las vistas previas
+                // None the previews views
                 if (newPreview) {
                     newPreview.style.display = 'none';
                     newPreview.src = '#';
                 }
 
-                // 3. Manejar la imagen existente (marcar para borrado en el servidor)
+                // 3. Manage the existant image
                 if (existingPreview) {
                     const hasExistingImage = existingPreview.src && existingPreview.src !== window.location.href && existingPreview.style.display !== 'none';
                     if (hasExistingImage) {
                         if (deleteInput) {
-                            deleteInput.value = 'true'; // Marcar para borrado
+                            deleteInput.value = 'true'; // Mark for delete
                         }
-                        existingPreview.style.display = 'none'; // Ocultar
+                        existingPreview.style.display = 'none'; // None
                     }
                 }
 
-                // 4. Ocultar el botón de borrado
+                // None button delete
                 this.style.display = 'none';
 
-                // 5. Forzar la validación si es requerido y ahora está vacío
+                //  Validation
                 if (required) {
                     input.setCustomValidity("required");
                 }
@@ -223,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Inicializar el manejador de imágenes para cada campo
+    // Initialize the image handler for each field
     const fields = [
         { name: 'cover' },
         { name: 'titlePhoto' },
@@ -235,19 +233,19 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     fields.forEach(f => {
-        // Obtenemos si el campo tiene el atributo 'required' en el HTML
+        //We check if the field has the 'required' attribute in the HTML
         const isRequiredInHtml = document.getElementById(f.name)?.hasAttribute('required');
         setupImageHandler(f.name, isRequiredInHtml);
     });
 
-    // --- Lógica de Drag and Drop ---
+    // Drag and Drop logic(for images)
     function setupDragAndDrop(containerId, inputId) {
         const container = document.getElementById(containerId);
         const fileInput = document.getElementById(inputId);
 
         if (!container || !fileInput) return;
 
-        // 1. Prevenir el comportamiento por defecto
+        // Prevent default behavior
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             container.addEventListener(eventName, preventDefaults, false);
         });
@@ -257,21 +255,20 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
         }
 
-        // 2. Resaltar la zona (opcional)
         container.addEventListener('dragenter', highlight, false);
         container.addEventListener('dragover', highlight, false);
         container.addEventListener('dragleave', unhighlight, false);
         container.addEventListener('drop', unhighlight, false);
 
         function highlight() {
-            container.classList.add('highlight-dropzone'); // Clase que definirás en CSS
+            container.classList.add('highlight-dropzone'); 
         }
 
         function unhighlight() {
             container.classList.remove('highlight-dropzone');
         }
 
-        // 3. Manejar el 'drop'
+        // Drop manage
         container.addEventListener('drop', handleDrop, false);
 
         function handleDrop(e) {
@@ -279,16 +276,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const files = dt.files;
 
             if (files.length > 0 && files[0].type.startsWith('image/')) {
-                // Asignar el archivo arrastrado al input file
+                // Assign the dragged file to the file input
                 fileInput.files = files;
 
-                // Disparar el evento 'change' para activar el setupImageHandler
+                // Trigger the 'change' event to activate the setupImageHandler
                 fileInput.dispatchEvent(new Event('change'));
             }
         }
     }
 
-    // Configurar Drag and Drop para cada contenedor de vista previa
+    // Set up Drag and Drop for each preview container
     setupDragAndDrop('coverPreviewContainer', 'cover');
     setupDragAndDrop('titlePhotoPreviewContainer', 'titlePhoto');
     setupDragAndDrop('filmPhotoPreviewContainer', 'filmPhoto');
@@ -299,8 +296,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     
-    // ADD FILM / ADD COMMENT
-    // =========================================================
+    // Add film, add comment
+    
     const mainForms = [document.getElementById('filmForm'), document.getElementById('addCommentForm')];
 
     mainForms.forEach(form => {
@@ -345,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             //Comment added correctly
                             window.location.href = result.redirectUrl;
                         } else {
-                            // 
+                            
                             
                             form.reset();
                             form.classList.remove('was-validated');
@@ -366,28 +363,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
 
-    // =========================================================
-    // 5. BOTONES COMENTARIOS (EDICIÓN EN LÍNEA Y BORRADO)
-    // =========================================================
-    // Usamos delegación en 'reviewsContainer' para que funcione
+   
+    // Reviews Buttons(Edit and delete)
+    
     const reviewsContainer = document.getElementById('reviewsContainer');
 
     if (reviewsContainer) {
         reviewsContainer.addEventListener('click', function (e) {
 
-            // --- A) CLICK EN EDITAR (Genera Formulario) ---
-            // Buscamos si el clic fue dentro de un botón con clase .btn-edit-inline o .btn-edit-comment
+            // If click in edit, the form is generated
+            // We check if the click was inside a button with the class .btn-edit-inline or .btn-edit-comment
             const editBtn = e.target.closest('.btn-edit-inline') || e.target.closest('.btn-edit-comment');
 
             if (editBtn) {
                 const container = editBtn.closest('.review');
                 if (container.classList.contains('editing-mode')) return;
 
-                // Leer datos actuales de los data-attributes
+                // Read data data-attributes
                 const currentText = container.dataset.description || editBtn.dataset.text; // Fallback
                 const currentRating = container.dataset.rating || editBtn.dataset.rating; // Fallback
 
-                // HTML del formulario en línea
+                // Online Html form
                 const formHtml = `  
                     <form class="inline-edit-form p-3 border rounded bg-white shadow-sm" novalidate>
                         <h6 class="mb-3">Editing Review</h6>
@@ -406,21 +402,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     </form>
                 `;
 
-                // Guardar estado original
+                // Save origin state
                 
                 container.dataset.originalHtml = container.innerHTML;
                 container.innerHTML = formHtml;
                 container.classList.add('editing-mode');
             }
 
-            // --- B) CLICK EN CANCELAR EDICIÓN ---
+            // Click on cancel edit
             if (e.target.closest('.btn-cancel-edit')) {
                 const container = e.target.closest('.review');
                 container.innerHTML = container.dataset.originalHtml;
                 container.classList.remove('editing-mode');
             }
 
-            // --- C) CLICK EN BORRAR ---
+            // Click on delete
             const deleteBtn = e.target.closest('.btn-delete-comment');
             if (deleteBtn) {
                 if (!confirm("Are you sure you want to delete this comment?")) return;
@@ -436,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(data => {
                         setTimeout(() => {
                           if (data.success) {
-                          // Borrar del DOM
+                          // Delete DOM
                           const row = document.getElementById(`review-${cId}`);
                            if (row) row.remove();
                            } else {
@@ -454,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // --- D) SUBMIT DEL FORMULARIO EN LÍNEA ---
+        // Submit online form
         reviewsContainer.addEventListener('submit', async function (e) {
             if (e.target.classList.contains('inline-edit-form')) {
                 e.preventDefault();
@@ -463,21 +459,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const form = e.target;
                 const container = form.closest('.review');
 
-                // Validación básica HTML5
+                // Basic validation
                 if (!form.checkValidity()) {
                     form.classList.add('was-validated');
                     return;
                 }
 
-                // Recoger datos
+                // Get data
                 const formData = new FormData(form);
                 const newText = formData.get('reviewText');
                 const newRating = formData.get('reviewRating');
                 const cId = container.dataset.commentId;
                 const mId = container.dataset.movieId;
-                const userName = container.dataset.userName; // Necesario tenerlo en el div padre
+                const userName = container.dataset.userName; 
 
-                // Bloquear UI
+                // Block UI
                 const inputs = form.querySelectorAll('input, textarea, button');
                 inputs.forEach(el => el.disabled = true);
 
@@ -490,12 +486,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const result = await res.json();
 
                     if (result.success) {
-                        // ACTUALIZAR HTML DEL COMENTARIO (Sin recargar)
+                        // Update comment without recharge
                         container.dataset.description = newText;
                         container.dataset.rating = newRating;
 
-                        // Reconstruir el bloque del comentario
-                        // IMPORTANTE: Asegurarse de que las clases de los botones coincidan con los listeners (btn-edit-inline)
+                        // Rebuilt comment block
+                        
                         const newHtml = `
                             <div class="review-content">
                                 <div class="user-info d-flex align-items-center mb-1">
@@ -533,9 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // =========================================================
-    // 6. RESTAURACIÓN DEL BUSCADOR (INDICE)
-    // =========================================================
+    
+    //  Restore search engine
     const searchInput = document.querySelector('input[name="search"]');
     const searchBtn = document.querySelector('.btn-search');
 
