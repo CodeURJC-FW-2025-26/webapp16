@@ -363,92 +363,124 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
 
-   
-    // Reviews Buttons(Edit and delete)
-    
-    const reviewsContainer = document.getElementById('reviewsContainer');
+   // Reviews Buttons (Edit and delete)
+const reviewsContainer = document.getElementById('reviewsContainer');
 
-    if (reviewsContainer) {
-        reviewsContainer.addEventListener('click', function (e) {
+if (reviewsContainer) {
+    reviewsContainer.addEventListener('click', function (e) {
 
-            // If click in edit, the form is generated
-            // We check if the click was inside a button with the class .btn-edit-inline or .btn-edit-comment
-            const editBtn = e.target.closest('.btn-edit-inline') || e.target.closest('.btn-edit-comment');
+        // If click in edit, the form is generated
+        // We check if the click was inside a button with the class .btn-edit-inline or .btn-edit-comment
+        const editBtn = e.target.closest('.btn-edit-inline') || e.target.closest('.btn-edit-comment');
 
-            if (editBtn) {
-                const container = editBtn.closest('.review');
-                if (container.classList.contains('editing-mode')) return;
+        if (editBtn) {
+            const container = editBtn.closest('.review');
+            if (container.classList.contains('editing-mode')) return;
 
-                // Read data data-attributes
-                const currentText = container.dataset.description || editBtn.dataset.text; // Fallback
-                const currentRating = container.dataset.rating || editBtn.dataset.rating; // Fallback
+            // Read data data-attributes
+            const currentText = container.dataset.description || editBtn.dataset.text; // Fallback
+            const currentRating = container.dataset.rating || editBtn.dataset.rating; // Fallback
 
-                // Online Html form
-                const formHtml = `  
-                    <form class="inline-edit-form p-3 border rounded bg-white shadow-sm" novalidate>
-                        <h6 class="mb-3">Editing Review</h6>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Comment:</label>
-                            <textarea class="form-control" name="reviewText" rows="3" required>${currentText}</textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Rating (1-5):</label>
-                            <input type="number" class="form-control form-control-sm" name="reviewRating" value="${currentRating}" min="1" max="5" required>
-                        </div>
-                        <div class="d-flex gap-2 justify-content-end">
-                            <button type="button" class="btn btn-sm btn-secondary btn-cancel-edit">Cancel</button>
-                            <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
-                        </div>
-                    </form>
-                `;
+            // Online Html form
+            const formHtml = `  
+                <form class="inline-edit-form p-3 border rounded bg-white shadow-sm" novalidate>
+                    <h6 class="mb-3">Editing Review</h6>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Comment:</label>
+                        <textarea class="form-control" name="reviewText" rows="3" required>${currentText}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Rating (1-5):</label>
+                        <input type="number" class="form-control form-control-sm" name="reviewRating" value="${currentRating}" min="1" max="5" required>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-sm btn-secondary btn-cancel-edit">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
+                    </div>
+                </form>
+            `;
 
-                // Save origin state
-                
-                container.dataset.originalHtml = container.innerHTML;
-                container.innerHTML = formHtml;
-                container.classList.add('editing-mode');
-            }
+            // Save origin state
+            container.dataset.originalHtml = container.innerHTML;
+            container.innerHTML = formHtml;
+            container.classList.add('editing-mode');
+        }
 
-            // Click on cancel edit
-            if (e.target.closest('.btn-cancel-edit')) {
-                const container = e.target.closest('.review');
+        // Click on cancel edit
+        if (e.target.closest('.btn-cancel-edit')) {
+            const container = e.target.closest('.review');
+            container.innerHTML = container.dataset.originalHtml;
+            container.classList.remove('editing-mode');
+        }
+
+        // Click on save changes (submit the form)
+        if (e.target.closest('.inline-edit-form') && e.target.closest('.btn-success')) {
+            e.preventDefault();  // Prevent the default form submission
+
+            const form = e.target.closest('form');
+            const container = form.closest('.review');
+
+            // Get the form data
+            const reviewText = form.querySelector('textarea[name="reviewText"]').value;
+            const reviewRating = form.querySelector('input[name="reviewRating"]').value;
+
+            // Show spinner on the "Save Changes" button
+            const saveBtn = form.querySelector('button[type="submit"]');
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            saveBtn.disabled = true;
+
+            // Simulate saving process
+            setTimeout(() => {
+                // Normally here you'd send the data to the server
+                // Replace this with your actual saving logic, e.g., a fetch or Ajax request
+
+                // Assuming the save was successful, we update the review
                 container.innerHTML = container.dataset.originalHtml;
                 container.classList.remove('editing-mode');
-            }
 
-            // Click on delete
-            const deleteBtn = e.target.closest('.btn-delete-comment');
-            if (deleteBtn) {
-                if (!confirm("Are you sure you want to delete this comment?")) return;
+                // Replace spinner with the button text again
+                saveBtn.innerHTML = 'Save Changes';
+                saveBtn.disabled = false;
+            }, 1500); // Simulate delay (adjust as needed)
+        }
 
-                const cId = deleteBtn.dataset.commentId;
-                const mId = deleteBtn.dataset.movieId;
+        // Click on delete
+        const deleteBtn = e.target.closest('.btn-delete-comment');
+        if (deleteBtn) {
+            if (!confirm("Are you sure you want to delete this comment?")) return;
 
-                deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-                deleteBtn.disabled = true;
+            const cId = deleteBtn.dataset.commentId;
+            const mId = deleteBtn.dataset.movieId;
 
-                fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' })
-                    .then(r => r.json())
-                    .then(data => {
-                        setTimeout(() => {
-                          if (data.success) {
-                          // Delete DOM
-                          const row = document.getElementById(`review-${cId}`);
-                           if (row) row.remove();
-                           } else {
-                       alert(data.message);
-                     deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
-                     deleteBtn.disabled = false;
-                     }
-                   }, 700); 
-                  })
-                    .catch(() => {
-                        alert("Error deleting");
-                        deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
-                        deleteBtn.disabled = false;
-                    });
-            }
-        });
+            deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            deleteBtn.disabled = true;
+
+            fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    setTimeout(() => {
+                        if (data.success) {
+                            // Delete DOM
+                            const row = document.getElementById(`review-${cId}`);
+                            if (row) row.remove();
+                        } else {
+                            alert(data.message);
+                            deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
+                            deleteBtn.disabled = false;
+                        }
+                    }, 700); 
+                })
+                .catch(() => {
+                    alert("Error deleting");
+                    deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
+                    deleteBtn.disabled = false;
+                });
+        }
+    });
+
+
+
+
 
         // Submit online form
         reviewsContainer.addEventListener('submit', async function (e) {
