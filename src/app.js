@@ -5,7 +5,6 @@ import { fileURLToPath } from "url";
 import multer from "multer";
 import * as fs from 'fs';
 import router from './router.js';
-// Make sure you import initDB, cleanupDB and client for closing.
 import { initDB, cleanupDB, client } from './Database.js';
 
 
@@ -17,14 +16,14 @@ const partialsPath = path.join(viewsPath, "partials");
 const BASE_PATH = path.join(__dirname, '..');
 
 // ----------------------------------------------------
-// 🛠️ MULTER CONFIGURATION (File Upload)
+//  MULTER CONFIGURATION 
 // ----------------------------------------------------
 const UPLOADS_PATH = path.join(BASE_PATH, 'Uploads');
 
 // 2. Configure Multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Save uploaded files to the 'Uploads' folder (outside Public)
+        // Save uploaded files to the 'Uploads' folder 
         cb(null, UPLOADS_PATH);
     },
     filename: (req, file, cb) => {
@@ -100,7 +99,7 @@ function copyImagesToUploads() {
             console.warn(`⚠️ Warning: Image source folder not found: ${sourceDir}`);
             return;
         }
-        // Create destination folder if it doesn't exist (CRITICAL for server start)
+        // Create destination folder if it doesn't exist 
         if (!fs.existsSync(destDir)) {
             fs.mkdirSync(destDir, { recursive: true });
         }
@@ -116,7 +115,6 @@ function copyImagesToUploads() {
 // ----------------------------------------------------
 app.use('/', router);
 app.use('/Uploads', express.static(UPLOADS_PATH));
-// Must be wrapped in a try/catch to handle MongoDB connection failures.
 copyImagesToUploads(); // Copy images and create folder before filling the DB
 try {
     await cleanupDB(); // Clean up the DB

@@ -143,62 +143,155 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // 3. IMAGE PREVIEW LOGIC
-    const isEditingInput = document.getElementById('isEditing');
-    const isEditing = isEditingInput ? isEditingInput.value === 'true' : false;
+    function setupImageHandler(field, required) {
+        const input = document.getElementById(field);
+        const newPreview = document.getElementById(`${field}NewPreview`);
+        const existingPreview = document.getElementById(`${field}ExistingPreview`);
+        const deleteBtn = document.getElementById(`delete${field.charAt(0).toUpperCase() + field.slice(1)}Btn`);
+        const deleteInput = document.getElementById(`delete_${field}_input`);
 
-    function setupFilePreview(fileInputId) {
-        const fileInput = document.getElementById(fileInputId);
-        const newPreview = document.getElementById(fileInputId + 'NewPreview');
-        const existingPreview = document.getElementById(fileInputId + 'ExistingPreview');
-        const deleteBtn = document.getElementById('delete' + fileInputId.charAt(0).toUpperCase() + fileInputId.slice(1) + 'Btn');
-        const deleteInput = document.getElementById('delete_' + fileInputId + '_input');
-
-        if (fileInput) {
-            fileInput.addEventListener('change', function () {
+        // --- Lógica de Previsualización (Listener 'change' para input) ---
+        if (input) {
+            input.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
+                    // Hay un archivo nuevo
                     const reader = new FileReader();
                     reader.onload = function (e) {
-                        if (existingPreview) existingPreview.style.display = 'none';
                         if (newPreview) {
                             newPreview.src = e.target.result;
                             newPreview.style.display = 'block';
                         }
-                        if (deleteBtn) deleteBtn.style.display = 'flex';
-                        if (isEditing && deleteInput) deleteInput.value = 'false';
-                    }
+                        if (existingPreview) {
+                            existingPreview.style.display = 'none';
+                        }
+                        if (deleteBtn) {
+                            deleteBtn.style.display = 'block';
+                        }
+                        if (deleteInput) {
+                            deleteInput.value = 'false'; // Anular borrado
+                        }
+                    };
                     reader.readAsDataURL(this.files[0]);
+                    input.setCustomValidity("");
                 } else {
-                    if (newPreview) { newPreview.src = '#'; newPreview.style.display = 'none'; }
-                    const shouldRestore = isEditing && existingPreview && (deleteInput.value !== 'true');
-                    if (shouldRestore) {
-                        existingPreview.style.display = 'block';
-                        if (deleteBtn) deleteBtn.style.display = 'flex';
-                    } else if (!existingPreview && deleteBtn) {
-                        deleteBtn.style.display = 'none';
+                    // Input vacío (e.g., al cancelar selección después de Drag and Drop)
+                    // Si el input está vacío y no hay imagen existente, se aplica la validación
+                    if (required && (!existingPreview || existingPreview.style.display === 'none')) {
+                        input.setCustomValidity("required");
                     }
+                }
+            });
+        }
+
+        // --- Lógica de Borrado (Listener 'click' para botón 'X') ---
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function () {
+                // 1. Limpiar el input file
+                if (input) {
+                    input.value = ''; // Limpia el archivo seleccionado
+                }
+
+                // 2. Ocultar las vistas previas
+                if (newPreview) {
+                    newPreview.style.display = 'none';
+                    newPreview.src = '#';
+                }
+
+                // 3. Manejar la imagen existente (marcar para borrado en el servidor)
+                if (existingPreview) {
+                    const hasExistingImage = existingPreview.src && existingPreview.src !== window.location.href && existingPreview.style.display !== 'none';
+                    if (hasExistingImage) {
+                        if (deleteInput) {
+                            deleteInput.value = 'true'; // Marcar para borrado
+                        }
+                        existingPreview.style.display = 'none'; // Ocultar
+                    }
+                }
+
+                // 4. Ocultar el botón de borrado
+                this.style.display = 'none';
+
+                // 5. Forzar la validación si es requerido y ahora está vacío
+                if (required) {
+                    input.setCustomValidity("required");
                 }
             });
         }
     }
 
-    ['cover', 'titlePhoto', 'filmPhoto', 'fotoDirector', 'fotoActor1', 'fotoActor2', 'fotoActor3'].forEach(f => setupFilePreview(f));
+    // Inicializar el manejador de imágenes para cada campo
+    const fields = [
+        { name: 'cover' },
+        { name: 'titlePhoto' },
+        { name: 'filmPhoto' },
+        { name: 'fotoDirector' },
+        { name: 'fotoActor1' },
+        { name: 'fotoActor2' },
+        { name: 'fotoActor3' }
+    ];
 
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const fieldName = this.getAttribute('data-field');
-            const existingPreview = document.getElementById(fieldName + 'ExistingPreview');
-            const newPreview = document.getElementById(fieldName + 'NewPreview');
-            const fileInput = document.getElementById(fieldName);
-            const deleteInput = document.getElementById('delete_' + fieldName + '_input');
-
-            if (existingPreview) existingPreview.style.display = 'none';
-            if (newPreview) newPreview.style.display = 'none';
-            this.style.display = 'none';
-            if (fileInput) fileInput.value = '';
-            if (isEditing && existingPreview && deleteInput) deleteInput.value = 'true';
-            if (!isEditing && fileInput) fileInput.required = true;
-        });
+    fields.forEach(f => {
+        // Obtenemos si el campo tiene el atributo 'required' en el HTML
+        const isRequiredInHtml = document.getElementById(f.name)?.hasAttribute('required');
+        setupImageHandler(f.name, isRequiredInHtml);
     });
+
+    // --- Lógica de Drag and Drop ---
+    function setupDragAndDrop(containerId, inputId) {
+        const container = document.getElementById(containerId);
+        const fileInput = document.getElementById(inputId);
+
+        if (!container || !fileInput) return;
+
+        // 1. Prevenir el comportamiento por defecto
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            container.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // 2. Resaltar la zona (opcional)
+        container.addEventListener('dragenter', highlight, false);
+        container.addEventListener('dragover', highlight, false);
+        container.addEventListener('dragleave', unhighlight, false);
+        container.addEventListener('drop', unhighlight, false);
+
+        function highlight() {
+            container.classList.add('highlight-dropzone'); // Clase que definirás en CSS
+        }
+
+        function unhighlight() {
+            container.classList.remove('highlight-dropzone');
+        }
+
+        // 3. Manejar el 'drop'
+        container.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                // Asignar el archivo arrastrado al input file
+                fileInput.files = files;
+
+                // Disparar el evento 'change' para activar el setupImageHandler
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        }
+    }
+
+    // Configurar Drag and Drop para cada contenedor de vista previa
+    setupDragAndDrop('coverPreviewContainer', 'cover');
+    setupDragAndDrop('titlePhotoPreviewContainer', 'titlePhoto');
+    setupDragAndDrop('filmPhotoPreviewContainer', 'filmPhoto');
+    setupDragAndDrop('fotoDirectorPreviewContainer', 'fotoDirector');
+    setupDragAndDrop('fotoActor1PreviewContainer', 'fotoActor1');
+    setupDragAndDrop('fotoActor2PreviewContainer', 'fotoActor2');
+    setupDragAndDrop('fotoActor3PreviewContainer', 'fotoActor3');
 
 
     // 4. MAIN FORMS (ADD FILM / ADD COMMENT) - ASYNC/AWAIT
@@ -239,11 +332,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.success) {
                     if (form.id === 'filmForm') {
                         window.location.href = result.redirectUrl;
-                    } else {
-                        showModal('Added!', 'Review added successfully.', 'success');
+                    } else {  
                         form.reset();
                         form.classList.remove('was-validated');
-                        if (btnCloseModal) btnCloseModal.onclick = () => window.location.reload();
+                        window.location.reload();
                     }
                 } else {
                     showModal('Error', result.message, 'danger');
@@ -278,10 +370,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Comment:</label>
                             <textarea class="form-control" name="reviewText" rows="3" required>${currentText}</textarea>
+                            <div class="invalid-feedback">Review text is required.</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Rating (1-5):</label>
                             <input type="number" class="form-control form-control-sm" name="reviewRating" value="${currentRating}" min="1" max="5" required>
+                            <div class="invalid-feedback">Please enter a rating between 1 and 5.</div>
                         </div>
                         <div class="d-flex gap-2 justify-content-end">
                             <button type="button" class="btn btn-sm btn-secondary btn-cancel-edit">Cancel</button>
