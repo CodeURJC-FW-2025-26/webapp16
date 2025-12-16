@@ -7,23 +7,29 @@ import { fileURLToPath } from "url";
 
 const router = express.Router();
 
-// --- CONFIGURACIÓN BASE DE DATOS ---
+// --- DB CONFIGURATION ---
 const uri = 'mongodb://localhost:27017/Softflix';
 const client = new MongoClient(uri);
 const db = client.db('Softflix');
 const moviesColl = db.collection('Softflix');
 const commentsColl = db.collection('comentaries');
 
-// --- DIRECTORIOS ---
+// --- DIRECTORIES ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const BASE_PATH = path.join(__dirname, '..');
 const UPLOADS_PATH = path.join(BASE_PATH, 'Uploads');
 
-// --- VARIABLES GLOBALES VALIDACIONES ---
+// --- SIMULATE SERVER DELAY (Spinner Logic in Backend) ---
+// This forces the frontend to wait 1.5s, showing the spinner naturally.
+const simulateDelay = async () => {
+    return new Promise(resolve => setTimeout(resolve, 1500));
+};
+
+// --- VALIDATION GLOBALS ---
 const existingUsernames = ['admin', 'root', 'moderator', 'test'];
 
-// --- RUTAS VALIDACIÓN EXTRA ---
+// --- VALIDATION ROUTES ---
 router.get('/checkInfo', (req, res) => {
     let info = req.query.info;
     let isValid = info && !info.toLowerCase().includes('banned');
@@ -41,7 +47,7 @@ router.get("/availableUsername", (req, res) => {
     res.json({ available: isAvailable, message: isAvailable ? 'Available' : 'Username is taken' });
 });
 
-// --- HELPER MULTER ---
+// --- MULTER HELPER ---
 const cleanupFiles = (files) => {
     if (!files) return;
     Object.keys(files).forEach(key => {
@@ -73,11 +79,11 @@ const imageFields = [
 ];
 const uploadFields = imageFields.map(field => ({ name: field.fieldName, maxCount: 1 }));
 
-// --- RUTAS BÁSICAS ---
+// --- BASIC ROUTES ---
 router.get('/', (req, res) => res.redirect('/indice'));
 router.get('/add', (req, res) => res.render('add'));
 
-// --- VALIDACIÓN AJAX TÍTULO ---
+// --- AJAX VALIDATION (TITLE) ---
 router.get('/checkTitle', async (req, res) => {
     try {
         const title = req.query.title;
@@ -86,7 +92,7 @@ router.get('/checkTitle', async (req, res) => {
     } catch (err) { res.status(500).json({ available: false }); }
 });
 
-// --- ÍNDICE ---
+// --- INDEX ---
 router.get('/indice', async (req, res) => {
     try {
         const currentPage = parseInt(req.query.page) || 1;
@@ -127,13 +133,16 @@ router.post("/addFilm", (req, res) => {
     const uploadMiddleware = upload.fields(uploadFields);
     uploadMiddleware(req, res, async (err) => {
         if (err) { cleanupFiles(req.files); return res.status(400).json({ success: false, message: err.message }); }
+        
+        await simulateDelay(); // FORCE SPINNER
+
         const files = req.files;
         const body = req.body;
         const title = body.title ? body.title.trim() : '';
 
         try {
             if (!title || !body.description || !body.releaseYear || !body.director || !body.ageClassification) {
-                cleanupFiles(files); return res.status(400).json({ success: false, message: 'Missing fields.' });
+                cleanupFiles(files); return res.status(400).json({ success: false, message: 'Missing required fields.' });
             }
             if (/^[a-z]/.test(title)) {
                 cleanupFiles(files); return res.status(400).json({ success: false, message: 'Title must start with Uppercase.' });
@@ -156,18 +165,18 @@ router.post("/addFilm", (req, res) => {
                 comments: []
             };
             const result = await moviesColl.insertOne(movie);
-            return res.json({ success: true, message: "Film added.", redirectUrl: `/Ej/${result.insertedId}` });
+            return res.json({ success: true, message: "Film added successfully", redirectUrl: `/Ej/${result.insertedId}` });
         } catch (err) { cleanupFiles(req.files); return res.status(500).json({ success: false, message: err.message }); }
     });
 });
 
-// --- EDIT FILM ---
+// --- EDIT FILM (GET) ---
 router.get('/edit/:id', async (req, res) => {
     try {
         if (!ObjectId.isValid(req.params.id)) return res.redirect('/indice');
         const film = await moviesColl.findOne({ _id: new ObjectId(req.params.id) });
         if (!film) return res.redirect('/indice');
-        // Normalización básica
+
         const castArray = Array.isArray(film.cast) ? film.cast : [film.cast];
         const genreArray = Array.isArray(film.genre) ? film.genre : [film.genre];
         const languageArray = Array.isArray(film.language) ? film.language : [film.language];
@@ -175,13 +184,11 @@ router.get('/edit/:id', async (req, res) => {
         const filmNormalized = {
             ...film, _id: film._id.toString(),
             actor1: castArray[0] || '', actor2: castArray[1] || '', actor3: castArray[2] || '',
-            // Flags para checkboxes
             isAction: genreArray.includes('Action'), isComedy: genreArray.includes('Comedy'),
             isHorror: genreArray.includes('Horror'), isScifi: genreArray.includes('Science-Fiction'),
             isFantasy: genreArray.includes('Fantasy'), isAdventure: genreArray.includes('Adventure'), isOtherGenre: genreArray.includes('Other'),
             isEnglish: languageArray.includes('English'), isSpanish: languageArray.includes('Spanish'),
             isFrench: languageArray.includes('French'), isGerman: languageArray.includes('German'), isOtherLanguage: languageArray.includes('Other'),
-            // Paths actuales para preview
             currentCoverPath: film.coverPath, currentTitlePhotoPath: film.titlePhotoPath, currentFilmPhotoPath: film.filmPhotoPath,
             currentDirectorImagePath: film.directorImagePath, currentActor1ImagePath: film.actor1ImagePath,
             currentActor2ImagePath: film.actor2ImagePath, currentActor3ImagePath: film.actor3ImagePath
@@ -190,21 +197,25 @@ router.get('/edit/:id', async (req, res) => {
     } catch (err) { res.redirect('/indice'); }
 });
 
+// --- EDIT FILM (POST) ---
 router.post('/editFilm/:id', (req, res) => {
-    const uploadMiddleware = upload.fields(uploadFields);
-    uploadMiddleware(req, res, async (err) => {
+    const editUploadMiddleware = upload.fields(uploadFields);
+    editUploadMiddleware(req, res, async (err) => {
         if (err) return res.status(400).json({ success: false, message: err.message });
+        
+        await simulateDelay(); // FORCE SPINNER
+
         try {
             const { id } = req.params;
             const title = req.body.title ? req.body.title.trim() : '';
-            if (!ObjectId.isValid(id)) return res.status(400).json({ success: false, message: 'Invalid ID' });
-            
+            if (!ObjectId.isValid(id) || /^[a-z]/.test(title)) return res.status(400).json({ success: false, message: 'Invalid ID or Title format.' });
+
             const existingFilm = await moviesColl.findOne({ _id: new ObjectId(id) });
-            if (!existingFilm) return res.status(404).json({ success: false, message: 'Not found.' });
-            
+            if (!existingFilm) return res.status(404).json({ success: false, message: 'Movie not found.' });
+
             if (title !== existingFilm.title) {
                 const dup = await moviesColl.findOne({ title: title });
-                if (dup) return res.status(409).json({ success: false, message: 'Title taken.' });
+                if (dup) return res.status(409).json({ success: false, message: 'Title already taken.' });
             }
 
             const updateFields = {
@@ -221,19 +232,19 @@ router.post('/editFilm/:id', (req, res) => {
                 const deleteField = req.body[`delete_${fieldName}`];
                 const fileUploaded = req.files && req.files[fieldName] && req.files[fieldName].length > 0;
 
-                if (deleteField === 'true') { // Borrar existente
+                if (deleteField === 'true') {
                     if (existingFilm[dbPath] && existingFilm[dbPath].startsWith('/Uploads/')) {
                         const p = path.join(UPLOADS_PATH, existingFilm[dbPath].replace(/^\/Uploads\//, ''));
                         if (fs.existsSync(p)) fs.unlinkSync(p);
                     }
                     updateFields[dbPath] = fileUploaded ? addUploadPrefix(req.files[fieldName][0].filename) : null;
-                } else if (fileUploaded) { // Reemplazar
+                } else if (fileUploaded) {
                     if (existingFilm[dbPath] && existingFilm[dbPath].startsWith('/Uploads/')) {
                         const p = path.join(UPLOADS_PATH, existingFilm[dbPath].replace(/^\/Uploads\//, ''));
                         if (fs.existsSync(p)) fs.unlinkSync(p);
                     }
                     updateFields[dbPath] = addUploadPrefix(req.files[fieldName][0].filename);
-                } else { // Mantener
+                } else {
                     updateFields[dbPath] = existingFilm[dbPath];
                 }
             }
@@ -243,7 +254,7 @@ router.post('/editFilm/:id', (req, res) => {
     });
 });
 
-// --- Detail Page ---
+// --- DETAIL ---
 router.get('/Ej/:id', async (req, res) => {
     try {
         if (!ObjectId.isValid(req.params.id)) return res.status(400).send("Invalid ID");
@@ -267,9 +278,11 @@ router.get('/Ej/:id', async (req, res) => {
     } catch (err) { res.status(500).send(err.message); }
 });
 
-// --- REVIEWS ---
+// --- COMMENTS ---
 router.post('/Ej/:id/addReview', async (req, res) => {
     try {
+        await simulateDelay(); // FORCE SPINNER
+
         const { userName, rating, reviewText } = req.body;
         if (!userName || !rating || !reviewText) return res.status(400).json({ success: false, message: 'Missing fields.' });
         if (existingUsernames.includes(userName)) return res.status(409).json({ success: false, message: 'Username taken (Backend).' });
@@ -285,62 +298,39 @@ router.post('/Ej/:id/addReview', async (req, res) => {
 
 router.post('/deleteComment/:movieId/:commentId', async (req, res) => {
     try {
+        await simulateDelay(); // FORCE SPINNER
+
         const commentId = new ObjectId(req.params.commentId);
         const movieId = new ObjectId(req.params.movieId);
-
-        // Try to delete comment
         const result = await commentsColl.deleteOne({ _id: commentId });
 
-        // If deleteOne = 0 we throw an error
-        if (result.deletedCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'The current comment can not be deleted because does not exist'
-            });
-        }
-        await moviesColl.updateOne(
-            { _id: movieId },
-            { $pull: { comments: commentId } }
-        );
+        if (result.deletedCount === 0) return res.status(404).json({ success: false, message: 'Comment not found.' });
+        await moviesColl.updateOne({ _id: movieId }, { $pull: { comments: commentId } });
+        
         res.json({ success: true, message: 'Deleted.' });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
-
-
 
 router.post('/updateComment/:movieId/:commentId', async (req, res) => {
     try {
+        await simulateDelay(); // FORCE SPINNER
+
         const { reviewText, reviewRating } = req.body;
         const commentId = new ObjectId(req.params.commentId);
-
         const result = await commentsColl.updateOne(
             { _id: commentId },
-            {
-                $set: {
-                    description: reviewText,
-                    Rating: parseInt(reviewRating)
-                }
-            }
+            { $set: { description: reviewText, Rating: parseInt(reviewRating) } }
         );
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'The comment can not be edited because it does not exist'
-            });
-        }
+        if (result.matchedCount === 0) return res.status(404).json({ success: false, message: 'Comment not found.' });
         res.json({ success: true, message: 'Updated.' });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
-
-// --- Delete movie ---
+// --- DELETE FILM (MODIFIED TO JSON FOR AJAX/SPINNER) ---
 router.post('/deleteFilm', async (req, res) => {
     try {
+        await simulateDelay(); // FORCE SPINNER
+
         const oid = new ObjectId(req.body.movieId);
         const movie = await moviesColl.findOne({ _id: oid });
         if (movie) {
@@ -352,11 +342,14 @@ router.post('/deleteFilm', async (req, res) => {
             await commentsColl.deleteMany({ movieId: oid });
             await moviesColl.deleteOne({ _id: oid });
         }
-        res.redirect('/indice');
-    } catch(err) { res.redirect('/indice'); }
+        // Respond JSON for AJAX redirection
+        res.json({ success: true, redirectUrl: '/indice' }); 
+    } catch(err) { 
+        res.status(500).json({ success: false, message: "Error deleting film" });
+    }
 });
 
-// --- SCROLL INFINITO (API) ---
+// --- INFINITE SCROLL API ---
 router.get("/api/films", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;

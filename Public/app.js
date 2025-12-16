@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Global Configuration
+    // 1. GLOBAL CONFIGURATION
     const resultModalEl = document.getElementById('resultModal');
     const resultModal = resultModalEl ? new bootstrap.Modal(resultModalEl) : null;
     const modalTitle = document.getElementById('modalTitle');
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTitle.className = `modal-title text-${type}`;
         modalBody.textContent = msg;
         if (btnRedirect) btnRedirect.style.display = 'none';
-        // Clear previous events from the close button
         if (btnCloseModal) btnCloseModal.onclick = null;
         resultModal.show();
     }
@@ -22,29 +21,29 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleLoading(btn, isLoading) {
         if (!btn) return;
         btn.disabled = isLoading;
-        const spinner = btn.querySelector('.spinner-border'); // Class search
-        const text = btn.querySelector('.btn-text'); // Class search
-        // Search for ID
+        // Generic spinner check
+        const spinner = btn.querySelector('.spinner-border');
+        const text = btn.querySelector('.btn-text'); 
+        
+        // Add form specific ID check
         const spinnerId = document.getElementById('btnSpinner');
         const textId = document.getElementById('btnText');
         const loadTextId = document.getElementById('btnLoadingText');
 
-        if (spinnerId) {
-            // Logic for add.html
+        // Check if we are in Add/Edit Film page (using IDs)
+        if (spinnerId && btn.id === 'submitBtn') {
             spinnerId.style.display = isLoading ? 'inline-block' : 'none';
             textId.style.display = isLoading ? 'none' : 'inline-block';
             loadTextId.style.display = isLoading ? 'inline-block' : 'none';
         } else {
-            // Logic for Ej.html
+            // Logic for comments/delete buttons (using classes)
             if (spinner) spinner.classList.toggle('d-none', !isLoading);
         }
     }
 
+    // 2. AJAX VALIDATIONS (ASYNC/AWAIT)
     
-    // 2. Ajax Validations (User, Title, Director, Genres)
-    
-
-    // User(Comments)
+    // User (Comments)
     const userNameInput = document.getElementById('userName');
     const userErrorDiv = document.getElementById('user-error');
     if (userNameInput) {
@@ -53,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(userTimeout);
             userNameInput.classList.remove('is-invalid', 'is-valid');
             userNameInput.setCustomValidity("");
+            
             userTimeout = setTimeout(async () => {
                 const val = userNameInput.value.trim();
                 if (val.length > 0) {
@@ -66,13 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else {
                             userNameInput.classList.add('is-valid');
                         }
-                    } catch (e) { }
+                    } catch (e) { console.error(e); }
                 }
             }, 500);
         });
     }
 
-    // Title(Movie)
+    // Title (Movie)
     const titleInput = document.getElementById('title');
     const titleErrorServer = document.getElementById('title-error-server');
     if (titleInput) {
@@ -82,15 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
             titleInput.classList.remove('is-invalid', 'is-valid');
             if (titleErrorServer) titleErrorServer.style.display = 'none';
             titleInput.setCustomValidity("");
+            
             titleTimeout = setTimeout(async () => {
                 const title = titleInput.value.trim();
-                // Validate Uppercase
+                // Uppercase check
                 if (title.length > 0 && title[0] !== title[0].toUpperCase()) {
                     titleInput.classList.add('is-invalid');
                     titleInput.setCustomValidity("Uppercase required");
                     return;
                 }
-                // Validate Ajax
+                // Ajax check
                 if (title.length > 0) {
                     try {
                         const response = await fetch(`/checkTitle?title=${encodeURIComponent(title)}`);
@@ -102,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else {
                             titleInput.classList.add('is-valid');
                         }
-                    } catch (e) { }
+                    } catch (e) { console.error(e); }
                 }
             }, 500);
         });
     }
 
-    // C) Director(Mayus auto-correct)
+    // Director (Auto Uppercase)
     const directorInput = document.querySelector('input[name="director"]');
     if (directorInput) {
         directorInput.addEventListener('blur', async () => {
@@ -121,12 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     const data = await res.json();
                     directorInput.value = data.textUppercase;
-                } catch (e) { }
+                } catch (e) { console.error(e); }
             }
         });
     }
 
-    // D) Genres (Checkbox)
+    // Genres (Checkbox)
     function validateGenres() {
         if (document.querySelectorAll('input[name="genre"]').length === 0) return true;
         const checked = document.querySelectorAll('input[name="genre"]:checked');
@@ -141,163 +142,66 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="genre"]').forEach(cb => cb.addEventListener('change', validateGenres));
 
 
-   
-    // 3. Preview, Delete, and drag and drop of images
-    
+    // 3. IMAGE PREVIEW LOGIC
+    const isEditingInput = document.getElementById('isEditing');
+    const isEditing = isEditingInput ? isEditingInput.value === 'true' : false;
 
-    function setupImageHandler(field, required) {
-        const input = document.getElementById(field);
-        const newPreview = document.getElementById(`${field}NewPreview`);
-        const existingPreview = document.getElementById(`${field}ExistingPreview`);
-        const deleteBtn = document.getElementById(`delete${field.charAt(0).toUpperCase() + field.slice(1)}Btn`);
-        const deleteInput = document.getElementById(`delete_${field}_input`);
+    function setupFilePreview(fileInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        const newPreview = document.getElementById(fileInputId + 'NewPreview');
+        const existingPreview = document.getElementById(fileInputId + 'ExistingPreview');
+        const deleteBtn = document.getElementById('delete' + fileInputId.charAt(0).toUpperCase() + fileInputId.slice(1) + 'Btn');
+        const deleteInput = document.getElementById('delete_' + fileInputId + '_input');
 
-        // Preview Logic (Listener change for input)
-        if (input) {
-            input.addEventListener('change', function () {
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
-                    // New file
                     const reader = new FileReader();
                     reader.onload = function (e) {
+                        if (existingPreview) existingPreview.style.display = 'none';
                         if (newPreview) {
                             newPreview.src = e.target.result;
                             newPreview.style.display = 'block';
                         }
-                        if (existingPreview) {
-                            existingPreview.style.display = 'none';
-                        }
-                        if (deleteBtn) {
-                            deleteBtn.style.display = 'block';
-                        }
-                        if (deleteInput) {
-                            deleteInput.value = 'false'; // cancel delete
-                        }
-                    };
+                        if (deleteBtn) deleteBtn.style.display = 'flex';
+                        if (isEditing && deleteInput) deleteInput.value = 'false';
+                    }
                     reader.readAsDataURL(this.files[0]);
-                    input.setCustomValidity("");
                 } else {
-                    // Empty input  
-                    // IF the input is empty and there is no existant image, apply the validation
-                    if (required && (!existingPreview || existingPreview.style.display === 'none')) {
-                        input.setCustomValidity("required");
+                    if (newPreview) { newPreview.src = '#'; newPreview.style.display = 'none'; }
+                    const shouldRestore = isEditing && existingPreview && (deleteInput.value !== 'true');
+                    if (shouldRestore) {
+                        existingPreview.style.display = 'block';
+                        if (deleteBtn) deleteBtn.style.display = 'flex';
+                    } else if (!existingPreview && deleteBtn) {
+                        deleteBtn.style.display = 'none';
                     }
-                }
-            });
-        }
-
-        // Delete logic (Listener 'click' for button 'X') 
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function () {
-                // Clean the input file
-                if (input) {
-                    input.value = ''; // Clean the selected archive
-                }
-
-                // None the previews views
-                if (newPreview) {
-                    newPreview.style.display = 'none';
-                    newPreview.src = '#';
-                }
-
-                // 3. Manage the existant image
-                if (existingPreview) {
-                    const hasExistingImage = existingPreview.src && existingPreview.src !== window.location.href && existingPreview.style.display !== 'none';
-                    if (hasExistingImage) {
-                        if (deleteInput) {
-                            deleteInput.value = 'true'; // Mark for delete
-                        }
-                        existingPreview.style.display = 'none'; // None
-                    }
-                }
-
-                // None button delete
-                this.style.display = 'none';
-
-                //  Validation
-                if (required) {
-                    input.setCustomValidity("required");
                 }
             });
         }
     }
 
-    // Initialize the image handler for each field
-    const fields = [
-        { name: 'cover' },
-        { name: 'titlePhoto' },
-        { name: 'filmPhoto' },
-        { name: 'fotoDirector' },
-        { name: 'fotoActor1' },
-        { name: 'fotoActor2' },
-        { name: 'fotoActor3' }
-    ];
+    ['cover', 'titlePhoto', 'filmPhoto', 'fotoDirector', 'fotoActor1', 'fotoActor2', 'fotoActor3'].forEach(f => setupFilePreview(f));
 
-    fields.forEach(f => {
-        //We check if the field has the 'required' attribute in the HTML
-        const isRequiredInHtml = document.getElementById(f.name)?.hasAttribute('required');
-        setupImageHandler(f.name, isRequiredInHtml);
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const fieldName = this.getAttribute('data-field');
+            const existingPreview = document.getElementById(fieldName + 'ExistingPreview');
+            const newPreview = document.getElementById(fieldName + 'NewPreview');
+            const fileInput = document.getElementById(fieldName);
+            const deleteInput = document.getElementById('delete_' + fieldName + '_input');
+
+            if (existingPreview) existingPreview.style.display = 'none';
+            if (newPreview) newPreview.style.display = 'none';
+            this.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+            if (isEditing && existingPreview && deleteInput) deleteInput.value = 'true';
+            if (!isEditing && fileInput) fileInput.required = true;
+        });
     });
 
-    // Drag and Drop logic(for images)
-    function setupDragAndDrop(containerId, inputId) {
-        const container = document.getElementById(containerId);
-        const fileInput = document.getElementById(inputId);
 
-        if (!container || !fileInput) return;
-
-        // Prevent default behavior
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            container.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        container.addEventListener('dragenter', highlight, false);
-        container.addEventListener('dragover', highlight, false);
-        container.addEventListener('dragleave', unhighlight, false);
-        container.addEventListener('drop', unhighlight, false);
-
-        function highlight() {
-            container.classList.add('highlight-dropzone'); 
-        }
-
-        function unhighlight() {
-            container.classList.remove('highlight-dropzone');
-        }
-
-        // Drop manage
-        container.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-
-            if (files.length > 0 && files[0].type.startsWith('image/')) {
-                // Assign the dragged file to the file input
-                fileInput.files = files;
-
-                // Trigger the 'change' event to activate the setupImageHandler
-                fileInput.dispatchEvent(new Event('change'));
-            }
-        }
-    }
-
-    // Set up Drag and Drop for each preview container
-    setupDragAndDrop('coverPreviewContainer', 'cover');
-    setupDragAndDrop('titlePhotoPreviewContainer', 'titlePhoto');
-    setupDragAndDrop('filmPhotoPreviewContainer', 'filmPhoto');
-    setupDragAndDrop('fotoDirectorPreviewContainer', 'fotoDirector');
-    setupDragAndDrop('fotoActor1PreviewContainer', 'fotoActor1');
-    setupDragAndDrop('fotoActor2PreviewContainer', 'fotoActor2');
-    setupDragAndDrop('fotoActor3PreviewContainer', 'fotoActor3');
-
-
-    
-    // Add film, add comment
-    
+    // 4. MAIN FORMS (ADD FILM / ADD COMMENT) - ASYNC/AWAIT
     const mainForms = [document.getElementById('filmForm'), document.getElementById('addCommentForm')];
 
     mainForms.forEach(form => {
@@ -316,173 +220,119 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = form.querySelector('button[type="submit"]');
             toggleLoading(submitBtn, true);
 
-            //The spinner is running 1.5 seconds
-            
-            const delay = (form.id === 'filmForm' || form.id === 'addCommentForm') ? 1500 : 0;
+            // NO setTimeout here. The delay is now in the backend.
+            try {
+                const formData = new FormData(form);
+                let fetchOptions = { method: 'POST' };
 
-            setTimeout(async () => {
-                try {
-                    const formData = new FormData(form);
-                    let fetchOptions = { method: 'POST' };
-
-                    // Add Comment use JSON, Film use Multipart
-                    if (form.id === 'addCommentForm') {
-                        const data = Object.fromEntries(formData.entries());
-                        fetchOptions.headers = { 'Content-Type': 'application/json' };
-                        fetchOptions.body = JSON.stringify(data);
-                    } else {
-                        fetchOptions.body = formData;
-                    }
-
-                    const response = await fetch(form.getAttribute('action'), fetchOptions);
-                    const result = await response.json();
-
-                    if (result.success) {
-                        if (form.id === 'filmForm') {
-                            //Comment added correctly
-                            window.location.href = result.redirectUrl;
-                        } else {
-                            
-                            
-                            form.reset();
-                            form.classList.remove('was-validated');
-                            window.location.reload();
-                        }
-                    } else {
-                        showModal('Error', result.message, 'danger');
-                    }
-                } catch (error) {
-                    showModal('Error', "Connection failed", 'danger');
-                } finally {
-                    toggleLoading(submitBtn, false);
+                if (form.id === 'addCommentForm') {
+                    const data = Object.fromEntries(formData.entries());
+                    fetchOptions.headers = { 'Content-Type': 'application/json' };
+                    fetchOptions.body = JSON.stringify(data);
+                } else {
+                    fetchOptions.body = formData;
                 }
-            }, delay);
+
+                const response = await fetch(form.getAttribute('action'), fetchOptions);
+                const result = await response.json();
+
+                if (result.success) {
+                    if (form.id === 'filmForm') {
+                        window.location.href = result.redirectUrl;
+                    } else {
+                        showModal('Added!', 'Review added successfully.', 'success');
+                        form.reset();
+                        form.classList.remove('was-validated');
+                        if (btnCloseModal) btnCloseModal.onclick = () => window.location.reload();
+                    }
+                } else {
+                    showModal('Error', result.message, 'danger');
+                }
+            } catch (error) {
+                showModal('Error', "Connection failed", 'danger');
+            } finally {
+                toggleLoading(submitBtn, false);
+            }
         });
     });
 
-    
 
+    // 5. REVIEWS DELEGATION (EDIT/DELETE) - ASYNC/AWAIT
+    const reviewsContainer = document.getElementById('reviewsContainer');
 
-   // Reviews Buttons (Edit and delete)
-const reviewsContainer = document.getElementById('reviewsContainer');
+    if (reviewsContainer) {
+        reviewsContainer.addEventListener('click', async function (e) {
+            
+            // --- EDIT CLICK ---
+            const editBtn = e.target.closest('.btn-edit-inline') || e.target.closest('.btn-edit-comment');
+            if (editBtn) {
+                const container = editBtn.closest('.review');
+                if (container.classList.contains('editing-mode')) return;
 
-if (reviewsContainer) {
-    reviewsContainer.addEventListener('click', function (e) {
+                const currentText = container.dataset.description || editBtn.dataset.text; 
+                const currentRating = container.dataset.rating || editBtn.dataset.rating; 
 
-        // If click in edit, the form is generated
-        // We check if the click was inside a button with the class .btn-edit-inline or .btn-edit-comment
-        const editBtn = e.target.closest('.btn-edit-inline') || e.target.closest('.btn-edit-comment');
+                const formHtml = `  
+                    <form class="inline-edit-form p-3 border rounded bg-white shadow-sm" novalidate>
+                        <h6 class="mb-3">Editing Review</h6>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Comment:</label>
+                            <textarea class="form-control" name="reviewText" rows="3" required>${currentText}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Rating (1-5):</label>
+                            <input type="number" class="form-control form-control-sm" name="reviewRating" value="${currentRating}" min="1" max="5" required>
+                        </div>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button type="button" class="btn btn-sm btn-secondary btn-cancel-edit">Cancel</button>
+                            <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
+                        </div>
+                    </form>
+                `;
+                container.dataset.originalHtml = container.innerHTML;
+                container.innerHTML = formHtml;
+                container.classList.add('editing-mode');
+            }
 
-        if (editBtn) {
-            const container = editBtn.closest('.review');
-            if (container.classList.contains('editing-mode')) return;
-
-            // Read data data-attributes
-            const currentText = container.dataset.description || editBtn.dataset.text; // Fallback
-            const currentRating = container.dataset.rating || editBtn.dataset.rating; // Fallback
-
-            // Online Html form
-            const formHtml = `  
-                <form class="inline-edit-form p-3 border rounded bg-white shadow-sm" novalidate>
-                    <h6 class="mb-3">Editing Review</h6>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Comment:</label>
-                        <textarea class="form-control" name="reviewText" rows="3" required>${currentText}</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Rating (1-5):</label>
-                        <input type="number" class="form-control form-control-sm" name="reviewRating" value="${currentRating}" min="1" max="5" required>
-                    </div>
-                    <div class="d-flex gap-2 justify-content-end">
-                        <button type="button" class="btn btn-sm btn-secondary btn-cancel-edit">Cancel</button>
-                        <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
-                    </div>
-                </form>
-            `;
-
-            // Save origin state
-            container.dataset.originalHtml = container.innerHTML;
-            container.innerHTML = formHtml;
-            container.classList.add('editing-mode');
-        }
-
-        // Click on cancel edit
-        if (e.target.closest('.btn-cancel-edit')) {
-            const container = e.target.closest('.review');
-            container.innerHTML = container.dataset.originalHtml;
-            container.classList.remove('editing-mode');
-        }
-
-        // Click on save changes (submit the form)
-        if (e.target.closest('.inline-edit-form') && e.target.closest('.btn-success')) {
-            e.preventDefault();  // Prevent the default form submission
-
-            const form = e.target.closest('form');
-            const container = form.closest('.review');
-
-            // Get the form data
-            const reviewText = form.querySelector('textarea[name="reviewText"]').value;
-            const reviewRating = form.querySelector('input[name="reviewRating"]').value;
-
-            // Show spinner on the "Save Changes" button
-            const saveBtn = form.querySelector('button[type="submit"]');
-            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-            saveBtn.disabled = true;
-
-            // Simulate saving process
-            setTimeout(() => {
-                // Normally here you'd send the data to the server
-                // Replace this with your actual saving logic, e.g., a fetch or Ajax request
-
-                // Assuming the save was successful, we update the review
+            // --- CANCEL CLICK ---
+            if (e.target.closest('.btn-cancel-edit')) {
+                const container = e.target.closest('.review');
                 container.innerHTML = container.dataset.originalHtml;
                 container.classList.remove('editing-mode');
+            }
 
-                // Replace spinner with the button text again
-                saveBtn.innerHTML = 'Save Changes';
-                saveBtn.disabled = false;
-            }, 1500); // Simulate delay (adjust as needed)
-        }
+            // --- DELETE COMMENT CLICK (Async/Await) ---
+            const deleteBtn = e.target.closest('.btn-delete-comment');
+            if (deleteBtn) {
+                if (!confirm("Are you sure you want to delete this comment?")) return;
 
-        // Click on delete
-        const deleteBtn = e.target.closest('.btn-delete-comment');
-        if (deleteBtn) {
-            if (!confirm("Are you sure you want to delete this comment?")) return;
+                const cId = deleteBtn.dataset.commentId;
+                const mId = deleteBtn.dataset.movieId;
 
-            const cId = deleteBtn.dataset.commentId;
-            const mId = deleteBtn.dataset.movieId;
+                deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                deleteBtn.disabled = true;
 
-            deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-            deleteBtn.disabled = true;
-
-            fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    setTimeout(() => {
-                        if (data.success) {
-                            // Delete DOM
-                            const row = document.getElementById(`review-${cId}`);
-                            if (row) row.remove();
-                        } else {
-                            alert(data.message);
-                            deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
-                            deleteBtn.disabled = false;
-                        }
-                    }, 700); 
-                })
-                .catch(() => {
+                try {
+                    const res = await fetch(`/deleteComment/${mId}/${cId}`, { method: 'POST' });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        const row = document.getElementById(`review-${cId}`);
+                        if (row) row.remove();
+                    } else {
+                        alert(data.message);
+                        deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
+                        deleteBtn.disabled = false;
+                    }
+                } catch (err) {
                     alert("Error deleting");
                     deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
                     deleteBtn.disabled = false;
-                });
-        }
-    });
+                }
+            }
+        });
 
-
-
-
-
-        // Submit online form
+        // --- SUBMIT INLINE FORM (Async/Await) ---
         reviewsContainer.addEventListener('submit', async function (e) {
             if (e.target.classList.contains('inline-edit-form')) {
                 e.preventDefault();
@@ -491,23 +341,25 @@ if (reviewsContainer) {
                 const form = e.target;
                 const container = form.closest('.review');
 
-                // Basic validation
                 if (!form.checkValidity()) {
                     form.classList.add('was-validated');
                     return;
                 }
 
-                // Get data
                 const formData = new FormData(form);
                 const newText = formData.get('reviewText');
                 const newRating = formData.get('reviewRating');
                 const cId = container.dataset.commentId;
                 const mId = container.dataset.movieId;
-                const userName = container.dataset.userName; 
+                const userName = container.dataset.userName;
 
-                // Block UI
                 const inputs = form.querySelectorAll('input, textarea, button');
                 inputs.forEach(el => el.disabled = true);
+                
+                // Show Spinner on save button
+                const saveBtn = form.querySelector('button.btn-success');
+                const originalBtnText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
                 try {
                     const res = await fetch(`/updateComment/${mId}/${cId}`, {
@@ -518,62 +370,117 @@ if (reviewsContainer) {
                     const result = await res.json();
 
                     if (result.success) {
-                        // Update comment without recharge
                         container.dataset.description = newText;
                         container.dataset.rating = newRating;
 
-                        // Rebuilt comment block
-                        
                         const newHtml = `
-                            <div class="review-content">
-                                <div class="user-info d-flex align-items-center mb-1">
-                                    <img src="/User/User.png" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                                    <strong>${userName}</strong>
-                                    <span class="badge bg-warning text-dark ms-3">⭐ ${newRating}/5</span>
+                            <div class="view-mode d-flex justify-content-between align-items-start">
+                                <div class="review-content">
+                                    <div class="user-info d-flex align-items-center mb-1">
+                                        <img src="/User/User.png" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                                        <strong>${userName}</strong>
+                                        <span class="badge bg-warning text-dark ms-3">⭐ ${newRating}/5</span>
+                                    </div>
+                                    <p class="mb-1 text-content">${newText}</p>
                                 </div>
-                                <p class="mb-1">${newText}</p>
-                            </div>
-                            <div class="review-actions d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-primary btn-edit-inline" 
-                                        data-text="${newText}" data-rating="${newRating}">
-                                    <i class="bi bi-pencil-fill"></i> Edit
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger btn-delete-comment" 
-                                        data-comment-id="${cId}" data-movie-id="${mId}">
-                                    <i class="bi bi-trash-fill"></i> Delete
-                                </button>
+                                <div class="review-actions d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary btn-edit-inline" 
+                                            data-text="${newText}" data-rating="${newRating}">
+                                        <i class="bi bi-pencil-fill"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger btn-delete-comment" 
+                                            data-comment-id="${cId}" data-movie-id="${mId}">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </button>
+                                </div>
                             </div>
                         `;
-
                         container.innerHTML = newHtml;
                         container.classList.remove('editing-mode');
-
                     } else {
                         alert("Error: " + result.message);
                         inputs.forEach(el => el.disabled = false);
+                        saveBtn.innerHTML = originalBtnText;
                     }
                 } catch (err) {
                     alert("Server Error");
                     inputs.forEach(el => el.disabled = false);
+                    saveBtn.innerHTML = originalBtnText;
                 }
             }
         });
     }
 
+    // 6. DELETE FILM (AJAX with Spinner)
+    // We target the delete form in Ej.html (which usually has action /deleteFilm)
+    const deleteFilmForm = document.querySelector('form[action="/deleteFilm"]');
+    if(deleteFilmForm) {
+        deleteFilmForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if(!confirm("Are you sure you want to delete this film?")) return;
 
-    
-    //  Restore search engine
+            const btn = this.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            // Show Spinner manually since toggleLoading is for the main form
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Deleting...';
+
+            try {
+                const formData = new FormData(this);
+                // Convert FormData to JSON or URLSearchParams for generic body
+                const body = new URLSearchParams(formData);
+
+                const response = await fetch(this.getAttribute('action'), {
+                    method: 'POST',
+                    body: body
+                });
+                
+                // If the router redirects, fetch might follow it automatically or return the redirect URL
+                // In your router, you return JSON now: {success: true, redirectUrl: '/indice'}
+                const result = await response.json();
+
+                if(result.success) {
+                    window.location.href = result.redirectUrl;
+                } else {
+                    alert("Error deleting film");
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Connection failed");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    }
+
+    // 7. REAL TIME SEARCH (INPUT + DEBOUNCE)
     const searchInput = document.querySelector('input[name="search"]');
     const searchBtn = document.querySelector('.btn-search');
+    let searchDebounce;
 
     if (searchInput) {
+        // "As you type" search with debounce
+        searchInput.addEventListener('input', function (e) {
+            clearTimeout(searchDebounce);
+            // Wait 500ms after user stops typing
+            searchDebounce = setTimeout(() => {
+                performSearch();
+            }, 500); 
+        });
+
+        // Also keep Enter key
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                clearTimeout(searchDebounce);
                 performSearch();
             }
         });
     }
+
     if (searchBtn) {
         searchBtn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -592,4 +499,5 @@ if (reviewsContainer) {
         }
         window.location.href = targetUrl;
     }
+
 });
