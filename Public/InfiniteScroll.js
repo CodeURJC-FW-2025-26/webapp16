@@ -1,4 +1,4 @@
-let page = 2; // Empieza en pagina 2
+let page = 2; // Start in second page
 let loading = false;
 
 const filmContainer = document.getElementById('film-container');

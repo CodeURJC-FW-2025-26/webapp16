@@ -346,10 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             window.location.href = result.redirectUrl;
                         } else {
                             // Éxito Comentario: Modal y Recarga
-                            showModal('Added!', 'Review added successfully.', 'success');
+                            
                             form.reset();
                             form.classList.remove('was-validated');
-                            if (btnCloseModal) btnCloseModal.onclick = () => window.location.reload();
+                            window.location.reload();
                         }
                     } else {
                         showModal('Error', result.message, 'danger');

@@ -243,7 +243,7 @@ router.post('/editFilm/:id', (req, res) => {
     });
 });
 
-// --- DETALLE ---
+// --- Detail Page ---
 router.get('/Ej/:id', async (req, res) => {
     try {
         if (!ObjectId.isValid(req.params.id)) return res.status(400).send("Invalid ID");
@@ -338,7 +338,7 @@ router.post('/updateComment/:movieId/:commentId', async (req, res) => {
 });
 
 
-// --- BORRAR PELÍCULA ---
+// --- Delete movie ---
 router.post('/deleteFilm', async (req, res) => {
     try {
         const oid = new ObjectId(req.body.movieId);
