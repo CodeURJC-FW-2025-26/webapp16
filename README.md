@@ -261,7 +261,7 @@ This section details the function of each key file in the website's implementati
            (https://github.com/CodeURJC-FW-2025-26/webapp16/commit/5f557bffce3d3e75dd27997755f7b852572c42f3) 
   
   -Pages:  ([Ej.html](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Ej.html))
-           ([InfiniteScroll.js]((https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/InfiniteScroll.js)))
+           ([InfiniteScroll.js]((https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/InfiniteScroll.js))
            ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/Public/app.js))
            ([app.js](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/src/app.js))
            ([data.json](https://github.com/CodeURJC-FW-2025-26/webapp16/blob/main/data/data.json))
