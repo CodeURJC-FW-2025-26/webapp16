@@ -150,11 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = document.getElementById(`delete${field.charAt(0).toUpperCase() + field.slice(1)}Btn`);
         const deleteInput = document.getElementById(`delete_${field}_input`);
 
-        // --- Lógica de Previsualización (Listener 'change' para input) ---
+        // --- Previsualitation logic (Listener 'change' for input) ---
         if (input) {
             input.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
-                    // Hay un archivo nuevo
+                    // There is a new file
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         if (newPreview) {
@@ -168,14 +168,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             deleteBtn.style.display = 'block';
                         }
                         if (deleteInput) {
-                            deleteInput.value = 'false'; // Anular borrado
+                            deleteInput.value = 'false'; // Undelete
                         }
                     };
                     reader.readAsDataURL(this.files[0]);
                     input.setCustomValidity("");
                 } else {
-                    // Input vacío (e.g., al cancelar selección después de Drag and Drop)
-                    // Si el input está vacío y no hay imagen existente, se aplica la validación
+                    // Empty input (e.g., when canceling selection after drag and drop)
+                    // If the input is empty and there is no existing image, validation is applied.
                     if (required && (!existingPreview || existingPreview.style.display === 'none')) {
                         input.setCustomValidity("required");
                     }
@@ -183,35 +183,35 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // --- Lógica de Borrado (Listener 'click' para botón 'X') ---
+        //  Deletion Logic (Listener 'click' for button 'X') 
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function () {
-                // 1. Limpiar el input file
+                // 1. Clear the input file
                 if (input) {
-                    input.value = ''; // Limpia el archivo seleccionado
+                    input.value = ''; // Clean the selected file
                 }
 
-                // 2. Ocultar las vistas previas
+                // 2. Hide previews
                 if (newPreview) {
                     newPreview.style.display = 'none';
                     newPreview.src = '#';
                 }
 
-                // 3. Manejar la imagen existente (marcar para borrado en el servidor)
+                // 3. Manage the existing image(mark for deletion on the server)
                 if (existingPreview) {
                     const hasExistingImage = existingPreview.src && existingPreview.src !== window.location.href && existingPreview.style.display !== 'none';
                     if (hasExistingImage) {
                         if (deleteInput) {
-                            deleteInput.value = 'true'; // Marcar para borrado
+                            deleteInput.value = 'true'; // Mark for deletion
                         }
-                        existingPreview.style.display = 'none'; // Ocultar
+                        existingPreview.style.display = 'none'; // Hide
                     }
                 }
 
-                // 4. Ocultar el botón de borrado
+                // 4. Hide the delete button
                 this.style.display = 'none';
 
-                // 5. Forzar la validación si es requerido y ahora está vacío
+                // 5. Force validation if required and is now empty
                 if (required) {
                     input.setCustomValidity("required");
                 }
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Inicializar el manejador de imágenes para cada campo
+    // Initialize the image handler for each field
     const fields = [
         { name: 'cover' },
         { name: 'titlePhoto' },
@@ -231,19 +231,19 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     fields.forEach(f => {
-        // Obtenemos si el campo tiene el atributo 'required' en el HTML
+        // We check if the field has the 'required' attribute in the HTML
         const isRequiredInHtml = document.getElementById(f.name)?.hasAttribute('required');
         setupImageHandler(f.name, isRequiredInHtml);
     });
 
-    // --- Lógica de Drag and Drop ---
+    // --- Drag and Drop logic---
     function setupDragAndDrop(containerId, inputId) {
         const container = document.getElementById(containerId);
         const fileInput = document.getElementById(inputId);
 
         if (!container || !fileInput) return;
 
-        // 1. Prevenir el comportamiento por defecto
+        // 1. Prevent default behavior
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             container.addEventListener(eventName, preventDefaults, false);
         });
@@ -253,21 +253,21 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
         }
 
-        // 2. Resaltar la zona (opcional)
+        // 2. Highlight the area (optional)
         container.addEventListener('dragenter', highlight, false);
         container.addEventListener('dragover', highlight, false);
         container.addEventListener('dragleave', unhighlight, false);
         container.addEventListener('drop', unhighlight, false);
 
         function highlight() {
-            container.classList.add('highlight-dropzone'); // Clase que definirás en CSS
+            container.classList.add('highlight-dropzone'); // Class that you will define in CSS
         }
 
         function unhighlight() {
             container.classList.remove('highlight-dropzone');
         }
 
-        // 3. Manejar el 'drop'
+        // 3. Managing the 'drop'
         container.addEventListener('drop', handleDrop, false);
 
         function handleDrop(e) {
@@ -275,16 +275,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const files = dt.files;
 
             if (files.length > 0 && files[0].type.startsWith('image/')) {
-                // Asignar el archivo arrastrado al input file
+                // Assign the dragged file to the input file
                 fileInput.files = files;
 
-                // Disparar el evento 'change' para activar el setupImageHandler
+                // Trigger the 'change' event to activate the setupImageHandler
                 fileInput.dispatchEvent(new Event('change'));
             }
         }
     }
 
-    // Configurar Drag and Drop para cada contenedor de vista previa
+    // Configure Drag and Drop for each preview container
     setupDragAndDrop('coverPreviewContainer', 'cover');
     setupDragAndDrop('titlePhotoPreviewContainer', 'titlePhoto');
     setupDragAndDrop('filmPhotoPreviewContainer', 'filmPhoto');
